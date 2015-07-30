@@ -1,0 +1,1450 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-01 19:18+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: .\basedata\apps.py:9
+msgid "BaseData"
+msgstr "基础数据"
+
+#: .\basedata\models.py:16
+msgid "list code"
+msgstr "编号"
+
+#: .\basedata\models.py:17
+msgid "list name"
+msgstr "名称"
+
+#: .\basedata\models.py:18 .\syscfg\models.py:40 .\syscfg\models.py:41
+#: .\syscfg\models.py:48
+msgid "module"
+msgstr "模块"
+
+#: .\basedata\models.py:19 .\basedata\models.py:38 .\organ\models.py:16
+#: .\organ\models.py:60 .\syscfg\models.py:37 .\syscfg\models.py:54
+#: .\syscfg\models.py:68
+msgid "in use"
+msgstr "在用？"
+
+#: .\basedata\models.py:20
+msgid "is init"
+msgstr "初始数据？"
+
+#: .\basedata\models.py:21
+msgid "is locked"
+msgstr "锁定？"
+
+#: .\basedata\models.py:22
+msgid "locked by"
+msgstr "锁定用户"
+
+#: .\basedata\models.py:23
+msgid "locked time"
+msgstr "锁定时间"
+
+#: .\basedata\models.py:26 .\basedata\models.py:27
+msgid "value list"
+msgstr "值列表"
+
+#: .\basedata\models.py:34
+msgid "list group"
+msgstr "值列表组"
+
+#: .\basedata\models.py:36
+msgid "item code"
+msgstr "项编号"
+
+#: .\basedata\models.py:37
+msgid "item name"
+msgstr "项名称"
+
+#: .\basedata\models.py:39 .\organ\models.py:34 .\organ\models.py:66
+#: .\organ\models.py:104 .\syscfg\models.py:34 .\syscfg\models.py:52
+msgid "weight"
+msgstr "排序权重"
+
+#: .\basedata\models.py:53 .\basedata\models.py:54
+msgid "list item"
+msgstr "列表项"
+
+#: .\basedata\models.py:63 .\basedata\models.py:73 .\basedata\models.py:74
+#: .\organ\models.py:23
+msgid "address"
+msgstr "地址"
+
+#: .\basedata\models.py:64 .\organ\models.py:24
+msgid "zipcode"
+msgstr "邮编"
+
+#: .\basedata\models.py:65 .\basedata\models.py:105 .\organ\models.py:27
+#: .\organ\models.py:63
+msgid "phone"
+msgstr "联系电话"
+
+#: .\basedata\models.py:66 .\basedata\models.py:104 .\organ\models.py:26
+#: .\organ\models.py:64
+msgid "contacts"
+msgstr "联系人"
+
+#: .\basedata\models.py:82
+msgid "Customer"
+msgstr "客户"
+
+#: .\basedata\models.py:83
+msgid "Supplier"
+msgstr "供应商"
+
+#: .\basedata\models.py:93
+msgid "partner code"
+msgstr "合作伙伴编号"
+
+#: .\basedata\models.py:94
+msgid "partner name"
+msgstr "名称"
+
+#: .\basedata\models.py:95 .\organ\models.py:14 .\organ\models.py:57
+#: .\organ\models.py:96
+msgid "short name"
+msgstr "简称"
+
+#: .\basedata\models.py:96 .\organ\models.py:15 .\organ\models.py:58
+#: .\organ\models.py:97
+msgid "pinyin"
+msgstr "拼音/英语"
+
+#: .\basedata\models.py:97 .\organ\models.py:59
+msgid "type"
+msgstr "类别"
+
+#: .\basedata\models.py:98
+msgid "level"
+msgstr "等级"
+
+#: .\basedata\models.py:100 .\organ\models.py:18
+msgid "tax num"
+msgstr "纳税识别号"
+
+#: .\basedata\models.py:101 .\organ\models.py:19
+msgid "tax address"
+msgstr "开票地址/电话"
+
+#: .\basedata\models.py:102 .\organ\models.py:20
+msgid "tax account"
+msgstr "发票开户行"
+
+#: .\basedata\models.py:106 .\basedata\models.py:119
+msgid "memo"
+msgstr "备注"
+
+#: .\basedata\models.py:109 .\basedata\models.py:110 .\basedata\models.py:120
+msgid "partner"
+msgstr "合作伙伴"
+
+#: .\basedata\models.py:117
+msgid "account num"
+msgstr "银行帐号"
+
+#: .\basedata\models.py:118
+msgid "bank name"
+msgstr "开户行"
+
+#: .\basedata\models.py:123 .\basedata\models.py:124
+msgid "bank account"
+msgstr "银行账户"
+
+#: .\common\const.py:20
+msgid "OFF"
+msgstr "关闭"
+
+#: .\common\const.py:21
+msgid "ON"
+msgstr "开启"
+
+#: .\common\generic.py:31 .\syscfg\models.py:13
+msgid "begin date"
+msgstr "开始日期"
+
+#: .\common\generic.py:32 .\syscfg\models.py:14
+msgid "end date"
+msgstr "结束日期"
+
+#: .\common\generic.py:33
+msgid "creator"
+msgstr "创建用户"
+
+#: .\common\generic.py:34
+msgid "modifier"
+msgstr "修改用户"
+
+#: .\common\generic.py:35
+msgid "creation"
+msgstr "创建时间"
+
+#: .\common\generic.py:36
+msgid "modification"
+msgstr "修改时间"
+
+#: .\organ\apps.py:9 .\organ\models.py:37 .\organ\models.py:38
+#: .\organ\models.py:54
+msgid "organization"
+msgstr "组织机构"
+
+#: .\organ\models.py:12 .\organ\models.py:55
+msgid "organ code"
+msgstr "机构编号"
+
+#: .\organ\models.py:13 .\organ\models.py:56
+msgid "organ name"
+msgstr "机构名称"
+
+#: .\organ\models.py:22
+msgid "representative "
+msgstr "法人代表"
+
+#: .\organ\models.py:25 .\organ\models.py:62
+msgid "fax"
+msgstr "传真"
+
+#: .\organ\models.py:28
+msgid "website"
+msgstr "网址"
+
+#: .\organ\models.py:29 .\organ\models.py:65
+msgid "email"
+msgstr "邮箱"
+
+#: .\organ\models.py:30
+msgid "license code"
+msgstr "营业执照代码"
+
+#: .\organ\models.py:31
+msgid "certificate code"
+msgstr "组织机构代码"
+
+#: .\organ\models.py:32
+msgid "business license"
+msgstr "营业执照"
+
+#: .\organ\models.py:33
+msgid "organization code certificate"
+msgstr "组织机构证书"
+
+#: .\organ\models.py:46
+msgid "BRANCH"
+msgstr "分公司/事业部"
+
+#: .\organ\models.py:47
+msgid "DEPARTMENT"
+msgstr "一级部门"
+
+#: .\organ\models.py:48
+msgid "OFFICE"
+msgstr "二级部门/处室/科室"
+
+#: .\organ\models.py:49
+msgid "TEAM"
+msgstr "组/班"
+
+#: .\organ\models.py:50
+msgid "COMMITTEE"
+msgstr "委员会"
+
+#: .\organ\models.py:53 .\organ\models.py:93 .\syscfg\models.py:36
+#: .\syscfg\models.py:69
+msgid "parent"
+msgstr "父级"
+
+#: .\organ\models.py:61 .\organ\models.py:100
+msgid "is virtual"
+msgstr "虚拟？"
+
+#: .\organ\models.py:69 .\organ\models.py:70 .\organ\models.py:92
+msgid "org unit"
+msgstr "组织单元"
+
+#: .\organ\models.py:78
+msgid "Admin Position"
+msgstr "管理类"
+
+#: .\organ\models.py:79
+msgid "Sale Position"
+msgstr "营销类"
+
+#: .\organ\models.py:80
+msgid "Technology Position"
+msgstr "技术类"
+
+#: .\organ\models.py:81
+msgid "Produce Position"
+msgstr "生产/操作类"
+
+#: .\organ\models.py:85
+msgid "BASIC"
+msgstr "基础"
+
+#: .\organ\models.py:86
+msgid "MEDIUM"
+msgstr "中等"
+
+#: .\organ\models.py:87
+msgid "SENIOR"
+msgstr "高级"
+
+#: .\organ\models.py:88
+msgid "PROFESSOR"
+msgstr "教授"
+
+#: .\organ\models.py:89
+msgid "EXPERT"
+msgstr "专家"
+
+#: .\organ\models.py:94
+msgid "position code"
+msgstr "岗位编号"
+
+#: .\organ\models.py:95
+msgid "position name"
+msgstr "岗位名称"
+
+#: .\organ\models.py:98
+msgid "position series"
+msgstr "岗位序列"
+
+#: .\organ\models.py:99
+msgid "position grade"
+msgstr "岗位级别"
+
+#: .\organ\models.py:101
+msgid "position description"
+msgstr "岗位说明"
+
+#: .\organ\models.py:102
+msgid "qualification"
+msgstr "任职资格"
+
+#: .\organ\models.py:103
+msgid "reference"
+msgstr "参考资料"
+
+#: .\organ\models.py:107 .\organ\models.py:108
+msgid "position"
+msgstr "岗位"
+
+#: .\syscfg\apps.py:9
+msgid "SysConfig"
+msgstr "系统配置"
+
+#: .\syscfg\models.py:15
+msgid "site name"
+msgstr "站点名称"
+
+#: .\syscfg\models.py:16
+msgid "site description"
+msgstr "描述信息"
+
+#: .\syscfg\models.py:17
+msgid "administrator"
+msgstr "管理员"
+
+#: .\syscfg\models.py:23 .\syscfg\models.py:24
+msgid "Site"
+msgstr "站点"
+
+#: .\syscfg\models.py:31
+msgid "module code"
+msgstr "模块编号"
+
+#: .\syscfg\models.py:32
+msgid "module name"
+msgstr "模块名称"
+
+#: .\syscfg\models.py:33
+msgid "module url"
+msgstr "URL"
+
+#: .\syscfg\models.py:35 .\syscfg\models.py:53
+msgid "style class"
+msgstr "样式类"
+
+#: .\syscfg\models.py:49
+msgid "menu code"
+msgstr "菜单编号"
+
+#: .\syscfg\models.py:50
+msgid "menu name"
+msgstr "菜单名称"
+
+#: .\syscfg\models.py:51
+msgid "menu url"
+msgstr "URL"
+
+#: .\syscfg\models.py:57 .\syscfg\models.py:58
+msgid "menu"
+msgstr "菜单"
+
+#: .\syscfg\models.py:65
+msgid "role code"
+msgstr "角色编号"
+
+#: .\syscfg\models.py:66
+msgid "role name"
+msgstr "角色名称"
+
+#: .\syscfg\models.py:67
+msgid "description"
+msgstr "描述信息"
+
+#: .\syscfg\models.py:70
+msgid "role users"
+msgstr "分配用户"
+
+#: .\syscfg\models.py:71
+msgid "role menus"
+msgstr "分配菜单"
+
+#: .\syscfg\models.py:74 .\syscfg\models.py:75
+msgid "role"
+msgstr "角色"
+
+msgid "code"
+msgstr "编号"
+
+msgid "address type"
+msgstr "地址类型"
+
+msgid "project"
+msgstr "项目"
+
+msgid "project code"
+msgstr "项目编号"
+
+msgid "project name"
+msgstr "项目名称"
+
+msgid "status"
+msgstr "状态"
+
+msgid "project type"
+msgstr "性质"
+
+msgid "budget"
+msgstr "预算金额"
+
+msgid "income"
+msgstr "收入金额"
+
+msgid "expand"
+msgstr "支出金额"
+
+msgid "blueprint"
+msgstr "技术/图纸"
+
+msgid "offer sheet"
+msgstr "报价单"
+
+msgid "business document"
+msgstr "商务/标书"
+
+msgid "related users"
+msgstr "关系人"
+
+msgid "trade"
+msgstr "经济行业"
+
+msgid "brand"
+msgstr "品牌"
+
+msgid "category"
+msgstr "分类"
+
+msgid "path"
+msgstr "路径"
+
+msgid "material"
+msgstr "物料"
+
+msgid "material code"
+msgstr "物料编号"
+
+msgid "material name"
+msgstr "物料名称"
+
+msgid "bar code"
+msgstr "条形码"
+
+msgid "specifications"
+msgstr "规格型号"
+
+msgid "is equipment"
+msgstr "设备？"
+
+msgid "can sale"
+msgstr "可销售"
+
+msgid "warehouse"
+msgstr "仓库"
+
+msgid "measure"
+msgstr "计量单位"
+
+msgid "stock price"
+msgstr "库存单价"
+
+msgid "purchase price"
+msgstr "采购单价"
+
+msgid "sale price"
+msgstr "销售单价"
+
+msgid "technical parameter"
+msgstr "技术参数"
+
+msgid "technical value"
+msgstr "参数值"
+
+msgid "value"
+msgstr "值"
+
+msgid "location"
+msgstr "位置"
+
+msgid "material category"
+msgstr "物料分类"
+
+msgid "expenses account"
+msgstr "费用科目"
+
+msgid "HR-DOMAIN"
+msgstr "人事费用"
+
+msgid "OFFICE-DOMAIN"
+msgstr "行政办公"
+
+msgid "PUBLIS-DOMAIN"
+msgstr "运营公共"
+
+msgid "MUNADOMAIN"
+msgstr "生产制造"
+
+msgid "BUSINESS"
+msgstr "市场商务"
+
+msgid "OTHER"
+msgstr "其他"
+
+msgid "employee number"
+msgstr "工号"
+
+msgid "employee name"
+msgstr "职员姓名"
+
+msgid "birthday"
+msgstr "出生日期"
+
+msgid "gender"
+msgstr "性别"
+
+msgid "id card"
+msgstr "身份证号码"
+
+msgid "nationality"
+msgstr "国籍"
+
+msgid "hometown"
+msgstr "籍贯"
+
+msgid "home address"
+msgstr "家庭住址"
+
+msgid "emergency contacts"
+msgstr "紧急联系人/方式"
+
+msgid "office phone"
+msgstr "办公电话"
+
+msgid "employee rank"
+msgstr "职员职级"
+
+msgid "workday"
+msgstr "参加工作日期"
+
+msgid "start date"
+msgstr "入司日期"
+
+msgid "religion"
+msgstr "宗教信仰"
+
+msgid "marital status"
+msgstr "婚姻状况"
+
+msgid "political party"
+msgstr "政治面貌"
+
+msgid "nation"
+msgstr "民族"
+
+msgid "employ ygxs"
+msgstr "用工形式"
+
+msgid "employ status"
+msgstr "人员状态"
+
+msgid "employ category"
+msgstr "人员类别"
+
+msgid "literacy"
+msgstr "文化程度"
+
+msgid "major type"
+msgstr "专业类别"
+
+msgid "major degree"
+msgstr "学位"
+
+msgid "tag1 fzjr"
+msgstr "复转军人？"
+
+msgid "tag2 dwld"
+msgstr "党委负责人？"
+
+msgid "tag3 dsjs"
+msgstr "董事监事？"
+
+msgid "tag4 byzk"
+msgstr "兵役状况"
+
+msgid "employee"
+msgstr "职员"
+
+msgid "special job"
+msgstr "特殊工种？"
+
+msgid "family member"
+msgstr "家庭成员"
+
+msgid "education experience"
+msgstr "教育履历"
+
+msgid "work experience"
+msgstr "工作履历"
+
+msgid "social status"
+msgstr "人员身份"
+
+msgid "emergency"
+msgstr "紧急联系人？"
+
+msgid "edu type"
+msgstr "教育类型"
+
+msgid "school"
+msgstr "毕业学校"
+
+msgid "major"
+msgstr "专业"
+
+msgid "family title"
+msgstr "成员称谓"
+
+msgid "health"
+msgstr "健康状况"
+
+msgid "Content Types"
+msgstr "内容类型"
+
+msgid "workflow model"
+msgstr "工作流模型"
+
+msgid "workflow code"
+msgstr "编号"
+
+msgid "workflow name"
+msgstr "工作流名称"
+
+msgid "app name"
+msgstr "应用名称"
+
+msgid "model name"
+msgstr "模型名称"
+
+msgid "node code"
+msgstr "节点编号"
+
+msgid "node name"
+msgstr "节点名称"
+
+msgid "tooltip words"
+msgstr "提示语"
+
+msgid "start node"
+msgstr "起始节点？"
+
+msgid "stop node"
+msgstr "结束节点？"
+
+msgid "can terminate"
+msgstr "允许终止？"
+
+msgid "can deny"
+msgstr "允许拒绝？"
+
+msgid "email notice"
+msgstr "邮件通知？"
+
+msgid "short message notice"
+msgstr "短信通知？"
+
+msgid "approve node"
+msgstr "批准节点"
+
+msgid "handler"
+msgstr "处理人"
+
+msgid "workflow node"
+msgstr "工作流节点"
+
+msgid "NEW"
+msgstr "新建"
+
+msgid "IN PROGRESS"
+msgstr "处理中"
+
+msgid "DENY"
+msgstr "拒绝"
+
+msgid "TERMINATED"
+msgstr "已终止审批"
+
+msgid "APPROVED"
+msgstr "已批准"
+
+msgid "start user"
+msgstr "提交人"
+
+msgid "start time"
+msgstr "提交时间"
+
+msgid "approved time"
+msgstr "批准时间"
+
+msgid "current node"
+msgstr "当前节点"
+
+msgid "SUBMIT"
+msgstr "提交"
+
+msgid "AGREE"
+msgstr "同意"
+
+msgid "workflow instance"
+msgstr "工作流实例"
+
+msgid "submitter"
+msgstr "提交人"
+
+msgid "process time"
+msgstr "处理时间"
+
+msgid "process type"
+msgstr "处理类型"
+
+msgid "workflow history"
+msgstr "审批记录"
+
+msgid "arrived time"
+msgstr "到达时间"
+
+msgid "is read"
+msgstr "已阅？"
+
+msgid "read time"
+msgstr "阅读时间"
+
+msgid "workflow todo"
+msgstr "待办任务"
+
+msgid "workflow"
+msgstr "工作流"
+
+msgid "No, take me back"
+msgstr "不，返回"
+
+msgid "submit"
+msgstr "提交"
+
+msgid "Are you sure you want to submit the %(object_name)s \"%(escaped_object)s\"? "
+msgstr "您确定要提交\"%(escaped_object)s\"进行审批吗？"
+
+msgid "next node"
+msgstr "下一节点"
+
+msgid "designated department"
+msgstr "部门范围"
+
+msgid "designated user"
+msgstr "指定用户"
+
+msgid "designated role"
+msgstr "指定角色"
+
+msgid "designated position"
+msgstr "指定岗位"
+
+msgid "handler type"
+msgstr "处理人类型"
+
+msgid "Please handle the request %(verbose)s:%(object)s"
+msgstr "请审批单据："
+
+msgid "node"
+msgstr "节点"
+
+msgid "Workflow Memo"
+msgstr "审批意见"
+
+msgid "Workflow History"
+msgstr "审批历史"
+
+msgid "already read"
+msgstr "已阅"
+
+msgid "unread"
+msgstr "未阅"
+
+msgid "workflow started successfully"
+msgstr "工作流提交成功"
+
+msgid "the object is already in workflow"
+msgstr "对象已提交审批，请勿重复提交"
+
+msgid "agree"
+msgstr "同意"
+
+msgid "deny"
+msgstr "拒绝"
+
+msgid "terminate"
+msgstr "终止"
+
+msgid "workflow approve"
+msgstr "工作流审批"
+
+msgid "No workflow model was found"
+msgstr "未配置工作流模型"
+
+msgid "you needs to config a workflow model for this content type"
+msgstr "请在 工作流/工作流模型 中配置本业务的流程模型"
+
+msgid "Hold down \"Control\", or \"Command\" on a Mac, to select more than one."
+msgstr "按住\"Ctrl\"键或者Mac上的\"Command\"键进行多选"
+
+msgid "No user was configured to handle this node"
+msgstr "本节点未配置处理人，请联系管理员配置处理人"
+
+msgid "current node is stop node,click the submit button to complete it"
+msgstr "当前为流程最后一个环节，点击\"确定\"完成流程"
+
+msgid "workflow approved successfully"
+msgstr "工作流审批成功"
+
+msgid "COMPLETED"
+msgstr "完成"
+
+msgid "Summary"
+msgstr "摘要"
+
+msgid "Objects"
+msgstr "对象清单"
+
+msgid "your apply has been denied,you can restart a new apply"
+msgstr "您的申请未获得批准，您可重新启动申请"
+
+msgid "restart workflow"
+msgstr "重新启动"
+
+msgid "work order"
+msgstr "工单"
+
+msgid "work orders"
+msgstr "工单"
+
+msgid "classification"
+msgstr "分类"
+
+msgid "business domain"
+msgstr "业务域"
+
+msgid "workorder apply"
+msgstr "工单服务"
+
+msgid "workorder code"
+msgstr "工单编号"
+
+msgid "title"
+msgstr "标题"
+
+msgid "amount"
+msgstr "数量"
+
+msgid "price"
+msgstr "单价"
+
+msgid "service name"
+msgstr "服务名称"
+
+msgid "refer wo"
+msgstr "参考工单"
+
+msgid "self help"
+msgstr "个人自助"
+
+msgid "extra values"
+msgstr "扩展信息"
+
+msgid "workorder items"
+msgstr "工单明细"
+
+msgid "extra param"
+msgstr "扩展参数"
+
+msgid "extra params"
+msgstr "扩展参数"
+
+msgid "param value"
+msgstr "值"
+
+msgid "data type"
+msgstr "数据类别"
+
+msgid "data source"
+msgstr "数据源"
+
+msgid "DATE"
+msgstr "日期"
+
+msgid "NUMBER"
+msgstr "数字"
+
+msgid "loans"
+msgstr "借款申请"
+
+msgid "loan"
+msgstr "借款申请"
+
+msgid "reimbursement"
+msgstr "费用报销"
+
+msgid "reimbursements"
+msgstr "费用报销"
+
+msgid "fee item"
+msgstr "费用明细"
+
+msgid "fee items"
+msgstr "费用明细"
+
+msgid "fee code"
+msgstr "单据编号"
+
+msgid "loan code"
+msgstr "单据编号"
+
+msgid "loan amount"
+msgstr "借款金额"
+
+msgid "logout time"
+msgstr "核销时间"
+
+msgid "logout amount"
+msgstr "核销金额"
+
+msgid "amount of money"
+msgstr "金额"
+
+msgid "cost center"
+msgstr "成本中心"
+
+msgid "loan record"
+msgstr "借款单据"
+
+msgid "pay amount"
+msgstr "支付金额"
+
+msgid "occur date"
+msgstr "发生日期"
+
+msgid "fico"
+msgstr "财务信息"
+
+msgid "Authentication and Authorization"
+msgstr "认证授权"
+
+msgid "human resource"
+msgstr "人力资源"
+
+msgid "salary items"
+msgstr "工资项"
+
+msgid "salary item"
+msgstr "工资项"
+
+msgid "plus or minus"
+msgstr "增减属性"
+
+msgid "employee entries"
+msgstr "人员入职"
+
+msgid "employee entry"
+msgstr "人员入职"
+
+msgid "designate position"
+msgstr "拟任岗位"
+
+msgid "mail address"
+msgstr "邮寄地址"
+
+msgid "profile"
+msgstr "简历信息"
+
+msgid "org distribute"
+msgstr "组织分配"
+
+msgid "guider"
+msgstr "指导老师"
+
+msgid "calculate way"
+msgstr "计算方式"
+
+msgid "fixed value"
+msgstr "固定值"
+
+msgid "base value"
+msgstr "基数值"
+
+msgid "org percent"
+msgstr "公司比例"
+
+msgid "employee percent"
+msgstr "员工比例"
+
+msgid "probation months"
+msgstr "试聘期"
+
+msgid "probation begin"
+msgstr "试聘开始"
+
+msgid "probation end"
+msgstr "试聘结束"
+
+msgid "is required"
+msgstr "必需？"
+
+msgid "extra value"
+msgstr "扩展信息"
+
+msgid "workorder item"
+msgstr "工单明细"
+
+msgid "inventory manage"
+msgstr "库存管理"
+
+msgid "Initial Inventory"
+msgstr "期初库存"
+
+msgid "StockIn"
+msgstr "入库单"
+
+msgid "StockOut"
+msgstr "领料单"
+
+msgid "execute time"
+msgstr "执行时间"
+
+msgid "in items"
+msgstr "入库明细"
+
+msgid "in item"
+msgstr "入库明细"
+
+msgid "out items"
+msgstr "出库明细"
+
+msgid "out item"
+msgstr "出库明细"
+
+msgid "init item"
+msgstr "期初明细"
+
+msgid "PLUS"
+msgstr "增加"
+
+msgid "MINUS"
+msgstr "减少"
+
+msgid "EXECUTED"
+msgstr "已执行"
+
+msgid "QUALITY TESTING"
+msgstr "质检"
+
+msgid "purchase manage"
+msgstr "采购管理"
+
+msgid "purchase orders"
+msgstr "采购单"
+
+msgid "purchase order"
+msgstr "采购单"
+
+msgid "order date"
+msgstr "订单日期"
+
+msgid "arrive date"
+msgstr "交货日期"
+
+msgid "count"
+msgstr "数量"
+
+msgid "money amount"
+msgstr "金额"
+
+msgid "discount amount"
+msgstr "折扣金额"
+
+msgid "tax rate"
+msgstr "税率"
+
+msgid "po item"
+msgstr "采购明细"
+
+msgid "discount price"
+msgstr "折后单价"
+
+msgid "batch"
+msgstr "批次号"
+
+msgid "Action Stock In"
+msgstr "入库"
+
+msgid "Action Stock Out"
+msgstr "出库"
+
+msgid "money of amount"
+msgstr "金额"
+
+msgid "stock in money of amount"
+msgstr "入库金额"
+
+msgid "entry time"
+msgstr "入库时间"
+
+msgid "ALREADY STOCK IN"
+msgstr "已入库"
+
+msgid "Inventory"
+msgstr "实时库存"
+
+msgid "CHAR"
+msgstr "字符"
+
+msgid "inventory material"
+msgstr "库存物资"
+
+msgid "stock out time"
+msgstr "出库时间"
+
+msgid "stock out amount"
+msgstr "出库金额"
+
+msgid "Invoice"
+msgstr "发票"
+
+msgid "invoice date"
+msgstr "发票日期"
+
+msgid "invoice code"
+msgstr "发票代码"
+
+msgid "invoice number"
+msgstr "发票编号"
+
+msgid "po amount"
+msgstr "采购金额"
+
+msgid "invoice amount"
+msgstr "发票金额"
+
+msgid "invoice file"
+msgstr "发票文件"
+
+msgid "pay date"
+msgstr "付款日期"
+
+msgid "pay code"
+msgstr "付款编号"
+
+msgid "response code"
+msgstr "银行回执"
+
+msgid "Payment"
+msgstr "采购付款"
+
+msgid "activity"
+msgstr "活动"
+
+msgid "activities"
+msgstr "活动"
+
+msgid "begin time"
+msgstr "开始时间"
+
+msgid "end time"
+msgstr "结束时间"
+
+msgid "host"
+msgstr "主持人"
+
+msgid "speaker"
+msgstr "主讲人"
+
+msgid "room"
+msgstr "房间/会议室"
+
+msgid "mail list"
+msgstr "邮件组"
+
+msgid "mail notice"
+msgstr "邮件通知"
+
+msgid "weixin notice"
+msgstr "微信通知"
+
+msgid "attach"
+msgstr "附件"
+
+msgid "Meeting"
+msgstr "会议"
+
+msgid "Train"
+msgstr "培训"
+
+msgid "Community"
+msgstr "集体活动"
+
+msgid "out user"
+msgstr "领料人"
+
+msgid "other info"
+msgstr "其他信息"
+
+msgid "InOut History"
+msgstr "出入库历史"
+
+msgid "source"
+msgstr "原始单据"
+
+msgid "plus or minus prop"
+msgstr "增减属性"
+
+msgid "deliver address"
+msgstr "交付地址"
+
+msgid "deliver date"
+msgstr "交付日期"
+
+msgid "sales man"
+msgstr "销售员"
+
+msgid "invoice type"
+msgstr "发票类型"
+
+msgid "sale management"
+msgstr "销售管理"
+
+msgid "sale order"
+msgstr "销售订单"
+
+msgid "order detail"
+msgstr "订单明细"
+
+msgid "Payment Collection"
+msgstr "销售回款"
+
+msgid "collection date"
+msgstr "回款日期"
+
+msgid "collection code"
+msgstr "回款单号"
+
+msgid "order amount"
+msgstr "合同金额"
+
+msgid "collection amount"
+msgstr "到账金额"
+
+msgid "offer detail"
+msgstr "报价明细"
+
+msgid "offer date"
+msgstr "报价日期"
+
+msgid "offer man"
+msgstr "报价员"
+
+msgid "offer sheet file"
+msgstr "报价表"
+
+msgid "cost price"
+msgstr "成本单价"
+
+msgid "mt type"
+msgstr "物料性质"
+
+msgid "ware return"
+msgstr "返库单"
+
+msgid "return item"
+msgstr "返库明细"
+
+msgid "out count"
+msgstr "领料数量"
+
+msgid "Action Ware Return"
+msgstr "执行返库"
+
+msgid "ware adjust"
+msgstr "库存调整"
+
+msgid "adjust item"
+msgstr "调整明细"
+
+msgid "plus or minus property"
+msgstr "增减属性"
+
+msgid "Action Ware Adjust"
+msgstr "执行调整"
+
+msgid "data import"
+msgstr "导入"
+
+msgid "date"
+msgstr "日期"
+
+msgid "clear old data?"
+msgstr "清除旧数据？"
+
+msgid "handler class"
+msgstr "处理类"
+
+msgid "import"
+msgstr "导入"
+
+msgid "action"
+msgstr "执行"
+
+msgid "data import successfully"
+msgstr "数据导入成功"
+
+msgid "applier"
+msgstr "申请人"
+
+msgid "pay"
+msgstr "支付"
+
+msgid "PAYED"
+msgstr "已支付"
+
+msgid "action successfully"
+msgstr "执行成功"
+
+msgid "Are your sure to execute the operations?"
+msgstr "您确认要执行本操作吗？"
+
+msgid "to be imported detail"
+msgstr "待导入明细"
+
+msgid "draft"
+msgstr "草稿"
+
+msgid "published"
+msgstr "已发布"
+
+msgid "keywords"
+msgstr "关键词"
+
+msgid "BUSINESS DOC"
+msgstr "业务文档"
+
+msgid "SYSTEM MANUAL"
+msgstr "系统手册"
+
+msgid "document"
+msgstr "文档"
+
+msgid "documents"
+msgstr "文档"
+
+msgid "%(app)s administration"
+msgstr "%(app)s 模块"
+
+msgid "next user handler"
+msgstr "next用户处理类"
+
+msgid "next node handler"
+msgstr "next节点处理类"
+
+msgid "status field"
+msgstr "状态字段"
+
+msgid "status value"
+msgstr "状态值"
+
+msgid "execute action"
+msgstr "执行动作"
+
+msgid "can edit"
+msgstr "可编辑？"
+
+msgid "attention"
+msgstr "注意"
+
+msgid "is done"
+msgstr "已办？"
+
+msgid "Are you sure to deny the request?"
+msgstr "您确定要拒绝申请吗？"
+
+msgid "Are you sure to terminate the request?"
+msgstr "您确定要终止申请吗？"
+
+msgid "workflow restarted success"
+msgstr "工作流重启成功"
+
+msgid "export selected %(verbose_name_plural)s"
+msgstr "导出所选的 %(verbose_name_plural)s"
+
+msgid "publish selected %(verbose_name_plural)s"
+msgstr "发布所选的 %(verbose_name_plural)s"
+
+msgid "Are your sure to execute the check out operations?"
+msgstr "您确定要执行出库操作吗？"
+
+msgid "check out successfully"
+msgstr "已成功出库"
+
+msgid "check in successfully"
+msgstr "已成功入库"

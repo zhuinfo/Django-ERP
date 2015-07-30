@@ -1,0 +1,38 @@
+
+table#workflow-history{
+    width:100%
+}
+table#workflow-history tbody th,table#workflow-history tbody td.col {
+    width: 16em;
+}
+
+.submitlink {
+    padding-left: 12px;
+    background: url(../img/icon-yes.gif) 0 .25em no-repeat;
+}
+
+a.submitlink:link, a.submitlink:visited {
+    color: #CC3434;
+}
+
+a.submitlink:hover {
+    color: #993333;
+}
+
+label.control{
+    width:4em;
+}
+
+p.next-node{
+    font-weight:bold;
+}
+ul.node-users{
+    list-style:none;
+}
+p.tooltip{
+    color:#999;
+}
+li.done-link{
+    padding-left: 12px;
+    background: url(../img/icon_yes.gif) 0 .2em no-repeat;
+}
