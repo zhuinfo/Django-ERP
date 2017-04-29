@@ -4,7 +4,7 @@ from django.forms import models
 from django.forms import fields,TextInput,Textarea
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.generic import GenericTabularInline
+from django.contrib.contenttypes.admin import GenericTabularInline
 from common import generic
 from basedata.models import ValueList,ValueListItem,Address,Partner,BankAccount,Project,Measure,Material,Brand,\
     Category,Warehouse,TechnicalParameterName,TechnicalParameterValue,Trade,ExpenseAccount,Employee,Family,Education,\

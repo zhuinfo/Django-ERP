@@ -4,10 +4,16 @@ Django-ERP是一款基于Django开发的ERP管理软件，包含常用的销售�
 Forked from <a href="https://github.com/zhuinfo/Django-ERP">zhuinfo Django-ERP</a> 感谢他的付出。
 
 # 安装指南
+
+> 我的开发、测试环境是Python2.7的，所以这个文档大多数情况我默认会使用这个条件，有个别测试不到位的可能还需要慢慢完善。
+
 请先确保您已安装了Python 2.7,并已配置好了数据库，本文档会略过这部分内容（理论上Django是可以支持MYSql、PGSQL、SQLite、Oracle等主流数据库的，但是建议不要嘬，用自己熟悉的数据库，因为数据是无价的。）
 验证方法请通过python --version查看版本，以及数据库 确认用户名和密码是否登录正常
 
+后续我争取不上requirements.txt，远期目标我个人是希望能做个dock镜像，并让它能慢慢顺着Python3和新版本的django平滑过渡上去。
+
 ## 数据库配置
+
 数据库配置项在mis/settings.py文件中
 在88-96行为Mysql数据库配置
 
@@ -26,4 +32,35 @@ DATABASES = {
 
 ## 克隆代码
 > git clone https://github.com/bg4hkq/Django-ERP.git
->
+
+
+## 导入数据库
+> mysql -uroot -proot mis < Install/mis.sql
+
+## 运行测试服务器
+> python manage.py runserver
+
+## 创建管理员账户（因为我没找到SQL库里admin的密码）
+```
+C:\Django-ERP>python manage.py createsuperuser
+
+You have 3 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth.
+Run 'python manage.py migrate' to apply them.
+Username (leave blank to use 'baoz'): system
+Email address: yurihuang@me.com
+Password:
+Password (again):
+Superuser created successfully.
+
+C:\Django-ERP>
+```
+
+# 排错
+
+## MYSQL驱动错误
+```
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: No module named MySQLdb
+```
+
+出现No module named MySQLdb是django找不到MySQL驱动导致的问题，所以需要先安装一个数据库驱动。
+
