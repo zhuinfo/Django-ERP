@@ -40,17 +40,16 @@ DATABASES = {
 ## 运行测试服务器
 > python manage.py runserver
 
-## 创建管理员账户（因为我没找到SQL库里admin的密码）
+## 修改管理员账户密码
 ```
-C:\Django-ERP>python manage.py createsuperuser
+C:\Django-ERP>python manage.py changepassword admin
 
 You have 3 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth.
 Run 'python manage.py migrate' to apply them.
-Username (leave blank to use 'baoz'): system
-Email address: yurihuang@me.com
+Changing password for user 'admin'
 Password:
 Password (again):
-Superuser created successfully.
+Password changed successfully for user 'admin'
 
 C:\Django-ERP>
 ```
