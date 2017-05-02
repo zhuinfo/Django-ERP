@@ -31,7 +31,7 @@ DATABASES = {
 
 
 ## 克隆代码
-> git clone https://github.com/bg4hkq/Django-ERP.git
+> git clone https://github.com/zhuinfo/Django-ERP.git
 
 
 ## 导入数据库
