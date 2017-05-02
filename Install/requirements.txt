@@ -1,0 +1,4 @@
+Django=1.10.6
+PyMySQL=0.7.9
+xlwt=1.0.0
+xlrd=1.2.0
