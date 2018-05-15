@@ -72,11 +72,11 @@ class BOManager(models.Manager):
 
 class ToStringMixin(object):
 
-    def __unicode__(self):
-        return u''
-
     def __str__(self):
-        return force_str(self.__unicode__())
+        if hasattr(self, '__unicode__'):
+            return force_str(self.__unicode__())
+        else:
+            return super(ToStringMixin, self).__str__()
 
 
 class BO(models.Model, ToStringMixin):
