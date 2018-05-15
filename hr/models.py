@@ -62,8 +62,8 @@ class Entry(generic.BO):
     zipcode = models.CharField(_("zipcode"),max_length=const.DB_CHAR_CODE_8)
     phone = models.CharField(_("phone"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
 
-    guider = models.ForeignKey(Employee,verbose_name=_("guider"))
-    position = models.ForeignKey(Position,verbose_name = _('designate position'))
+    guider = models.ForeignKey(Employee,verbose_name=_("guider"),on_delete=models.CASCADE)
+    position = models.ForeignKey(Position,verbose_name = _('designate position'),on_delete=models.CASCADE)
     rank = models.CharField(_("employee rank"),max_length=const.DB_CHAR_CODE_2,default='00',choices=const.get_value_list('S017'))
     ygxs = models.CharField(_("employ ygxs"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S019'),default='2')
     category = models.CharField(_("employ category"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S018'),default='21')
@@ -87,9 +87,9 @@ class EmployeeSalaryItem(models.Model):
     """
 
     """
-    entry = models.ForeignKey(Entry,verbose_name=_("employee entry"))
-    employee = models.ForeignKey(Employee,verbose_name=_("employee"),blank=True,null=True)
-    salary_item = models.ForeignKey(SalaryItem,verbose_name=_("salary item"))
+    entry = models.ForeignKey(Entry,verbose_name=_("employee entry"),on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee,verbose_name=_("employee"),blank=True,null=True,on_delete=models.CASCADE)
+    salary_item = models.ForeignKey(SalaryItem,verbose_name=_("salary item"),on_delete=models.CASCADE)
     calculate_way = models.CharField(_("calculate way"),max_length=const.DB_CHAR_CODE_2,choices=const.get_value_list('S050'),default='10')
     fixed_value = models.DecimalField(_("fixed value"),blank=True,null=True,max_digits=10,decimal_places=2)
     base_value = models.DecimalField(_("base value"),blank=True,null=True,max_digits=10,decimal_places=2)
@@ -106,7 +106,7 @@ class Transfer(generic.BO):
     """
     人员调动
     """
-    employee = models.ForeignKey(Employee,verbose_name=_("employee"))
+    employee = models.ForeignKey(Employee,verbose_name=_("employee"),on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("employee transfer")
@@ -117,7 +117,7 @@ class Departure(generic.BO):
     """
     人员离职
     """
-    employee = models.ForeignKey(Employee,verbose_name=_("employee"))
+    employee = models.ForeignKey(Employee,verbose_name=_("employee"),on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("employee departure")

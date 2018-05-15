@@ -18,7 +18,7 @@ class Modal(models.Model):
     code = models.CharField(_("workflow code"),max_length=const.DB_CHAR_CODE_6,blank=True,null=True)
     name = models.CharField(_("workflow name"),max_length=const.DB_CHAR_NAME_40)
     description = models.TextField(_("description"),blank=True,null=True)
-    content_type = models.ForeignKey(ContentType,verbose_name=_("content type"),limit_choices_to={"app_label__in":['basedata','organ']})
+    content_type = models.ForeignKey(ContentType,verbose_name=_("content type"),limit_choices_to={"app_label__in":['basedata','organ']},on_delete=models.CASCADE)
     app_name = models.CharField(_("app name"),max_length=const.DB_CHAR_NAME_60,blank=True,null=True)
     model_name = models.CharField(_("model name"),max_length=const.DB_CHAR_NAME_60,blank=True,null=True)
     # added by zhugl 2015-05-10
@@ -50,7 +50,7 @@ class Node(models.Model):
         (4, _("submitter")),
     )
     index_weight = 2
-    modal = models.ForeignKey(Modal,verbose_name=_("workflow model"))
+    modal = models.ForeignKey(Modal,verbose_name=_("workflow model"),on_delete=models.CASCADE)
     code = models.CharField(_("node code"),max_length=const.DB_CHAR_CODE_4,blank=True,null=True)
     name = models.CharField(_("node name"),max_length=const.DB_CHAR_NAME_80)
     tooltip = models.CharField(_('tooltip words'),blank=True,null=True,max_length=const.DB_CHAR_NAME_120)
@@ -108,9 +108,9 @@ class Instance(models.Model):
     )
     index_weight = 3
     code = models.CharField(_("code"),blank=True,null=True,max_length=const.DB_CHAR_CODE_10)
-    modal = models.ForeignKey(Modal,verbose_name=_("workflow model"))
+    modal = models.ForeignKey(Modal,verbose_name=_("workflow model"),on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField("object id")
-    starter = models.ForeignKey(User,verbose_name=_("start user"),related_name="starter")
+    starter = models.ForeignKey(User,verbose_name=_("start user"),related_name="starter",on_delete=models.CASCADE)
     start_time = models.DateTimeField(_("start time"),auto_now_add=True)
     approved_time = models.DateTimeField(_("approved time"),blank=True,null=True)
     status = models.IntegerField(_("status"),default=1,choices=STATUS)
@@ -142,9 +142,9 @@ class History(models.Model):
         (4, _("TERMINATE")),
     )
     index_weight = 5
-    inst = models.ForeignKey(Instance,verbose_name=_("workflow instance"))
-    node = models.ForeignKey(Node,verbose_name=_("workflow node"),blank=True,null=True)
-    user = models.ForeignKey(User,verbose_name=_("submitter"))
+    inst = models.ForeignKey(Instance,verbose_name=_("workflow instance"),on_delete=models.CASCADE)
+    node = models.ForeignKey(Node,verbose_name=_("workflow node"),blank=True,null=True,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,verbose_name=_("submitter"),on_delete=models.CASCADE)
     pro_time = models.DateTimeField(_("process time"),auto_now_add=True)
     pro_type = models.IntegerField(_("process type"),choices=PROCESS_TYPE,default=0)
     memo = models.CharField(_("memo"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
@@ -181,11 +181,11 @@ class TodoList(models.Model):
     """
     index_weight = 4
     code = models.CharField(_("code"),max_length=const.DB_CHAR_CODE_10,blank=True,null=True)
-    inst = models.ForeignKey(Instance,verbose_name=_("workflow instance"))
-    node = models.ForeignKey(Node,verbose_name=_("current node"),blank=True,null=True)
+    inst = models.ForeignKey(Instance,verbose_name=_("workflow instance"),on_delete=models.CASCADE)
+    node = models.ForeignKey(Node,verbose_name=_("current node"),blank=True,null=True,on_delete=models.CASCADE)
     app_name = models.CharField(_("app name"),max_length=const.DB_CHAR_NAME_60,blank=True,null=True)
     model_name = models.CharField(_("model name"),max_length=const.DB_CHAR_NAME_60,blank=True,null=True)
-    user = models.ForeignKey(User,verbose_name=_("handler"))
+    user = models.ForeignKey(User,verbose_name=_("handler"),on_delete=models.CASCADE)
     arrived_time = models.DateTimeField(_("arrived time"),auto_now_add=True)
     is_read = models.BooleanField(_("is read"),default=False)
     read_time = models.DateTimeField(_("read time"),blank=True,null=True)
@@ -211,13 +211,10 @@ class TodoList(models.Model):
     code_link.short_description = _("code")
 
     def href(self):
-        import sys
-        reload(sys)
-        sys.setdefaultencoding("utf-8")
         ct = ContentType.objects.get(app_label=self.app_name,model=self.model_name)
         obj = ct.get_object_for_this_type(id=self.inst.object_id)
-        title = u"%s" % (obj)
-        return format_html("<a href='/admin/{}/{}/{}'>{}</a>",
+        title = u"%s" % obj
+        return format_html(u"<a href='/admin/{}/{}/{}'>{}</a>",
                            self.app_name,self.model_name,self.inst.object_id,title)
     def modal_dsc(self):
         return u'%s'%(self.inst.modal.name)
@@ -251,7 +248,7 @@ def get_modal(app_label,model_name):
     """
     try:
         return Modal.objects.get(app_name=app_label,model_name=model_name)
-    except Exception,e:
+    except Exception:
         return None
 
 
@@ -266,7 +263,7 @@ def get_instance(obj):
         if modal:
             try:
                 return Instance.objects.get(modal=modal,object_id=obj.id)
-            except Exception,e:
+            except Exception:
                 return None
     else:
         return None

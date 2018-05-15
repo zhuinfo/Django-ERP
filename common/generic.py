@@ -1,4 +1,6 @@
 # coding=utf-8
+import logging
+
 __author__ = 'zhugl'
 # created at 15-4-21
 import datetime
@@ -9,10 +11,9 @@ from django.db import connection,transaction
 from django.db.models import fields
 from django.db.models.fields import related
 from django.contrib import admin
-from django.http import HttpRequest,HttpResponseRedirect,HttpResponse
+from django.http import HttpRequest,HttpResponse
 from django.contrib.contenttypes.models import ContentType
-from django.utils.text import force_text
-from django.utils.encoding import smart_str
+from django.utils.encoding import smart_str, force_text
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from common import const
@@ -32,8 +33,8 @@ def update(sql, params=None):
                 cursor.execute(sql,params)
             else:
                 cursor.execute(sql)
-        except Exception,e:
-            print e
+        except Exception as e:
+            logging.error('', exc_info=e)
 
 def get_app_model_info_from_request(request):
     """
@@ -148,8 +149,8 @@ class BOAdmin(admin.ModelAdmin):
                     can_restart = True
                     show_workflow_line = True
 
-            except Exception,e:
-                print Exception,e
+            except Exception:
+                pass
 
         if workflow_modal and not workflow_instance:
             show_submit_button = True
@@ -209,8 +210,7 @@ class BOAdmin(admin.ModelAdmin):
                 )
                 # print history_list
                 extra_context.update(ctx)
-            except Exception,e:
-                print Exception,e
+            except Exception:
                 pass
         return super(BOAdmin,self).history_view(request,object_id,extra_context)
 
@@ -228,7 +228,7 @@ class BOAdmin(admin.ModelAdmin):
             setattr(obj,'end',datetime.date(9999,12,31))
             try:
                 setattr(obj,'user',request.user)
-            except Exception,e:
+            except Exception:
                 pass
 
         super(BOAdmin,self).save_model(request,obj,form,change)
@@ -241,10 +241,9 @@ class BOAdmin(admin.ModelAdmin):
                 code = fmt % (self.CODE_PREFIX,obj.id)
                 table = obj._meta.db_table
                 sql = 'update %s set code = \'%s\' where id=%s' % (table,code,obj.id)
-                print sql
                 update(sql)
-        except Exception,e:
-            print e
+        except Exception:
+            pass
 
     # def response_change(self, request, obj):
         # return HttpResponseRedirect('')
@@ -263,7 +262,7 @@ class BOAdmin(admin.ModelAdmin):
             try:
                 f = ops.get_field(field)
                 col_name = f.verbose_name
-            except Exception,e:
+            except Exception:
                 f = getattr(self.model,field)
                 if hasattr(f,'short_description'):
                     col_name = f.short_description
@@ -276,7 +275,7 @@ class BOAdmin(admin.ModelAdmin):
                 f = field
                 try:
                     f = ops.get_field(field)
-                except Exception,e:
+                except Exception:
                     pass
                 v = getattr(obj,field,'')
                 if hasattr(v,'__call__') or callable(v):

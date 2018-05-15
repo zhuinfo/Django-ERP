@@ -1,3 +1,4 @@
+
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from common import generic
@@ -25,7 +26,6 @@ class WorkflowModelAdmin(admin.ModelAdmin):
     )
 
     def get_form(self, request, obj=None, **kwargs):
-        print kwargs
         return super(WorkflowModelAdmin,self).get_form(request,obj,**kwargs)
 
     def save_model(self, request, obj, form, change):
