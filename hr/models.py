@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from common import generic
 from common import const
 from basedata.models import Position,Employee
+from common.generic import ToStringMixin
 from organ.models import OrgUnit
 import datetime
 
@@ -19,7 +20,7 @@ class SalaryItemHandler:
         return 0
 
 
-class SalaryItem(models.Model):
+class SalaryItem(models.Model, ToStringMixin):
     """
     工资项
     """

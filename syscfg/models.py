@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from common import const
 from common import generic
+from common.generic import ToStringMixin
 
 
-class Site(models.Model):
+class Site(models.Model, ToStringMixin):
     """
     站点，一个站点下可有多个公司，处于同一个站点下的用户逻辑上位于同一个组织
     """

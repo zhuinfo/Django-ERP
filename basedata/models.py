@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_text
 from common import const
 from common import generic
+from common.generic import ToStringMixin
 from syscfg.models import Module,Site
 from organ.models import Organization,Position
 import datetime
@@ -39,7 +40,7 @@ class ValueList(generic.BO):
         verbose_name_plural = _('value list')
 
 
-class ValueListItem(models.Model):
+class ValueListItem(models.Model, ToStringMixin):
     """
     值列表项
     """
@@ -199,7 +200,7 @@ class Project(generic.BO):
         verbose_name_plural = _('project')
 
 
-class Warehouse(models.Model):
+class Warehouse(models.Model, ToStringMixin):
     """
     仓库
     """
@@ -219,7 +220,7 @@ class Warehouse(models.Model):
         verbose_name_plural = _('warehouse')
 
 
-class Measure(models.Model):
+class Measure(models.Model, ToStringMixin):
     """
     计量单位
     """
@@ -236,7 +237,7 @@ class Measure(models.Model):
         verbose_name_plural = _('measure')
 
 
-class Trade(models.Model):
+class Trade(models.Model, ToStringMixin):
     """
     国民经济行业分类
     """
@@ -255,7 +256,7 @@ class Trade(models.Model):
         ordering = ['code']
 
 
-class Brand(models.Model):
+class Brand(models.Model, ToStringMixin):
     """
     品牌
     """
@@ -273,7 +274,7 @@ class Brand(models.Model):
         verbose_name_plural = _('brand')
 
 
-class Category(models.Model):
+class Category(models.Model, ToStringMixin):
     """
     分类
     """
@@ -292,7 +293,7 @@ class Category(models.Model):
         verbose_name_plural = _('category')
 
 
-class TechnicalParameterName(models.Model):
+class TechnicalParameterName(models.Model, ToStringMixin):
     """
     技术参数-名称，将技术参数绑定于物料分类上，在此分类下的物料自动继承全部技术参数
     """
@@ -309,7 +310,7 @@ class TechnicalParameterName(models.Model):
         verbose_name_plural = _('technical parameter')
 
 
-class TechnicalParameterValue(models.Model):
+class TechnicalParameterValue(models.Model, ToStringMixin):
     """
     技术参数-值，将技术参数绑定于物料分类上，在此分类下的物料自动继承全部技术参数
     """
@@ -363,7 +364,7 @@ class Material(generic.BO):
         ordering = ['tp','code']
 
 
-class MaterialParam(models.Model):
+class MaterialParam(models.Model, ToStringMixin):
     """
 
     """
@@ -380,7 +381,7 @@ class MaterialParam(models.Model):
         verbose_name_plural = _('material parameter')
 
 
-class ExtraParam(models.Model):
+class ExtraParam(models.Model, ToStringMixin):
     """
 
     """

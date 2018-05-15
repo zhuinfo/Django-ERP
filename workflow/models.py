@@ -5,11 +5,12 @@ from django.contrib.auth.models import User
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from common import const
+from common.generic import ToStringMixin
 from syscfg.models import Role
 from organ.models import Position,OrgUnit
 
 
-class Modal(models.Model):
+class Modal(models.Model, ToStringMixin):
     """
 
     """
@@ -33,7 +34,7 @@ class Modal(models.Model):
         verbose_name_plural = _("workflow model")
 
 
-class Node(models.Model):
+class Node(models.Model, ToStringMixin):
     """
     submitter()
     upper()
@@ -94,7 +95,7 @@ class Node(models.Model):
         verbose_name_plural = _("workflow node")
 
 
-class Instance(models.Model):
+class Instance(models.Model, ToStringMixin):
     """
 
     """
@@ -131,7 +132,7 @@ class Instance(models.Model):
         verbose_name_plural = _("workflow instance")
 
 
-class History(models.Model):
+class History(models.Model, ToStringMixin):
     """
     workflow history
     """
@@ -175,7 +176,7 @@ class History(models.Model):
         ordering = ['inst','pro_time']
 
 
-class TodoList(models.Model):
+class TodoList(models.Model, ToStringMixin):
     """
 
     """

@@ -13,7 +13,7 @@ from django.db.models.fields import related
 from django.contrib import admin
 from django.http import HttpRequest,HttpResponse
 from django.contrib.contenttypes.models import ContentType
-from django.utils.encoding import smart_str, force_text
+from django.utils.encoding import smart_str, force_text, force_str
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from common import const
@@ -70,7 +70,16 @@ class BOManager(models.Manager):
         return super(BOManager,self).get_query_set()
 
 
-class BO(models.Model):
+class ToStringMixin(object):
+
+    def __unicode__(self):
+        return u''
+
+    def __str__(self):
+        return force_str(self.__unicode__())
+
+
+class BO(models.Model, ToStringMixin):
     """
     All business object derive from this class
     """
