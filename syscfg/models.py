@@ -7,7 +7,7 @@ from common import generic
 from common.generic import ToStringMixin
 
 
-class Site(models.Model, ToStringMixin):
+class Site(ToStringMixin, models.Model):
     """
     站点，一个站点下可有多个公司，处于同一个站点下的用户逻辑上位于同一个组织
     """

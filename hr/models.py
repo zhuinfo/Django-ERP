@@ -20,7 +20,7 @@ class SalaryItemHandler:
         return 0
 
 
-class SalaryItem(models.Model, ToStringMixin):
+class SalaryItem(ToStringMixin, models.Model):
     """
     工资项
     """

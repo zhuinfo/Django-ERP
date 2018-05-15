@@ -10,7 +10,7 @@ from syscfg.models import Role
 from organ.models import Position,OrgUnit
 
 
-class Modal(models.Model, ToStringMixin):
+class Modal(ToStringMixin, models.Model):
     """
 
     """
@@ -34,7 +34,7 @@ class Modal(models.Model, ToStringMixin):
         verbose_name_plural = _("workflow model")
 
 
-class Node(models.Model, ToStringMixin):
+class Node(ToStringMixin, models.Model):
     """
     submitter()
     upper()
@@ -95,7 +95,7 @@ class Node(models.Model, ToStringMixin):
         verbose_name_plural = _("workflow node")
 
 
-class Instance(models.Model, ToStringMixin):
+class Instance(ToStringMixin, models.Model):
     """
 
     """
@@ -132,7 +132,7 @@ class Instance(models.Model, ToStringMixin):
         verbose_name_plural = _("workflow instance")
 
 
-class History(models.Model, ToStringMixin):
+class History(ToStringMixin, models.Model):
     """
     workflow history
     """
@@ -176,7 +176,7 @@ class History(models.Model, ToStringMixin):
         ordering = ['inst','pro_time']
 
 
-class TodoList(models.Model, ToStringMixin):
+class TodoList(ToStringMixin, models.Model):
     """
 
     """

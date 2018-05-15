@@ -40,7 +40,7 @@ class ValueList(generic.BO):
         verbose_name_plural = _('value list')
 
 
-class ValueListItem(models.Model, ToStringMixin):
+class ValueListItem(ToStringMixin, models.Model):
     """
     值列表项
     """
@@ -200,7 +200,7 @@ class Project(generic.BO):
         verbose_name_plural = _('project')
 
 
-class Warehouse(models.Model, ToStringMixin):
+class Warehouse(ToStringMixin, models.Model):
     """
     仓库
     """
@@ -220,7 +220,7 @@ class Warehouse(models.Model, ToStringMixin):
         verbose_name_plural = _('warehouse')
 
 
-class Measure(models.Model, ToStringMixin):
+class Measure(ToStringMixin, models.Model):
     """
     计量单位
     """
@@ -237,7 +237,7 @@ class Measure(models.Model, ToStringMixin):
         verbose_name_plural = _('measure')
 
 
-class Trade(models.Model, ToStringMixin):
+class Trade(ToStringMixin, models.Model):
     """
     国民经济行业分类
     """
@@ -256,7 +256,7 @@ class Trade(models.Model, ToStringMixin):
         ordering = ['code']
 
 
-class Brand(models.Model, ToStringMixin):
+class Brand(ToStringMixin, models.Model):
     """
     品牌
     """
@@ -274,7 +274,7 @@ class Brand(models.Model, ToStringMixin):
         verbose_name_plural = _('brand')
 
 
-class Category(models.Model, ToStringMixin):
+class Category(ToStringMixin, models.Model):
     """
     分类
     """
@@ -293,7 +293,7 @@ class Category(models.Model, ToStringMixin):
         verbose_name_plural = _('category')
 
 
-class TechnicalParameterName(models.Model, ToStringMixin):
+class TechnicalParameterName(ToStringMixin, models.Model):
     """
     技术参数-名称，将技术参数绑定于物料分类上，在此分类下的物料自动继承全部技术参数
     """
@@ -310,7 +310,7 @@ class TechnicalParameterName(models.Model, ToStringMixin):
         verbose_name_plural = _('technical parameter')
 
 
-class TechnicalParameterValue(models.Model, ToStringMixin):
+class TechnicalParameterValue(ToStringMixin, models.Model):
     """
     技术参数-值，将技术参数绑定于物料分类上，在此分类下的物料自动继承全部技术参数
     """
@@ -364,7 +364,7 @@ class Material(generic.BO):
         ordering = ['tp','code']
 
 
-class MaterialParam(models.Model, ToStringMixin):
+class MaterialParam(ToStringMixin, models.Model):
     """
 
     """
@@ -381,7 +381,7 @@ class MaterialParam(models.Model, ToStringMixin):
         verbose_name_plural = _('material parameter')
 
 
-class ExtraParam(models.Model, ToStringMixin):
+class ExtraParam(ToStringMixin, models.Model):
     """
 
     """

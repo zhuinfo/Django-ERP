@@ -79,7 +79,7 @@ class ToStringMixin(object):
             return super(ToStringMixin, self).__str__()
 
 
-class BO(models.Model, ToStringMixin):
+class BO(ToStringMixin, models.Model):
     """
     All business object derive from this class
     """
