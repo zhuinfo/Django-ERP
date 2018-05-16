@@ -133,7 +133,7 @@ def start(request,app,model,object_id):
             try:
                 setattr(obj,next_node.status_field,next_node.status_value)
                 obj.save()
-            except Exception,e:
+            except Exception:
                 pass
         messages.success(request,_('workflow started successfully'))
         return HttpResponseRedirect("/admin/%s/%s/%s"%(app,model,object_id))
@@ -253,12 +253,12 @@ def approve(request,app,model,object_id,operation):
                             try:
                                 setattr(obj,current_tmp.status_field,current_tmp.status_value)
                                 obj.save()
-                            except Exception,e:
+                            except Exception:
                                 pass
                     History.objects.create(inst=workflow_instance,user=request.user,pro_type=int(operation),memo=memo,node=current_tmp)
                     TodoList.objects.filter(inst=workflow_instance,node=current_tmp,status=0).update(status=1)
                 messages.success(request,_('workflow approved successfully'))
-            except Exception,e:
+            except Exception as e:
                 messages.error(request,e)
                 pass
             if current_tmp.action and len(current_tmp.action) > 0:
@@ -309,6 +309,6 @@ def restart(request,app,model,object_id,instance):
             messages.success(request,_("workflow restarted success"))
         else:
             messages.warning(request,_("you do not have the permission to restart,only the starter can restart"))
-    except Exception,e:
+    except Exception as e:
         messages.error(request,e)
     return HttpResponseRedirect("/admin/%s/%s/%s"%(app,model,object_id))

@@ -28,7 +28,7 @@ def pay_action(request,model,object_id):
         try:
             obj.action_pay(request)
             messages.success(request,_('action successfully'))
-        except Exception,e:
+        except Exception as e:
             messages.error(request,e)
 
         return HttpResponseRedirect("/admin/selfhelp/%s/%s"%(model,object_id))

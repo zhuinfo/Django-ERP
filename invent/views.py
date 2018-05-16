@@ -27,7 +27,7 @@ def action_in(request,object_id):
         try:
             obj.action_entry(request)
             messages.success(request,_('check in successfully'))
-        except Exception,e:
+        except Exception as e:
             messages.error(request,e)
 
         return HttpResponseRedirect("/admin/invent/stockin/%s"%(object_id))
@@ -60,7 +60,7 @@ def action_out(request,object_id):
         try:
             obj.action_out(request)
             messages.success(request,_('check out successfully'))
-        except Exception,e:
+        except Exception as e:
             messages.error(request,e)
         return HttpResponseRedirect("/admin/invent/stockout/%s"%(object_id))
 
@@ -92,7 +92,7 @@ def action_init(request,object_id):
         try:
             obj.init_entry(request)
             messages.success(request,_('check in successfully'))
-        except Exception,e:
+        except Exception as e:
             messages.error(request,e)
 
         return HttpResponseRedirect("/admin/invent/initialinventory/%s"%(object_id))
@@ -125,7 +125,7 @@ def action_return(request,object_id):
         try:
             obj.action_return(request)
             messages.success(request,_('check in successfully'))
-        except Exception,e:
+        except Exception as e:
             messages.error(request,e)
 
         return HttpResponseRedirect("/admin/invent/warereturn/%s"%(object_id))
@@ -158,7 +158,7 @@ def action_adjust(request,object_id):
         try:
             obj.action_adjust(request)
             messages.success(request,_('check in successfully'))
-        except Exception,e:
+        except Exception as e:
             messages.error(request,e)
 
         return HttpResponseRedirect("/admin/invent/wareadjust/%s"%(object_id))

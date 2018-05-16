@@ -33,7 +33,7 @@ def get_value_list(group):
             cursor.execute('SELECT code,name FROM basedata_valuelistitem WHERE group_code=%s AND status=1',[group])
             rows = cursor.fetchall()
             return tuple([(code,name) for code,name in rows])
-        except Exception,e:
+        except Exception as e:
             return None
     else:
         return None

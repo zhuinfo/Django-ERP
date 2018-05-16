@@ -8,7 +8,15 @@ from django.conf import settings
 from django.contrib.admin import ModelAdmin, actions
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.core.urlresolvers import NoReverseMatch, reverse
+
+import django
+if django.VERSION > (1, 10):
+    from django.urls import NoReverseMatch, reverse
+    from django.utils.deprecation import MiddlewareMixin
+else:
+    from django.core.urlresolvers import NoReverseMatch, reverse
+    class MiddlewareMixin(object):
+        pass
 from django.db.models.base import ModelBase
 from django.http import Http404, HttpResponseRedirect
 from django.template.engine import Engine
@@ -26,7 +34,7 @@ def getuser():
     return getattr(_thread_local,'user',None)
 
 
-class RequestUser(object):
+class RequestUser(MiddlewareMixin):
 
     def process_request(self,request):
         django_user = getattr(request,'user',None)
@@ -90,7 +98,7 @@ class RequestUser(object):
             try:
                 todolist = self.get_my_task(request)
                 context.update(dict(todolist = todolist))
-            except Exception,e:
+            except Exception:
                 pass
             # print context
             view_kwargs['extra_context'] = context
@@ -110,10 +118,10 @@ class RequestUser(object):
                         'name': apps.get_app_config(label).verbose_name,
                         'app_label': label,
                         'app_url': reverse(
-                        'admin:app_list',
+                            'admin:app_list',
                             kwargs={'app_label': label},
                             current_app=admin.site.name,
-                            ),
+                        ),
                         'weight':app_weight.get(label,99),
                         'is_current':is_current,
                     }

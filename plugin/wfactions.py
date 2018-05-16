@@ -1,5 +1,6 @@
 # created at 15-6-30 
 # coding=utf-8
+import logging
 __author__ = 'zhugl'
 
 
@@ -28,8 +29,8 @@ class TestAction(WorkflowAction):
     name = 'action.test'
 
     def action(self,request,obj,node_config,operation=Operation.APPROVE):
-        print 'this is a workflow test action'
-        print 'request user is %s,current node is %s'%(request.user,node_config)
+        logging.info('this is a workflow test action')
+        logging.info('request user is %s,current node is %s'%(request.user,node_config))
 
 
 class WorkflowActionManager(object):
