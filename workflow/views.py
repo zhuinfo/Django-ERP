@@ -72,9 +72,9 @@ def compile_node_handler(request,obj,next_node):
             return users
         elif tp == 4:
             # submitter
-            return request.user
+            return [request.user]
         else:
-            return None
+            return []
 
 
 def start(request,app,model,object_id):
