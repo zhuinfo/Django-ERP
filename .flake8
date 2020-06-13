@@ -1,0 +1,6 @@
+[flake8]
+exclude = .git,*migrations,*venv*
+max-line-length = 120
+
+# ignore module level import not at top of file
+ignore = E402
