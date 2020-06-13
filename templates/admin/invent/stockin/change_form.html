@@ -100,6 +100,7 @@
             {% if adminform and add %}
                 $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
             {% endif %}
+            // 工作流按钮
             {% if workflow_modal  %}
                 {% if workflow_instance %}
                 workflow_modal = "{{ workflow_modal.code }}";
@@ -113,11 +114,15 @@
             {% else %}
                 $("#workflow_submit").hide();
             {% endif %}
+
+            // 额外的按钮
             {% if extra_buttons %}
                 {% for button in extra_buttons %}
-                    $("<a href='{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
+                    $("<a href='/admin/invent/stockin/{{original.id}}/{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
                 {% endfor %}
             {% endif %}
+
+            // 原始按钮
             {% if readonly %}
                 $('input,select').attr('disabled',true);
                 $('div.submit-row').hide();

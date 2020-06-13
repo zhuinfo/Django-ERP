@@ -53,7 +53,7 @@
         <label class="control"><input type="radio" name="operation" value="1" checked> {% trans "agree" %}</label>
         <label class="control"><input type="radio" name="operation" value="3"> {% trans "deny" %}</label>
         <label class="control"><input type="radio" name="operation" value="4"> {% trans "terminate" %}</label>
-        <a class="button" href="approve/1" id="workflow_submit">{% trans "submit" %}</a>
+        <a class="button" href="approve/1" id="workflow_approve">{% trans "submit" %}</a>
         {% endif %}
     </div>
 </fieldset>
@@ -95,8 +95,7 @@
                     e.preventDefault();
                     showRelatedObjectLookupPopup(this);
                 });
-                $("div.inline-group tr").removeClass("has_original");
-                $("td.original p").hide();
+
             {% if adminform and add %}
                 $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
             {% endif %}
@@ -105,17 +104,24 @@
                 workflow_modal = "{{ workflow_modal.code }}";
                 workflow_instance = "{{ workflow_instance.code }}";
                 $('tr.add-row').hide();
-                $('input,select,textarea').attr('disabled','true');
-                $('div.submit-row').hide();
-                $('.workflow input,.workflow select').removeAttr("disabled");
-                $("#workflow_submit").hide();
+                    {% if can_edit %}
+                        $('a.deletelink').hide();
+                        $("#workflow_submit").hide();
+                        $("input[name='_addanother']").hide();
+                        $("input[name='_continue']").hide();
+                    {% else %}
+                        $('input,select,textarea').attr('disabled','true');
+                        $('div.submit-row').hide();
+                        $('.workflow input,.workflow select').removeAttr("disabled");
+                        $("#workflow_submit").hide();
+                    {% endif %}
                 {% endif %}
             {% else %}
                 $("#workflow_submit").hide();
             {% endif %}
             {% if extra_buttons %}
                 {% for button in extra_buttons %}
-                    $("<a href='/admin/invent/stockout/{{original.id}}/{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
+                    $("<a href='/admin/invent/wareadjust/{{original.id}}/{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
                 {% endfor %}
             {% endif %}
             {% if readonly %}
@@ -123,7 +129,12 @@
                 $('div.submit-row').hide();
                 $('tr.add-row').hide();
             {% endif %}
-                $('div.inline-group select').attr('disabled',true);
+            try{
+                    $("div.inline-group table tbody tr.form-row").removeClass('has_original');
+                    $("div.inline-group table tbody tr.form-row td:first-child").find('p').hide();
+                }catch(e){
+
+                }
             });
         })(django.jQuery);
     </script>

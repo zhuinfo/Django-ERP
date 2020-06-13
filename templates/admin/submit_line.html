@@ -3,10 +3,13 @@
 
 {% if show_save %}<input type="submit" value="{% trans 'Save' %}" class="default" name="_save" />{% endif %}
 <a href="start" class="button" id="workflow_submit">{% trans "submit" %}</a>
-    {% for button in extra_buttons %}
-<a href="{{button.href}}" class="button">{{button.title}}</a>
-    {% endfor %}
-    {{extra_buttons}}
+    
+    <!-- {% for button in extra_buttons %}
+        <a href="{{button.href}}" class="button">{{button.title}}</a>
+    {% endfor %} -->
+
+    <!-- {{extra_buttons}} -->
+
 {% if show_delete_link %}
     {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
     <p class="deletelink-box"><a href="{% add_preserved_filters delete_url %}" class="deletelink">{% trans "Delete" %}</a>

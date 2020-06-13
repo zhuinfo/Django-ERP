@@ -95,8 +95,7 @@
                     e.preventDefault();
                     showRelatedObjectLookupPopup(this);
                 });
-                $("div.inline-group tr").removeClass("has_original");
-                $("td.original p").hide();
+
             {% if adminform and add %}
                 $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
             {% endif %}
@@ -115,7 +114,7 @@
             {% endif %}
             {% if extra_buttons %}
                 {% for button in extra_buttons %}
-                    $("<a href='/admin/invent/stockout/{{original.id}}/{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
+                    $("<a href='/admin/invent/initialinventory/{{original.id}}/{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
                 {% endfor %}
             {% endif %}
             {% if readonly %}
@@ -123,7 +122,6 @@
                 $('div.submit-row').hide();
                 $('tr.add-row').hide();
             {% endif %}
-                $('div.inline-group select').attr('disabled',true);
             });
         })(django.jQuery);
     </script>
@@ -134,4 +132,36 @@
 
 </div>
 </form></div>
+{% if detail %}
+<h1 style="margin-top:15px">{% trans "InOut History" %}</h1>
+    <div class="module">
+    <table id="workflow-history">
+        <thead>
+        <tr>
+            <th scope="col">{% trans 'execute time' %}</th>
+            <th scope="col">{% trans 'plus or minus prop' %}</th>
+            <th scope="col">{% trans 'price' %}</th>
+            <th scope="col">{% trans 'count' %}</th>
+            <th scope="col">{% trans 'measure' %}</th>
+            <th scope="col">{% trans 'status' %}</th>
+            <th scope="col">{% trans 'source' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+             {% for item in detail %}
+            <tr>
+                <th scope="row">{{ item.event_time|date:"DATETIME_FORMAT" }}</th>
+                <td class="col">{{ item.prop }}</td>
+                <td class="col">{{ item.price }}</td>
+                <td class="col">{{ item.cnt }}</td>
+                <td class="col">{{ item.measure }}</td>
+                <td class="col">{% if item.status %} {% trans 'EXECUTED'%} {% endif %}</td>
+                <td class="col">{{ item.source }}</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+    </div>
+{% endif %}
 {% endblock %}
