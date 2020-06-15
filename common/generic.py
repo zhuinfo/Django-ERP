@@ -119,8 +119,11 @@ class BOAdmin(admin.ModelAdmin):
     """
     All business object admin derive from this class
     """
+    # 编码长度
     CODE_NUMBER_WIDTH = 4
+    # 编码前缀
     CODE_PREFIX = '9'
+    # 额外的按钮
     extra_buttons = []
 
     exclude = ['creator', 'modifier', 'creation', 'modification', 'begin', 'end']
@@ -197,7 +200,7 @@ class BOAdmin(admin.ModelAdmin):
         return super(BOAdmin, self).changeform_view(request, object_id, form_url, extra_context)
 
     def history_view(self, request, object_id, extra_context=None):
-        """
+        """ 历史记录视图
 
         :param request:
         :param object_id:
@@ -243,8 +246,10 @@ class BOAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
 
         if change:
+            # 修改时更新以下信息
             setattr(obj, 'modifier', request.user.username)
         else:
+            # 创建时更新以下信息
             setattr(obj, 'creator', request.user.username)
             setattr(obj, 'begin', datetime.date.today())
             setattr(obj, 'end', datetime.date(9999, 12, 31))
@@ -255,6 +260,8 @@ class BOAdmin(admin.ModelAdmin):
 
         super(BOAdmin, self).save_model(request, obj, form, change)
         # print '=========it is here========='
+
+        # 更新 obj.code
         try:
             code = getattr(obj, 'code')
             # print code
@@ -265,12 +272,14 @@ class BOAdmin(admin.ModelAdmin):
                 sql = 'update %s set code = \'%s\' where id=%s' % (table, code, obj.id)
                 update(sql)
         except Exception:
+            # 如果没有 code 字段则会进入异常分支
             pass
 
     # def response_change(self, request, obj):
         # return HttpResponseRedirect('')
 
     def export_selected_data(self, request, queryset):
+        """导出所选的数据"""
         ops = self.model._meta
         workbook = xlwt.Workbook(encoding='utf-8')
         dd = datetime.date.today().strftime('%Y%m%d')
@@ -326,8 +335,10 @@ class BOAdmin(admin.ModelAdmin):
     export_selected_data.short_description = _("export selected %(verbose_name_plural)s")
 
     class Meta:
+        # 默认按创建时间降序排序
         ordering = ['-creation']
 
     class Media:
+        # 额外的前端静态文件？
         css = {'all': ('css/maximus.css',)}
         js = ('js/maximus.js',)
