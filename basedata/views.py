@@ -25,7 +25,7 @@ def action_import(request,object_id):
         try:
 
             messages.success(request,_('data import successfully'))
-        except Exception,e:
+        except Exception as e:
             messages.error(request,e)
 
         return HttpResponseRedirect("/admin/basedata/dataimport/%s"%(object_id))

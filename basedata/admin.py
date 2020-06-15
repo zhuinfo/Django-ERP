@@ -85,7 +85,7 @@ class PartnerAdmin(generic.BOAdmin):
         elif request.user.has_perm('basedata.view_all_customer'):
             return super(PartnerAdmin,self).get_queryset(request).filter(partner_type='C')
         else:
-           return super(PartnerAdmin,self).get_queryset(request).filter(partner_type='S')
+            return super(PartnerAdmin,self).get_queryset(request).filter(partner_type='S')
 
 
 class ProjectForm(models.ModelForm):
@@ -125,7 +125,7 @@ class WarehouseAdmin(admin.ModelAdmin):
             if not code:
                 obj.code = '%s%02d' % ('A',obj.id)
                 obj.save()
-        except Exception,e:
+        except Exception as e:
             self.message_user(request,'ERROR:%s' % e,level=messages.ERROR)
 
 
@@ -153,7 +153,7 @@ class CategoryAdmin(admin.ModelAdmin):
                 else:
                     obj.path = obj.parent.name
                 obj.save()
-        except Exception,e:
+        except Exception as e:
             self.message_user(request,'ERROR:%s' % e,level=messages.ERROR)
 
 

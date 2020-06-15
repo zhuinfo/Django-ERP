@@ -1,5 +1,5 @@
-# created at 15-6-27 
 # coding=utf-8
+# created at 15-6-27
 __author__ = 'zhugl'
 import xlrd
 import os
@@ -50,7 +50,7 @@ class OPSHandler(Handler):
                 try:
                     parent = OrgUnit.objects.get(code=row[4])
                     OrgUnit.objects.filter(code=row[0]).update(parent=parent)
-                except Exception,e:
+                except Exception:
                     pass
 
     def position(self,obj,sheet):
@@ -64,7 +64,7 @@ class OPSHandler(Handler):
             if len(row[4]) > 0:
                 try:
                     depart = OrgUnit.objects.filter(code=row[4],end__gt=datetime.date.today()).all()[0]
-                except Exception,e:
+                except Exception:
                     pass
             weight = 99
             if row[6]:
@@ -77,7 +77,7 @@ class OPSHandler(Handler):
                 try:
                     parent = Position.objects.filter(code=row[2],end__gt=datetime.date.today()).all()[0]
                     Position.objects.filter(code=row[0]).update(parent=parent)
-                except Exception,e:
+                except Exception:
                     pass
 
     def stuff(self,obj,sheet):
@@ -87,7 +87,7 @@ class OPSHandler(Handler):
         row_count = sheet.nrows
         try:
             group = Group.objects.get_by_natural_key(u'职员')
-        except Exception,e:
+        except Exception:
             pass
         for row_index in range(1,row_count):
             row = sheet.row_values(row_index)
@@ -104,13 +104,13 @@ class OPSHandler(Handler):
                 else:
                     employee.position = position
                     employee.save()
-            except Exception,e:
+            except Exception:
                 employee = Employee.objects.create(code=row[0],name=row[1],pinyin=row[2],gender=row[3],idcard=row[4],
                                     birthday=row[5],workday=row[6],startday=row[7],position=position)
             if username:
                 try:
                     user = User.objects.get_by_natural_key(username)
-                except Exception,e:
+                except Exception:
                     user = User.objects.create_user(username=username,password=password)
                     user.is_staff = True
                     user.is_active = True
@@ -139,7 +139,7 @@ class UserHandler(Handler):
             row_count = sheet.nrows
             try:
                 group = Group.objects.get_by_natural_key(u'职员')
-            except Exception,e:
+            except Exception:
                 pass
 
             for row_index in range(2,row_count):
@@ -153,7 +153,7 @@ class UserHandler(Handler):
                     continue
                 try:
                     user = User.objects.get_by_natural_key(username)
-                except Exception,e:
+                except Exception:
                     user = User.objects.create_user(username=username,password=password,email=email)
                     user.is_staff = True
                     user.is_active = True

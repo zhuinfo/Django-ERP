@@ -8,7 +8,7 @@ from django.db import models
 from django.db.models.aggregates import Sum
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.utils.text import force_text
+from django.utils.encoding import force_text
 from mis import settings
 from common import generic
 from common import const
@@ -29,13 +29,13 @@ class PurchaseOrder(generic.BO):
     )
     index_weight = 1
     code = models.CharField(_("code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    partner = models.ForeignKey(Partner,verbose_name=_("partner"),limit_choices_to={"partner_type":"S"})
+    partner = models.ForeignKey(Partner,verbose_name=_("partner"),limit_choices_to={"partner_type":"S"},on_delete=models.CASCADE)
     order_date = models.DateField(_("order date"))
     arrive_date = models.DateField(_("arrive date"))
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True,on_delete=models.CASCADE)
     title = models.CharField(_("title"),max_length=const.DB_CHAR_NAME_40)
     description = models.TextField(_("description"),blank=True,null=True)
-    user = models.ForeignKey(User,verbose_name=_("user"),blank=True,null=True)
+    user = models.ForeignKey(User,verbose_name=_("user"),blank=True,null=True,on_delete=models.CASCADE)
     status = models.CharField(_("status"),max_length=const.DB_CHAR_CODE_2,default='0',choices=STATUS)
     amount = models.DecimalField(_("money amount"),max_digits=12,decimal_places=2,blank=True,null=True,default=0.00)
     discount_amount = models.DecimalField(_("discount amount"),max_digits=12,decimal_places=2,blank=True,null=True,default=0.00)
@@ -79,12 +79,12 @@ class PurchaseOrder(generic.BO):
 
                     try:
                         measure = Measure.objects.get(code=row[4])
-                    except Exception,e:
+                    except Exception:
                         measure = Measure.objects.create(code=row[4],name=force_text(row[5]))
 
                     try:
                         material = Material.objects.get(code=row[0])
-                    except Exception,e:
+                    except Exception:
                         material = Material(code=row[0],name=force_text(row[1]),spec=force_text(row[2]))
                         material.purchase_price = row[6]
                         material.save()
@@ -115,16 +115,16 @@ class POItem(models.Model):
 
     """
     index_weight = 2
-    po = models.ForeignKey(PurchaseOrder,verbose_name=_("purchase order"))
-    material = models.ForeignKey(Material,verbose_name=_("material"),limit_choices_to={"is_virtual":"0"})
-    measure = models.ForeignKey(Measure,verbose_name=_("measure"),blank=True,null=True)
+    po = models.ForeignKey(PurchaseOrder,verbose_name=_("purchase order"),on_delete=models.CASCADE)
+    material = models.ForeignKey(Material,verbose_name=_("material"),limit_choices_to={"is_virtual":"0"},on_delete=models.CASCADE)
+    measure = models.ForeignKey(Measure,verbose_name=_("measure"),blank=True,null=True,on_delete=models.CASCADE)
     price = models.DecimalField(_("price"),max_digits=12,decimal_places=4,blank=True,null=True)
     cnt = models.DecimalField(_("count"),max_digits=12,decimal_places=4,blank=True,null=True)
     discount_price = models.DecimalField(_("discount price"),max_digits=12,decimal_places=4,blank=True,null=True)
     amount = models.DecimalField(_("money of amount"),max_digits=12,decimal_places=2,blank=True,null=True)
     discount_amount = models.DecimalField(_("discount amount"),max_digits=12,decimal_places=2,blank=True,null=True)
     tax = models.CharField(_("tax rate"),max_length=const.DB_CHAR_CODE_6,choices=const.get_value_list('S052'),default='0.00')
-    woitem = models.ForeignKey(WOItem,verbose_name=_("wo item"),blank=True,null=True)
+    woitem = models.ForeignKey(WOItem,verbose_name=_("wo item"),blank=True,null=True,on_delete=models.CASCADE)
     is_in_stock = models.BooleanField(_("is in stock"),default=0)
     in_stock_time = models.DateTimeField(_("execute time"),blank=True,null=True)
     entry_cnt = models.DecimalField(_("entry count"),max_digits=12,decimal_places=4,blank=True,null=True)
@@ -169,8 +169,8 @@ class Invoice(generic.BO):
     vo_date = models.DateField(_("invoice date"),blank=True,null=True,default=datetime.date.today)
     code = models.CharField(_("invoice code"),max_length=const.DB_CHAR_NAME_20)
     number = models.CharField(_("invoice number"),max_length=const.DB_CHAR_NAME_20)
-    po = models.ForeignKey(PurchaseOrder,verbose_name=_("purchase order"))
-    partner = models.ForeignKey(Partner,verbose_name=_("partner"),blank=True,null=True)
+    po = models.ForeignKey(PurchaseOrder,verbose_name=_("purchase order"),on_delete=models.CASCADE)
+    partner = models.ForeignKey(Partner,verbose_name=_("partner"),blank=True,null=True,on_delete=models.CASCADE)
     po_amount = models.DecimalField(_("po amount"),max_digits=14,decimal_places=4,blank=True,null=True)
     vo_amount = models.DecimalField(_("invoice amount"),max_digits=14,decimal_places=4)
     file = models.FileField(_("invoice file"),upload_to='invoice',blank=True,null=True)
@@ -196,13 +196,13 @@ class Payment(generic.BO):
     """
     index_weight = 3
     py_date = models.DateField(_("pay date"),blank=True,null=True,default=datetime.date.today)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True,on_delete=models.CASCADE)
     code = models.CharField(_("pay code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    po = models.ForeignKey(PurchaseOrder,verbose_name=_("purchase order"))
-    partner = models.ForeignKey(Partner,verbose_name=_("partner"),blank=True,null=True)
+    po = models.ForeignKey(PurchaseOrder,verbose_name=_("purchase order"),on_delete=models.CASCADE)
+    partner = models.ForeignKey(Partner,verbose_name=_("partner"),blank=True,null=True,on_delete=models.CASCADE)
     po_amount = models.DecimalField(_("po amount"),max_digits=14,decimal_places=4,blank=True,null=True)
     py_amount = models.DecimalField(_("pay amount"),max_digits=14,decimal_places=4)
-    bank = models.ForeignKey(BankAccount,verbose_name=_("bank account"),blank=True,null=True)
+    bank = models.ForeignKey(BankAccount,verbose_name=_("bank account"),blank=True,null=True,on_delete=models.CASCADE)
     response_code = models.CharField(_("response code"),max_length=const.DB_CHAR_NAME_80,blank=True,null=True)
     memo = models.TextField(_("memo"),blank=True,null=True)
 

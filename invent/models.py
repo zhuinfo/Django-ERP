@@ -3,11 +3,10 @@ import csv
 import os
 import datetime
 import decimal
-from django.db import transaction
 from django.db import models
 from django import forms
 from mis import settings
-from django.utils.text import force_text
+from django.utils.encoding import force_text
 from django.db import transaction
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -23,10 +22,10 @@ class Inventory(generic.BO):
     库存信息
     """
     index_weight = 1
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
-    warehouse = models.ForeignKey(Warehouse,verbose_name=_("warehouse"))
-    material = models.ForeignKey(Material,verbose_name=_("material"))
-    measure = models.ForeignKey(Measure,verbose_name=_("measure"))
+    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True,on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(Warehouse,verbose_name=_("warehouse"),on_delete=models.CASCADE)
+    material = models.ForeignKey(Material,verbose_name=_("material"),on_delete=models.CASCADE)
+    measure = models.ForeignKey(Measure,verbose_name=_("measure"),on_delete=models.CASCADE)
     cnt = models.DecimalField(_("count"),max_digits=14,decimal_places=4)
     batch = models.CharField(_("batch"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
     price = models.DecimalField(_("price"),max_digits=14,decimal_places=4)
@@ -51,9 +50,9 @@ class InitialInventory(generic.BO):
     )
     index_weight = 9
     code = models.CharField(_("code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True,on_delete=models.CASCADE)
     title = models.CharField(_("title"),max_length=const.DB_CHAR_NAME_40)
-    user = models.ForeignKey(User,verbose_name=_("user"),blank=True,null=True)
+    user = models.ForeignKey(User,verbose_name=_("user"),blank=True,null=True,on_delete=models.CASCADE)
     status = models.CharField(_("status"),max_length=const.DB_CHAR_CODE_2,default='0',choices=STATUS)
     execute_time = models.DateTimeField(_("execute time"),blank=True,null=True)
     attach = models.FileField(_('attach'),blank=True,null=True,upload_to='inventory',help_text=u'参考FD0002模板文档')
@@ -80,17 +79,17 @@ class InitialInventory(generic.BO):
 
                     try:
                         measure = Measure.objects.get(code=unit_code)
-                    except Exception,e:
+                    except Exception:
                         measure = Measure.objects.create(code=unit_code,name=force_text(unit_name.decode('gbk')))
 
                     try:
                         house = Warehouse.objects.get(code=warehouse_code)
-                    except Exception,e:
+                    except Exception:
                         house = Warehouse.objects.create(code=warehouse_code,name=force_text(warehouse_name.decode('gbk')))
 
                     try:
                         material = Material.objects.get(code=code)
-                    except Exception,e:
+                    except Exception:
                         material = Material(code=code,name=force_text(name.decode('gbk')),spec=force_text(description.decode('gbk')),warehouse=house)
                         material.stock_price = price
                         material.save()
@@ -138,13 +137,13 @@ class StockIn(generic.BO):
     )
     index_weight = 3
     code = models.CharField(_("code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
-    warehouse = models.ForeignKey(Warehouse,verbose_name=_("warehouse"))
+    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True,on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(Warehouse,verbose_name=_("warehouse"),on_delete=models.CASCADE)
     title = models.CharField(_("title"),max_length=const.DB_CHAR_NAME_40)
-    user = models.ForeignKey(User,verbose_name=_("user"),blank=True,null=True)
+    user = models.ForeignKey(User,verbose_name=_("user"),blank=True,null=True,on_delete=models.CASCADE)
     status = models.CharField(_("status"),max_length=const.DB_CHAR_CODE_2,default='0',choices=STATUS)
     execute_time = models.DateTimeField(_("execute time"),blank=True,null=True)
-    po = models.ForeignKey(PurchaseOrder,verbose_name=_("purchase order"),null=True,limit_choices_to={"entry_status":"0"},blank=True)
+    po = models.ForeignKey(PurchaseOrder,verbose_name=_("purchase order"),null=True,limit_choices_to={"entry_status":"0"},blank=True,on_delete=models.CASCADE)
     amount = models.DecimalField(_("stock in money of amount"),max_digits=14,decimal_places=4,blank=True,null=True)
     batch = models.CharField(_("batch"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
 
@@ -183,7 +182,7 @@ class StockIn(generic.BO):
                         inventory.cnt += item.cnt
                         inventory.save()
                         total_amount += item.price*item.cnt
-                    except Exception,e:
+                    except Exception:
                         Inventory.objects.create(warehouse=self.warehouse,material=item.material,measure=item.measure,
                                                  cnt=item.cnt,price=item.price,org=self.org)
                         item.material.stock_price = item.price
@@ -231,13 +230,13 @@ class StockOut(generic.BO):
     )
     index_weight = 2
     code = models.CharField(_("code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True,on_delete=models.CASCADE)
     title = models.CharField(_("title"),max_length=const.DB_CHAR_NAME_40)
-    project = models.ForeignKey(Project,verbose_name=_("project"),blank=True,null=True)
-    wo = models.ForeignKey(WorkOrder,verbose_name=_("work order"),blank=True,null=True)
+    project = models.ForeignKey(Project,verbose_name=_("project"),blank=True,null=True,on_delete=models.CASCADE)
+    wo = models.ForeignKey(WorkOrder,verbose_name=_("work order"),blank=True,null=True,on_delete=models.CASCADE)
     description = models.TextField(_("description"),blank=True,null=True)
     amount = models.DecimalField(_("money of amount"),max_digits=14,decimal_places=4,blank=True,null=True)
-    user = models.ForeignKey(User,verbose_name=_("out user"),blank=True,null=True)
+    user = models.ForeignKey(User,verbose_name=_("out user"),blank=True,null=True,on_delete=models.CASCADE)
     status = models.CharField(_("status"),max_length=const.DB_CHAR_CODE_2,default='0',choices=STATUS)
     execute_time = models.DateTimeField(_("execute time"),blank=True,null=True)
 
@@ -291,11 +290,11 @@ class WareReturn(generic.BO):
     )
     index_weight = 5
     code = models.CharField(_("code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True,on_delete=models.CASCADE)
     title = models.CharField(_("title"),max_length=const.DB_CHAR_NAME_40)
-    out = models.ForeignKey(StockOut,verbose_name=_('StockOut'))
+    out = models.ForeignKey(StockOut,verbose_name=_('StockOut'),on_delete=models.CASCADE)
     amount = models.DecimalField(_("money of amount"),max_digits=14,decimal_places=4,blank=True,null=True)
-    user = models.ForeignKey(User,verbose_name=_("out user"),blank=True,null=True)
+    user = models.ForeignKey(User,verbose_name=_("out user"),blank=True,null=True,on_delete=models.CASCADE)
     status = models.CharField(_("status"),max_length=const.DB_CHAR_CODE_2,default='0',choices=STATUS)
     execute_time = models.DateTimeField(_("execute time"),blank=True,null=True)
 
@@ -342,10 +341,10 @@ class WareAdjust(generic.BO):
     )
     index_weight = 4
     code = models.CharField(_("code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True,on_delete=models.CASCADE)
     title = models.CharField(_("title"),max_length=const.DB_CHAR_NAME_40)
     description = models.TextField(_("description"),blank=True,null=True)
-    user = models.ForeignKey(User,verbose_name=_("out user"),blank=True,null=True)
+    user = models.ForeignKey(User,verbose_name=_("out user"),blank=True,null=True,on_delete=models.CASCADE)
     status = models.CharField(_("status"),max_length=const.DB_CHAR_CODE_2,default='0',choices=STATUS)
     execute_time = models.DateTimeField(_("execute time"),blank=True,null=True)
 
@@ -384,9 +383,9 @@ class InOutDetail(models.Model):
     create_time = models.DateTimeField(_("create time"),auto_now_add=True)
     status = models.BooleanField(_("executed"),default=0)
     event_time = models.DateTimeField(_("event time"),blank=True,null=True)
-    warehouse = models.ForeignKey(Warehouse,verbose_name=_("warehouse"),blank=True,null=True)
-    material = models.ForeignKey(Material,verbose_name=_("material"),limit_choices_to={"is_virtual":"0"},blank=True,null=True)
-    measure = models.ForeignKey(Measure,verbose_name=_("measure"),blank=True,null=True)
+    warehouse = models.ForeignKey(Warehouse,verbose_name=_("warehouse"),blank=True,null=True,on_delete=models.CASCADE)
+    material = models.ForeignKey(Material,verbose_name=_("material"),limit_choices_to={"is_virtual":"0"},blank=True,null=True,on_delete=models.CASCADE)
+    measure = models.ForeignKey(Measure,verbose_name=_("measure"),blank=True,null=True,on_delete=models.CASCADE)
     cnt = models.DecimalField(_("count"),max_digits=14,decimal_places=4,blank=True,null=True)
     batch = models.CharField(_("batch"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
     price = models.DecimalField(_("price"),max_digits=14,decimal_places=4,blank=True,null=True)
@@ -398,7 +397,7 @@ class InitItem(InOutDetail):
     """
     期初入库明细
     """
-    master = models.ForeignKey(InitialInventory)
+    master = models.ForeignKey(InitialInventory,on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("init item")
@@ -409,8 +408,8 @@ class InItem(InOutDetail):
     """
     入库单明细
     """
-    master = models.ForeignKey(StockIn)
-    po_item = models.ForeignKey(POItem,verbose_name=_("po item"),blank=True,null=True)
+    master = models.ForeignKey(StockIn,on_delete=models.CASCADE)
+    po_item = models.ForeignKey(POItem,verbose_name=_("po item"),blank=True,null=True,on_delete=models.CASCADE)
 
     def get_new_price(self):
         if self.po_item and self.master.warehouse:
@@ -420,7 +419,7 @@ class InItem(InOutDetail):
                     total_amount = self.price*self.cnt+inventory.price*inventory.cnt
                     total_count = self.cnt+inventory.cnt
                     return total_amount/total_count
-            except Exception,e:
+            except Exception as e:
                 pass
         return self.price or ''
 
@@ -442,8 +441,8 @@ class OutItem(InOutDetail):
     """
     出库单明细
     """
-    master = models.ForeignKey(StockOut)
-    inventory = models.ForeignKey(Inventory,blank=True,null=True,verbose_name=_("inventory material"))
+    master = models.ForeignKey(StockOut,on_delete=models.CASCADE)
+    inventory = models.ForeignKey(Inventory,blank=True,null=True,verbose_name=_("inventory material"),on_delete=models.CASCADE)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -464,8 +463,8 @@ class ReturnItem(InOutDetail):
     """
     返库单明细
     """
-    master = models.ForeignKey(WareReturn)
-    out_item = models.ForeignKey(OutItem,blank=True,null=True,verbose_name=_('out item'))
+    master = models.ForeignKey(WareReturn,on_delete=models.CASCADE)
+    out_item = models.ForeignKey(OutItem,blank=True,null=True,verbose_name=_('out item'),on_delete=models.CASCADE)
     out_cnt = models.DecimalField(_("out count"),max_digits=14,decimal_places=4)
 
     class Meta:
@@ -477,8 +476,8 @@ class AdjustItem(InOutDetail):
     """
     库存调整明细
     """
-    master = models.ForeignKey(WareAdjust)
-    inventory = models.ForeignKey(Inventory,blank=True,null=True,verbose_name=_("inventory material"))
+    master = models.ForeignKey(WareAdjust,on_delete=models.CASCADE)
+    inventory = models.ForeignKey(Inventory,blank=True,null=True,verbose_name=_("inventory material"),on_delete=models.CASCADE)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
