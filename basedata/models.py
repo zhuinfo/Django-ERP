@@ -90,6 +90,7 @@ class ValueListItem(ToStringMixin, models.Model):
     weight = models.IntegerField(_("weight"), null=True, default=9)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        # 如果编号没赋值
         if not self.code:
             cnt = self.group.valuelistitem_set.count() + 1
             self.code = "%02d" % cnt
@@ -115,8 +116,11 @@ def get_value_list(group):
     """
     if group:
         try:
-            return tuple([(item.code, item.name) for item in ValueListItem.objects.filter(
-                group_code__exact=group, status=1)])
+            # exact: https://docs.djangoproject.com/en/3.0/ref/models/querysets/#exact
+            return tuple([
+                (item.code, item.name) for item in ValueListItem.objects.filter(
+                    group_code__exact=group, status=1)
+            ])
         except Exception:
             return None
     else:

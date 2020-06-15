@@ -23,6 +23,8 @@ class ValueListItemInline(admin.TabularInline):
 
 
 class ValueListAdmin(generic.BOAdmin):
+    """值列表"""
+
     CODE_NUMBER_WIDTH = 3
     CODE_PREFIX = 'S'
     list_display = ['code', 'name', 'module', 'status']
@@ -35,6 +37,8 @@ class ValueListAdmin(generic.BOAdmin):
 
     def save_model(self, request, obj, form, change):
         super(ValueListAdmin, self).save_model(request, obj, form, change)
+        # 更新 值列表选项 的 group_code 属性
+        # 似乎与 ValueList.save() 覆写的方法功能重复了
         obj.valuelistitem_set.update(group_code=obj.code)
 
 
@@ -353,6 +357,8 @@ class EmployeeAdmin(generic.BOAdmin):
 
 
 class DataImportAdmin(generic.BOAdmin):
+    """数据导入"""
+
     list_display = ['imp_date', 'title', 'status']
     list_display_links = ['imp_date', 'title']
     raw_id_fields = ['content_type']
