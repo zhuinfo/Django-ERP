@@ -79,7 +79,7 @@ def get_value_list(group):
     if group:
         try:
             return tuple([(item.code, item.name) for item in ValueListItem.objects.filter(group_code__exact=group,status=1)])
-        except OperationalError:
+        except Exception:
             return None
     else:
         return None
@@ -483,7 +483,7 @@ class Employee(generic.BO):
 
     tag1 = models.CharField(_("tag1 fzjr"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S039'),default='99')
     tag2 = models.CharField(_("tag2 dwld"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S040'),default='9')
-    tag3 = models.CharField(_("tag3 dsjs"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S041'),default='00')
+    tag3 = models.CharField(_("tag3 dsjs"),max_length=const.DB_CHAR_CODE_10,blank=True,null=True,choices=const.get_value_list('S041'),default='00')
     tag4 = models.CharField(_("tag4 byzk"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S027'),default='0')
 
     user = models.ForeignKey(User,verbose_name=_("user"),blank=True,null=True,on_delete=models.CASCADE)

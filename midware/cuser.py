@@ -21,7 +21,7 @@ from django.db.models.base import ModelBase
 from django.http import Http404, HttpResponseRedirect
 from django.template.engine import Engine
 from django.template.response import TemplateResponse
-from django.utils import six
+# from django.utils import six
 from django.utils.text import capfirst
 from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.decorators.cache import never_cache
@@ -86,7 +86,8 @@ class RequestUser(MiddlewareMixin):
                                 'weight':app_weight.get(app_label,99)
                             }
 
-            app_list = list(six.itervalues(app_dict))
+            # app_list = list(six.itervalues(app_dict))
+            app_list = list(app_dict.values())
             app_list.sort(key=lambda x: x['weight'])
 
             for app in app_list:
@@ -165,7 +166,8 @@ class RequestUser(MiddlewareMixin):
             # Sort the models alphabetically within each app.
             app_dict['models'].sort(key=lambda x: x['weight'])
 
-            app_lib = list(six.itervalues(lib_dict))
+            # app_lib = list(six.itervalues(lib_dict))
+            app_lib = list(lib_dict.values())
             app_lib.sort(key=lambda x: x['weight'])
 
             context = dict(
