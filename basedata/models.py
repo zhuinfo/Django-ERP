@@ -113,7 +113,6 @@ def get_value_list(group):
 
     :return: list or None
     """
-    from django.db.utils import OperationalError
     if group:
         try:
             return tuple([(item.code, item.name) for item in ValueListItem.objects.filter(
