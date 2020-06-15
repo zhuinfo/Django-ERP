@@ -20,27 +20,35 @@ class ValueList(generic.BO):
     """
 
     index_weight = 9
+    # 编号
     code = models.CharField(
         _("list code"),
         max_length=const.DB_CHAR_CODE_6,
         blank=True,
         null=True)
+    # 名称
     name = models.CharField(_("list name"), max_length=const.DB_CHAR_NAME_40)
+    # 模块
     module = models.ForeignKey(
         Module,
         verbose_name=_("module"),
         blank=True,
         null=True,
         on_delete=models.CASCADE)
+    # 状态 - 是否在用
     status = models.BooleanField(_("in use"), default=True)
+    # 是否是初始数据
     init = models.BooleanField(_("is init"), default=False)
+    # 是否锁定
     locked = models.BooleanField(_("is locked"), default=False)
+    # 锁定用户
     locked_by = models.ForeignKey(
         User,
         verbose_name=_("locked by"),
         blank=True,
         null=True,
         on_delete=models.CASCADE)
+    # 锁定日期时间
     lock_time = models.DateTimeField(_("locked time"), null=True, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -663,6 +671,7 @@ class Material(generic.BO):
         null=True,
         verbose_name=_("category"),
         on_delete=models.CASCADE)
+    # 物料性质 - Material type
     tp = models.CharField(
         _('mt type'),
         blank=True,
