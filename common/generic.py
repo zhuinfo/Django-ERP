@@ -85,12 +85,20 @@ class ToStringMixin(object):
 class BO(ToStringMixin, models.Model):
     """
     All business object derive from this class
+
+    通用事务对象抽象类
     """
+    # 开始日期
     begin = models.DateField(_('begin date'), blank=True, null=True)
+    # 结束日期
     end = models.DateField(_('end date'), blank=True, null=True)
+    # 创建者
     creator = models.CharField(_("creator"), blank=True, null=True, max_length=const.DB_CHAR_NAME_20)
+    # 修改者
     modifier = models.CharField(_("modifier"), blank=True, null=True, max_length=const.DB_CHAR_NAME_20)
+    # 创建datetime
     creation = models.DateTimeField(_('creation'), auto_now_add=True, blank=True, null=True)
+    # 修改datetime
     modification = models.DateTimeField(_('modification'), auto_now=True, blank=True, null=True)
     # mine = MineBOManager()
     objects = models.Manager()
