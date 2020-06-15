@@ -11,7 +11,7 @@ from common.generic import ToStringMixin
 from syscfg.models import Module, Site
 from organ.models import Organization, Position
 import datetime
-from plugin.xls import ExcelManager
+from plugin.xls import ExcelManager, excel_manager
 
 
 class ValueList(generic.BO):
@@ -1257,7 +1257,8 @@ class DataImport(generic.BO):
         from django.db import transaction
         if self.attach:
             if self.handler:
-                klass = ExcelManager().handlers.get(self.handler)
+                # klass = ExcelManager().handlers.get(self.handler)
+                klass = excel_manager.handlers.get(self.handler)
                 with transaction.atomic():
                     klass.handle(self, self.attach)
                     self.status = 1

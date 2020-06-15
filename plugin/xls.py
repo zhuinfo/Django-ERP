@@ -18,6 +18,7 @@ class OPSHandler(Handler):
     """
     导入基础信息：部门，岗位，职员
     """
+
     name = 'OPS'
 
     def handle(self, obj, f):
@@ -40,7 +41,7 @@ class OPSHandler(Handler):
         for row_index in range(1, row_count):
             row = sheet.row_values(row_index)
             weight = 99
-            if row[6]:
+            if len(row) > 6:
                 weight = row[6]
             OrgUnit.objects.create(code=row[0], name=row[1], short=row[2], pinyin=row[3], begin=datetime.date.today(),
                                    end=datetime.date(9999, 12, 31), weight=weight)
@@ -67,7 +68,7 @@ class OPSHandler(Handler):
                 except Exception:
                     pass
             weight = 99
-            if row[6]:
+            if len(row) > 6:
                 weight = row[6]
             Position.objects.create(code=row[0], name=row[1], unit=depart, begin=datetime.date.today(),
                                     end=datetime.date(9999, 12, 31), weight=weight)
@@ -92,9 +93,16 @@ class OPSHandler(Handler):
         for row_index in range(1, row_count):
             row = sheet.row_values(row_index)
             position = Position.objects.filter(code=row[8], end__gt=datetime.date.today()).all()[0]
-            username = row[10]
-            email = row[11]
-            password = row[4][-6:]
+
+            try:
+                username = row[10]
+                email = row[11]
+                password = row[4][-6:]
+            except IndexError:
+                username = None
+                email = None
+                password = None
+
             if position is None:
                 raise Exception(u'职员%s-%s未分配岗位，或者您选择的岗位已失效，不可被引用' % (row[0], row[1]))
             try:
@@ -180,3 +188,6 @@ class ExcelManager(object):
             raise Exception('%s already exists,register failed' % handler.name)
         if issubclass(handler, Handler):
             ExcelManager.handlers[handler.name] = handler()
+
+
+excel_manager = ExcelManager()
