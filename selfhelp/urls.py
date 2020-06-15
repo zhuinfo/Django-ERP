@@ -1,4 +1,4 @@
-from django.conf.urls import include, url,static
+from django.conf.urls import include, url, static
 import selfhelp.views
 
 urlpatterns = [

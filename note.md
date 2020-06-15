@@ -1,3 +1,7 @@
+# 笔记
+
+本分支由Python2 Django1迁移过来
+
 ## 快速开始
 
     pipenv install

@@ -18,8 +18,8 @@ DB_CHAR_NAME_200 = 200
 
 
 STATUS_ON_OFF = (
-    (0,_('OFF')),
-    (0,_('ON')),
+    (0, _('OFF')),
+    (0, _('ON')),
 )
 
 
@@ -30,9 +30,9 @@ def get_value_list(group):
     if group:
         try:
             cursor = connection.cursor()
-            cursor.execute('SELECT code,name FROM basedata_valuelistitem WHERE group_code=%s AND status=1',[group])
+            cursor.execute('SELECT code,name FROM basedata_valuelistitem WHERE group_code=%s AND status=1', [group])
             rows = cursor.fetchall()
-            return tuple([(code,name) for code,name in rows])
+            return tuple([(code, name) for code, name in rows])
         except Exception as e:
             return None
     else:

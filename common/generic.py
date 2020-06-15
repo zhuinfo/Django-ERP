@@ -7,11 +7,11 @@ import datetime
 import xlwt
 import re
 from django.db import models
-from django.db import connection,transaction
+from django.db import connection, transaction
 from django.db.models import fields
 from django.db.models.fields import related
 from django.contrib import admin
-from django.http import HttpRequest,HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import smart_str, force_text, force_str
 from django.utils.http import urlquote
@@ -30,17 +30,18 @@ def update(sql, params=None):
     with transaction.atomic():
         try:
             if params:
-                cursor.execute(sql,params)
+                cursor.execute(sql, params)
             else:
                 cursor.execute(sql)
         except Exception as e:
             logging.error('', exc_info=e)
 
+
 def get_app_model_info_from_request(request):
     """
 
     """
-    if request and isinstance(request,HttpRequest):
+    if request and isinstance(request, HttpRequest):
         import re
         pattern = re.compile(r"/(admin)/(\w+)/(\w+)/(\d+)")
         match = pattern.match(request.path)
@@ -49,9 +50,9 @@ def get_app_model_info_from_request(request):
             app = match.group(2)
             model = match.group(3)
             oid = match.group(4)
-            ct = ContentType.objects.get(app_label=app,model=model)
+            ct = ContentType.objects.get(app_label=app, model=model)
             obj = ct.get_object_for_this_type(id=oid)
-            return {'app':app,'model':model,'id':oid,'obj':obj}
+            return {'app': app, 'model': model, 'id': oid, 'obj': obj}
     return None
 
 
@@ -59,15 +60,17 @@ class MineBOManager(models.Manager):
     """
     get the objects created by current login user
     """
+
     def get_query_set(self):
-        return super(MineBOManager,self).get_query_set().filter(creator=cuser.getuser())
+        return super(MineBOManager, self).get_query_set().filter(creator=cuser.getuser())
 
 
 class BOManager(models.Manager):
     """
     """
+
     def get_query_set(self):
-        return super(BOManager,self).get_query_set()
+        return super(BOManager, self).get_query_set()
 
 
 class ToStringMixin(object):
@@ -83,17 +86,17 @@ class BO(ToStringMixin, models.Model):
     """
     All business object derive from this class
     """
-    begin = models.DateField(_('begin date'),blank=True,null=True)
-    end = models.DateField(_('end date'),blank=True,null=True)
-    creator = models.CharField(_("creator"),blank=True,null=True,max_length=const.DB_CHAR_NAME_20)
-    modifier = models.CharField(_("modifier"),blank=True,null=True,max_length=const.DB_CHAR_NAME_20)
-    creation = models.DateTimeField(_('creation'),auto_now_add=True,blank=True,null=True)
-    modification = models.DateTimeField(_('modification'),auto_now=True,blank=True,null=True)
+    begin = models.DateField(_('begin date'), blank=True, null=True)
+    end = models.DateField(_('end date'), blank=True, null=True)
+    creator = models.CharField(_("creator"), blank=True, null=True, max_length=const.DB_CHAR_NAME_20)
+    modifier = models.CharField(_("modifier"), blank=True, null=True, max_length=const.DB_CHAR_NAME_20)
+    creation = models.DateTimeField(_('creation'), auto_now_add=True, blank=True, null=True)
+    modification = models.DateTimeField(_('modification'), auto_now=True, blank=True, null=True)
     # mine = MineBOManager()
     objects = models.Manager()
 
     def __unicode__(self):
-        display = getattr(self,'name',None) or getattr(self,'title',None) or getattr(self,'description',None)
+        display = getattr(self, 'name', None) or getattr(self, 'title', None) or getattr(self, 'description', None)
         if not display:
             display = ' '
         return u'%s' % display
@@ -110,7 +113,7 @@ class BOAdmin(admin.ModelAdmin):
     CODE_PREFIX = '9'
     extra_buttons = []
 
-    exclude = ['creator','modifier','creation','modification','begin','end']
+    exclude = ['creator', 'modifier', 'creation', 'modification', 'begin', 'end']
     list_per_page = 18
     actions = ['export_selected_data']
 
@@ -135,25 +138,25 @@ class BOAdmin(admin.ModelAdmin):
         # print app_info
         if app_info:
             try:
-                modal = ContentType.objects.get(app_label='workflow',model='modal')
-                workflow_modal = modal.get_object_for_this_type(app_name=app_info['app'],model_name=app_info['model'])
+                modal = ContentType.objects.get(app_label='workflow', model='modal')
+                workflow_modal = modal.get_object_for_this_type(app_name=app_info['app'], model_name=app_info['model'])
                 has_workflow_modal = True
                 # print workflow_modal.code
-                instance = ContentType.objects.get(app_label='workflow',model='instance')
-                workflow_instance = instance.get_object_for_this_type(modal=workflow_modal,object_id=app_info['id'])
+                instance = ContentType.objects.get(app_label='workflow', model='instance')
+                workflow_instance = instance.get_object_for_this_type(modal=workflow_modal, object_id=app_info['id'])
                 has_workflow_instance = True
-                todo = ContentType.objects.get(app_label='workflow',model='todolist')
-                todo_list = todo.model_class().objects.filter(inst=workflow_instance,status=0,user=request.user)
+                todo = ContentType.objects.get(app_label='workflow', model='todolist')
+                todo_list = todo.model_class().objects.filter(inst=workflow_instance, status=0, user=request.user)
                 x = todo_list.all()
 
-                if x and len(x)>0:
+                if x and len(x) > 0:
                     can_edit = x[0].node.can_edit
                 if todo_list.count() > 0:
                     # print 'we fount it'
                     unread = todo_list.filter(is_read=0)
                     show_workflow_line = True
                     if unread.count() > 0:
-                        unread.update(is_read=1,read_time=datetime.datetime.now())
+                        unread.update(is_read=1, read_time=datetime.datetime.now())
                 if workflow_instance.status == 3 and request.user == workflow_instance.starter:
                     can_restart = True
                     show_workflow_line = True
@@ -165,23 +168,23 @@ class BOAdmin(admin.ModelAdmin):
             show_submit_button = True
         extra_context = extra_context or {}
         ctx = dict(
-            has_workflow_instance = has_workflow_instance,
-            has_workflow_modal = has_workflow_modal,
-            workflow_modal = workflow_modal,
-            workflow_instance = workflow_instance,
-            show_workflow_line = show_workflow_line,
-            can_restart = can_restart,
-            can_edit = can_edit,
-            show_submit_button = show_submit_button,
+            has_workflow_instance=has_workflow_instance,
+            has_workflow_modal=has_workflow_modal,
+            workflow_modal=workflow_modal,
+            workflow_instance=workflow_instance,
+            show_workflow_line=show_workflow_line,
+            can_restart=can_restart,
+            can_edit=can_edit,
+            show_submit_button=show_submit_button,
         )
         if len(self.extra_buttons) > 0:
             buttons = dict(
-                extra_buttons = self.extra_buttons
+                extra_buttons=self.extra_buttons
             )
             ctx.update(buttons)
         extra_context.update(ctx)
         # print extra_context
-        return super(BOAdmin,self).changeform_view(request,object_id,form_url,extra_context)
+        return super(BOAdmin, self).changeform_view(request, object_id, form_url, extra_context)
 
     def history_view(self, request, object_id, extra_context=None):
         """
@@ -195,61 +198,61 @@ class BOAdmin(admin.ModelAdmin):
         # print app_info
         if app_info:
             try:
-                modal = ContentType.objects.get(app_label='workflow',model='modal')
-                workflow_modal = modal.get_object_for_this_type(app_name=app_info['app'],model_name=app_info['model'])
+                modal = ContentType.objects.get(app_label='workflow', model='modal')
+                workflow_modal = modal.get_object_for_this_type(app_name=app_info['app'], model_name=app_info['model'])
                 has_workflow_modal = True
-                instance = ContentType.objects.get(app_label='workflow',model='instance')
-                workflow_instance = instance.get_object_for_this_type(modal=workflow_modal,object_id=app_info['id'])
+                instance = ContentType.objects.get(app_label='workflow', model='instance')
+                workflow_instance = instance.get_object_for_this_type(modal=workflow_modal, object_id=app_info['id'])
                 has_workflow_instance = True
-                history = ContentType.objects.get(app_label='workflow',model='history')
+                history = ContentType.objects.get(app_label='workflow', model='history')
                 history_list = history.model_class().objects.filter(inst=workflow_instance)
                 has_history = True
-                todo = ContentType.objects.get(app_label='workflow',model='todolist')
-                todo_list = todo.model_class().objects.filter(inst=workflow_instance,status=0).exclude(node=None)
+                todo = ContentType.objects.get(app_label='workflow', model='todolist')
+                todo_list = todo.model_class().objects.filter(inst=workflow_instance, status=0).exclude(node=None)
 
                 extra_context = extra_context or {}
                 ctx = dict(
-                    has_workflow_instance = has_workflow_instance,
-                    has_workflow_modal = has_workflow_modal,
-                    workflow_modal = workflow_modal,
-                    workflow_instance = workflow_instance,
-                    history_list = history_list,
-                    has_history = has_history,
-                    todo_list = todo_list,
+                    has_workflow_instance=has_workflow_instance,
+                    has_workflow_modal=has_workflow_modal,
+                    workflow_modal=workflow_modal,
+                    workflow_instance=workflow_instance,
+                    history_list=history_list,
+                    has_history=has_history,
+                    todo_list=todo_list,
                 )
                 # print history_list
                 extra_context.update(ctx)
             except Exception:
                 pass
-        return super(BOAdmin,self).history_view(request,object_id,extra_context)
+        return super(BOAdmin, self).history_view(request, object_id, extra_context)
 
     def get_changeform_initial_data(self, request):
         import datetime
-        return {'begin':datetime.date.today,'end':datetime.date(9999,12,31)}
+        return {'begin': datetime.date.today, 'end': datetime.date(9999, 12, 31)}
 
     def save_model(self, request, obj, form, change):
 
         if change:
-            setattr(obj,'modifier',request.user.username)
+            setattr(obj, 'modifier', request.user.username)
         else:
-            setattr(obj,'creator',request.user.username)
-            setattr(obj,'begin',datetime.date.today())
-            setattr(obj,'end',datetime.date(9999,12,31))
+            setattr(obj, 'creator', request.user.username)
+            setattr(obj, 'begin', datetime.date.today())
+            setattr(obj, 'end', datetime.date(9999, 12, 31))
             try:
-                setattr(obj,'user',request.user)
+                setattr(obj, 'user', request.user)
             except Exception:
                 pass
 
-        super(BOAdmin,self).save_model(request,obj,form,change)
+        super(BOAdmin, self).save_model(request, obj, form, change)
         # print '=========it is here========='
         try:
-            code = getattr(obj,'code')
+            code = getattr(obj, 'code')
             # print code
             if code is None or len(code) == 0:
-                fmt = '%s%0'+str(self.CODE_NUMBER_WIDTH)+'d'
-                code = fmt % (self.CODE_PREFIX,obj.id)
+                fmt = '%s%0' + str(self.CODE_NUMBER_WIDTH) + 'd'
+                code = fmt % (self.CODE_PREFIX, obj.id)
                 table = obj._meta.db_table
-                sql = 'update %s set code = \'%s\' where id=%s' % (table,code,obj.id)
+                sql = 'update %s set code = \'%s\' where id=%s' % (table, code, obj.id)
                 update(sql)
         except Exception:
             pass
@@ -257,13 +260,13 @@ class BOAdmin(admin.ModelAdmin):
     # def response_change(self, request, obj):
         # return HttpResponseRedirect('')
 
-    def export_selected_data(self,request,queryset):
+    def export_selected_data(self, request, queryset):
         ops = self.model._meta
         workbook = xlwt.Workbook(encoding='utf-8')
         dd = datetime.date.today().strftime('%Y%m%d')
-        file_name = force_text(ops.verbose_name+dd)
+        file_name = force_text(ops.verbose_name + dd)
         sheet = workbook.add_sheet(force_text(ops.verbose_name))
-        obj_fields = getattr(self,'export_fields',None) or self.list_display or self.fields
+        obj_fields = getattr(self, 'export_fields', None) or self.list_display or self.fields
 
         head_col_index = 0
         for field in obj_fields:
@@ -272,11 +275,11 @@ class BOAdmin(admin.ModelAdmin):
                 f = ops.get_field(field)
                 col_name = f.verbose_name
             except Exception:
-                f = getattr(self.model,field)
-                if hasattr(f,'short_description'):
+                f = getattr(self.model, field)
+                if hasattr(f, 'short_description'):
                     col_name = f.short_description
-            sheet.write(0,head_col_index,force_text(col_name))
-            head_col_index+=1
+            sheet.write(0, head_col_index, force_text(col_name))
+            head_col_index += 1
         row_index = 1
         for obj in queryset:
             col_index = 0
@@ -286,35 +289,35 @@ class BOAdmin(admin.ModelAdmin):
                     f = ops.get_field(field)
                 except Exception:
                     pass
-                v = getattr(obj,field,'')
-                if hasattr(v,'__call__') or callable(v):
+                v = getattr(obj, field, '')
+                if hasattr(v, '__call__') or callable(v):
                     v = v()
-                elif type(f) == fields.DateField:
+                elif isinstance(f, fields.DateField):
                     v = v.strftime('%Y-%m-%d')
-                elif type(f) == fields.DateTimeField:
+                elif isinstance(f, fields.DateTimeField):
                     v = v.strftime('%Y-%m-%d %H:%M')
-                elif type(f) == fields.CharField and f.choices:
-                    fc = 'get_'+field+'_display'
-                    v = getattr(obj,fc)()
-                elif type(f) == related.ForeignKey:
+                elif isinstance(f, fields.CharField) and f.choices:
+                    fc = 'get_' + field + '_display'
+                    v = getattr(obj, fc)()
+                elif isinstance(f, related.ForeignKey):
                     v = str(v)
-                sheet.write(row_index,col_index,v)
+                sheet.write(row_index, col_index, v)
                 col_index += 1
             row_index += 1
         response = HttpResponse(content_type='application/vnd.ms-excel')
         agent = request.META.get('HTTP_USER_AGENT')
         nn = smart_str(file_name)
-        if agent and re.search('MSIE',agent):
+        if agent and re.search('MSIE', agent):
             nn = urlquote(file_name)
-        response['Content-Disposition'] = 'attachment; filename=%s.xls'%nn
+        response['Content-Disposition'] = 'attachment; filename=%s.xls' % nn
         workbook.save(response)
         return response
-        #self.message_user(request,'SUCCESS')
+        # self.message_user(request,'SUCCESS')
     export_selected_data.short_description = _("export selected %(verbose_name_plural)s")
 
     class Meta:
         ordering = ['-creation']
 
     class Media:
-        css = {'all':('css/maximus.css',)}
+        css = {'all': ('css/maximus.css',)}
         js = ('js/maximus.js',)
