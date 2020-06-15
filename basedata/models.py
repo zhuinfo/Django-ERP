@@ -53,6 +53,7 @@ class ValueList(generic.BO):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super(ValueList, self).save(force_insert, force_update, using, update_fields)
+        # 同时更新 ValueListItem 模型数据的 group_code 数值
         sql = 'update basedata_valuelistitem set group_code = %s where groud_id=%s'
         params = [self.code, self.id]
         generic.update(sql, params)
@@ -75,13 +76,17 @@ class ValueListItem(ToStringMixin, models.Model):
         max_length=const.DB_CHAR_CODE_6,
         blank=True,
         null=True)
+    # 编号
     code = models.CharField(
         _("item code"),
         max_length=const.DB_CHAR_CODE_6,
         blank=True,
         null=True)
+    # 名称
     name = models.CharField(_("item name"), max_length=const.DB_CHAR_NAME_40)
+    # 是否在用？
     status = models.BooleanField(_("in use"), default=True)
+    # 排序权重
     weight = models.IntegerField(_("weight"), null=True, default=9)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -102,10 +107,11 @@ class ValueListItem(ToStringMixin, models.Model):
 
 
 def get_value_list(group):
-    """
+    """获取选项值的列表
 
-    :param group:
-    :return:
+    :param group: str
+
+    :return: list or None
     """
     from django.db.utils import OperationalError
     if group:

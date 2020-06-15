@@ -21,9 +21,11 @@ from midware import cuser
 
 
 def update(sql, params=None):
-    """
-    :param sql:
-    :param params:
+    """ 执行SQL
+
+    :param sql: str, SQL语句
+    :param params: list,参数
+
     :return:
     """
     cursor = connection.cursor()
