@@ -40,18 +40,23 @@ def update(sql, params=None):
 
 
 def get_app_model_info_from_request(request):
-    """
+    """ 从请求中获取app模型信息
 
+    :param request: django.http.HttpRequest
+
+    :return: dict or None
     """
     if request and isinstance(request, HttpRequest):
         import re
+        # 匹配请求路径
         pattern = re.compile(r"/(admin)/(\w+)/(\w+)/(\d+)")
         match = pattern.match(request.path)
 
         if match and match.group():
-            app = match.group(2)
-            model = match.group(3)
-            oid = match.group(4)
+            app = match.group(2)  # 第2个括号？
+            model = match.group(3)  # 第3个括号？
+            oid = match.group(4)  # 第4个括号？
+            # 获取 ContentType 对象
             ct = ContentType.objects.get(app_label=app, model=model)
             obj = ct.get_object_for_this_type(id=oid)
             return {'app': app, 'model': model, 'id': oid, 'obj': obj}
@@ -131,7 +136,7 @@ class BOAdmin(admin.ModelAdmin):
     actions = ['export_selected_data']
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
-        """
+        """修改表单视图
 
         :param request:
         :param object_id:
@@ -240,6 +245,10 @@ class BOAdmin(admin.ModelAdmin):
         return super(BOAdmin, self).history_view(request, object_id, extra_context)
 
     def get_changeform_initial_data(self, request):
+        """获取修改表单的初始数据
+
+        https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_changeform_initial_data
+        """
         import datetime
         return {'begin': datetime.date.today, 'end': datetime.date(9999, 12, 31)}
 
