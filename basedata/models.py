@@ -51,15 +51,8 @@ class ValueList(generic.BO):
     # 锁定日期时间
     lock_time = models.DateTimeField(_("locked time"), null=True, blank=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        super(
-            ValueList,
-            self).save(
-            force_insert,
-            force_update,
-            using,
-            update_fields)
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super(ValueList, self).save(force_insert, force_update, using, update_fields)
         sql = 'update basedata_valuelistitem set group_code = %s where groud_id=%s'
         params = [self.code, self.id]
         generic.update(sql, params)
@@ -91,19 +84,12 @@ class ValueListItem(ToStringMixin, models.Model):
     status = models.BooleanField(_("in use"), default=True)
     weight = models.IntegerField(_("weight"), null=True, default=9)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.code:
             cnt = self.group.valuelistitem_set.count() + 1
             self.code = "%02d" % cnt
         self.group_code = self.group.code
-        super(
-            ValueListItem,
-            self).save(
-            force_insert,
-            force_update,
-            using,
-            update_fields)
+        super(ValueListItem, self).save(force_insert, force_update, using, update_fields)
 
     def __unicode__(self):
         return "%s-%s" % (self.code, self.name)
