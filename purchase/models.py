@@ -21,10 +21,10 @@ class PurchaseOrder(generic.BO):
     采购单
     """
     STATUS = (
-        ('0', _("NEW")),                # 新建
-        ('1', _("IN PROGRESS")),        # 在处理
-        ('4', _("DROP")),               # 废弃
-        ('9', _("APPROVED")),           # 批准
+        ('00', _("NEW")),                # 新建
+        ('01', _("IN PROGRESS")),        # 在处理
+        ('04', _("DROP")),               # 废弃
+        ('09', _("APPROVED")),           # 批准
         ('99', _("ALREADY STOCK IN")),  # 已入库
     )
     index_weight = 1
