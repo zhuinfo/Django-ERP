@@ -197,6 +197,7 @@ class BOAdmin(admin.ModelAdmin):
             can_edit=can_edit,
             show_submit_button=show_submit_button,
         )
+        # 添加额外的按钮
         if len(self.extra_buttons) > 0:
             buttons = dict(
                 extra_buttons=self.extra_buttons

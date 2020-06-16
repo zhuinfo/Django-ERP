@@ -18,7 +18,7 @@ class POItemInline(admin.TabularInline):
 
 class PurchaseOrderAdmin(generic.BOAdmin):
     """
-
+    采购单管理
     """
     CODE_PREFIX = 'CG'
     CODE_NUMBER_WIDTH = 5
