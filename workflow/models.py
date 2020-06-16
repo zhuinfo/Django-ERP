@@ -12,7 +12,7 @@ from organ.models import Position, OrgUnit
 
 class Modal(ToStringMixin, models.Model):
     """
-
+    工作流模型
     """
     import datetime
     index_weight = 1
@@ -62,7 +62,9 @@ class Node(ToStringMixin, models.Model):
     )
     index_weight = 2
     modal = models.ForeignKey(Modal, verbose_name=_("workflow model"), on_delete=models.CASCADE)
+    # 编号
     code = models.CharField(_("node code"), max_length=const.DB_CHAR_CODE_4, blank=True, null=True)
+    # 名称
     name = models.CharField(_("node name"), max_length=const.DB_CHAR_NAME_80)
     tooltip = models.CharField(_('tooltip words'), blank=True, null=True, max_length=const.DB_CHAR_NAME_120)
 
@@ -97,8 +99,11 @@ class Node(ToStringMixin, models.Model):
     # added by zhugl 2015-06-30
     next_user_handler = models.CharField(_('next user handler'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
     next_node_handler = models.CharField(_('next node handler'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
+    # 状态字段
     status_field = models.CharField(_('status field'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
+    # 状态值
     status_value = models.CharField(_('status value'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
+    # 执行操作
     action = models.CharField(_('execute action'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -121,15 +126,17 @@ class Instance(ToStringMixin, models.Model):
     工作流实例
     """
     STATUS = (
-        (1, _("NEW")),
-        (2, _("IN PROGRESS")),
-        (3, _("DENY")),
-        (4, _("TERMINATED")),
-        (9, _("APPROVED")),
-        (99, _("COMPLETED"))
+        (1, _("NEW")),          # 新建
+        (2, _("IN PROGRESS")),  # 在处理
+        (3, _("DENY")),         # 拒绝
+        (4, _("TERMINATED")),   # 终止
+        (9, _("APPROVED")),     # 批准
+        (99, _("COMPLETED"))    # 结束
     )
     index_weight = 3
+    # 编号
     code = models.CharField(_("code"), blank=True, null=True, max_length=const.DB_CHAR_CODE_10)
+    # 关联的工作流模型
     modal = models.ForeignKey(Modal, verbose_name=_("workflow model"), on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField("object id")
     # 发起人
@@ -138,6 +145,7 @@ class Instance(ToStringMixin, models.Model):
     start_time = models.DateTimeField(_("start time"), auto_now_add=True)
     # 批准时间
     approved_time = models.DateTimeField(_("approved time"), blank=True, null=True)
+    # 状态
     status = models.IntegerField(_("status"), default=1, choices=STATUS)
     # 当前节点 多对多
     current_nodes = models.ManyToManyField(Node, verbose_name=_("current node"), blank=True)
@@ -148,6 +156,7 @@ class Instance(ToStringMixin, models.Model):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(Instance, self).save(force_insert, force_update, using, update_fields)
+        # 更新 code
         if not self.code:
             self.code = 'S%05d' % self.id
             self.save()
@@ -203,7 +212,7 @@ class History(ToStringMixin, models.Model):
 
 class TodoList(ToStringMixin, models.Model):
     """
-
+    待办列表
     """
     index_weight = 4
     code = models.CharField(_("code"), max_length=const.DB_CHAR_CODE_10, blank=True, null=True)
