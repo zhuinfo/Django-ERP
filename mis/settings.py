@@ -57,6 +57,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    # 添加自定义的获取请求用户中间件
     'midware.cuser.RequestUser',
 )
 MIDDLEWARE = MIDDLEWARE_CLASSES

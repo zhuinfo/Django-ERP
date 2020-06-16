@@ -69,6 +69,7 @@ class MineBOManager(models.Manager):
     """
 
     def get_query_set(self):
+        # cuser.getuser(): 获取当前用户
         return super(MineBOManager, self).get_query_set().filter(creator=cuser.getuser())
 
 
@@ -107,6 +108,7 @@ class BO(ToStringMixin, models.Model):
     creation = models.DateTimeField(_('creation'), auto_now_add=True, blank=True, null=True)
     # 修改datetime
     modification = models.DateTimeField(_('modification'), auto_now=True, blank=True, null=True)
+
     # mine = MineBOManager()
     objects = models.Manager()
 

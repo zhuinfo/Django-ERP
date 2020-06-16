@@ -36,6 +36,7 @@ def getuser():
 
 
 class RequestUser(MiddlewareMixin):
+    """当前用户中间件"""
 
     def process_request(self, request):
         django_user = getattr(request, 'user', None)
@@ -186,6 +187,8 @@ class RequestUser(MiddlewareMixin):
             view_kwargs['extra_context'] = context
 
     def get_my_task(self, request):
+        """获取我的任务"""
+
         from workflow.models import TodoList
         if request and request.user:
             query = TodoList.objects.filter(user=request.user, status=0)
