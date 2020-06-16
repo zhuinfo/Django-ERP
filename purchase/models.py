@@ -34,8 +34,7 @@ class PurchaseOrder(generic.BO):
     partner = models.ForeignKey(
         Partner,
         verbose_name=_("partner"),
-        limit_choices_to={
-            "partner_type": "S"},
+        limit_choices_to={"partner_type": "S"},
         on_delete=models.CASCADE)
     # 订单日期
     order_date = models.DateField(_("order date"))
