@@ -933,21 +933,25 @@ class Employee(generic.BO):
         null=True,
         default='CN',
         choices=const.get_value_list('S022'))
+    # 籍贯
     hometown = models.CharField(
         _("hometown"),
         max_length=const.DB_CHAR_NAME_40,
         blank=True,
         null=True)
+    # 家庭地址
     address = models.CharField(
         _("home address"),
         max_length=const.DB_CHAR_NAME_120,
         blank=True,
         null=True)
+    # 银行帐号
     banknum = models.CharField(
         _("bank account"),
         max_length=const.DB_CHAR_NAME_40,
         blank=True,
         null=True)
+    # 开户行
     bankname = models.CharField(
         _("bank name"),
         max_length=const.DB_CHAR_NAME_80,
@@ -958,11 +962,13 @@ class Employee(generic.BO):
         max_length=const.DB_CHAR_NAME_40,
         blank=True,
         null=True)
+    # 邮箱
     email = models.CharField(
         _("email"),
         max_length=const.DB_CHAR_NAME_20,
         blank=True,
         null=True)
+    # 办公电话
     office = models.CharField(
         _("office phone"),
         max_length=const.DB_CHAR_NAME_20,
@@ -984,7 +990,7 @@ class Employee(generic.BO):
     workday = models.DateField(_("workday"), blank=True, null=True)
     # 入职日期
     startday = models.DateField(_("start date"), blank=True, null=True)
-
+    # 宗教
     religion = models.CharField(
         _("religion"),
         max_length=const.DB_CHAR_CODE_2,
@@ -993,6 +999,7 @@ class Employee(generic.BO):
         blank=True,
         null=True,
     )
+    # 婚姻状况
     marital = models.CharField(
         _("marital status"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1000,7 +1007,7 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S023'),
         default='10')
-
+    # 政治面貌
     party = models.CharField(
         _("political party"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1008,6 +1015,7 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S026'),
         default='13')
+    # 民族
     nation = models.CharField(
         _("nation"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1052,6 +1060,7 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S038'),
         default='99')
+    # 学位
     degree = models.CharField(
         _("major degree"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1060,6 +1069,7 @@ class Employee(generic.BO):
         choices=const.get_value_list('S037'),
         default='4')
 
+    # 特殊工种
     spjob = models.CharField(
         _("special job"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1067,6 +1077,7 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S042'),
         default='00')
+    # 健康状况
     health = models.CharField(
         _("health"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1075,6 +1086,7 @@ class Employee(generic.BO):
         choices=const.get_value_list('S043'),
         default='1')
 
+    # 	复转军人标识
     tag1 = models.CharField(
         _("tag1 fzjr"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1082,6 +1094,7 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S039'),
         default='99')
+    # 党委负责人
     tag2 = models.CharField(
         _("tag2 dwld"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1089,6 +1102,7 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S040'),
         default='9')
+    # 董事监事
     tag3 = models.CharField(
         _("tag3 dsjs"),
         max_length=const.DB_CHAR_CODE_10,
@@ -1096,6 +1110,7 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S041'),
         default='00')
+    # 兵役状况
     tag4 = models.CharField(
         _("tag4 byzk"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1228,12 +1243,15 @@ class WorkExperience(generic.BO):
     工作履历
     """
 
+    # 组织机构
     organization = models.CharField(
         _("organization"),
         max_length=const.DB_CHAR_NAME_120)
+    # 岗位
     position = models.CharField(
         _("position"),
         max_length=const.DB_CHAR_NAME_120)
+    # 关联的职员
     employee = models.ForeignKey(
         Employee,
         verbose_name=_("employee"),
