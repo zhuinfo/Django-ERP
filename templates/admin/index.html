@@ -9,6 +9,7 @@
 
 {% block bodyclass %}{{ block.super }} dashboard{% endblock %}
 
+{% comment %} 导航栏 {% endcomment %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
@@ -62,6 +63,7 @@
 </div>
 {% endblock %}
 
+{% comment %} 重写了侧边栏 {% endcomment %}
 {% block sidebar %}
 <div id="content-related" style="width:18em">
     <div class="module">
