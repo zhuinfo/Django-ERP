@@ -80,14 +80,18 @@ class StockInAdmin(generic.BOAdmin):
 
     def save_model(self, request, obj, form, change):
         import decimal
+
         super(StockInAdmin, self).save_model(request, obj, form, change)
+
         if obj and obj.po:
+            # 自动创建入库单明细行
             po_items = obj.po.poitem_set.filter(left_cnt__gt=0).all()
             for item in po_items:
                 try:
                     InItem.objects.get(po_item=item, master=obj)
-                    continue
+                    continue  # 如果存在则继续循环
                 except Exception as e:
+                    # 不存在则创建明细行
                     pp = item.discount_price or item.price
                     if decimal.Decimal(item.tax) > decimal.Decimal(0):
                         pp = pp / (decimal.Decimal(1) + decimal.Decimal(item.tax))
@@ -113,6 +117,7 @@ class StockInAdmin(generic.BOAdmin):
         extra_context = extra_context or {}
         if object_id:
             obj = StockIn.objects.get(id=object_id)
+            # 有对象并且 execute_time 不为空，则设置为只读
             if obj and obj.execute_time:
                 extra_context.update(dict(readonly=True))
         return super(StockInAdmin, self).changeform_view(request, object_id, form_url, extra_context)
@@ -138,6 +143,7 @@ class StockOutAdmin(generic.BOAdmin):
         extra_context = extra_context or {}
         if object_id:
             obj = StockOut.objects.get(id=object_id)
+            # 有对象并且 execute_time 不为空，则设置为只读
             if obj and obj.execute_time:
                 extra_context.update(dict(readonly=True))
         return super(StockOutAdmin, self).changeform_view(request, object_id, form_url, extra_context)
@@ -149,6 +155,7 @@ class StockOutAdmin(generic.BOAdmin):
 
 
 class InitialInventoryAdmin(generic.BOAdmin):
+    """期初库存"""
     CODE_PREFIX = 'QC'
     CODE_NUMBER_WIDTH = 3
     list_display = ['code', 'title', 'status']
@@ -161,6 +168,7 @@ class InitialInventoryAdmin(generic.BOAdmin):
         extra_context = extra_context or {}
         if object_id:
             obj = InitialInventory.objects.get(id=object_id)
+            # 有对象并且 execute_time 不为空，则设置为只读
             if obj and obj.execute_time:
                 extra_context.update(dict(readonly=True))
         return super(InitialInventoryAdmin, self).changeform_view(request, object_id, form_url, extra_context)
@@ -192,7 +200,7 @@ class ReturnItemInline(admin.TabularInline):
 
 class WareReturnAdmin(generic.BOAdmin):
     """
-
+    返库单管理页面
     """
     CODE_PREFIX = 'FK'
     CODE_NUMBER_WIDTH = 4
@@ -208,6 +216,7 @@ class WareReturnAdmin(generic.BOAdmin):
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         if object_id:
             obj = WareReturn.objects.get(id=object_id)
+            # 有对象并且状态是已执行，则设置为只读
             if obj.status == '9':
                 extra_context = extra_context or {}
                 extra_context.update(dict(readonly=True))
@@ -228,6 +237,7 @@ class AdjustItemInline(admin.TabularInline):
 
 
 class WareAdjustAdmin(generic.BOAdmin):
+    """库存调整管理页面"""
     CODE_PREFIX = 'TZ'
     CODE_NUMBER_WIDTH = 3
     list_display = ['code', 'title', 'status']
@@ -242,6 +252,7 @@ class WareAdjustAdmin(generic.BOAdmin):
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         if object_id:
             obj = WareAdjust.objects.get(id=object_id)
+            # 有对象并且状态是已执行，则设置为只读
             if obj and obj.status == '9':
                 extra_context = extra_context or {}
                 extra_context.update(dict(readonly=True))

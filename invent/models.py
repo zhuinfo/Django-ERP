@@ -19,7 +19,7 @@ from purchase.models import PurchaseOrder, POItem
 
 class Inventory(generic.BO):
     """
-    库存信息
+    实时库存
     """
     index_weight = 1
     # 所属组织机构
@@ -33,6 +33,7 @@ class Inventory(generic.BO):
     # 数量
     cnt = models.DecimalField(_("count"), max_digits=14, decimal_places=4)
     batch = models.CharField(_("batch"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 单价
     price = models.DecimalField(_("price"), max_digits=14, decimal_places=4)
 
     def __unicode__(self):
@@ -185,6 +186,7 @@ class StockIn(generic.BO):
             return 0.00
 
     def entry_time(self):
+        """入库时间"""
         if self.execute_time:
             return self.execute_time
         else:
@@ -197,14 +199,14 @@ class StockIn(generic.BO):
         """
         执行入库操作
         """
-        # 入库明细行大
 
-
+        # 入库明细行大于零
         if self.initem_set.count() > 0:
             with transaction.atomic():
                 total_amount = decimal.Decimal(0)
                 for item in self.initem_set.filter(status=0).all():
                     try:
+                        # 根据仓库、物料和单位获取 实时库存 inventory 对象
                         inventory = Inventory.objects.get(
                             warehouse=self.warehouse, material=item.material, measure=item.measure)
                         if inventory.price != item.price:
@@ -238,13 +240,14 @@ class StockIn(generic.BO):
                     item.po_item.save()
                     none_zero_left = POItem.objects.filter(po=item.po_item.po, left_cnt__gt=0).count()
                     if none_zero_left == 0:
+                        # 没有 零剩余 的明细行，则表示全部入库
                         item.po_item.po.status = '99'  # 标记为已经入库
                         item.po_item.po.entry_status = 1  # 已入库
                         item.po_item.po.entry_time = datetime.datetime.now()  # 入库时间
                         item.po_item.po.save()
                     # saving stock in item status
                     item.status = 1
-                    item.event_time = datetime.datetime.now()
+                    item.event_time = datetime.datetime.now()  # 执行时间
                 # updating master's record
                 self.status = 9
                 self.execute_time = datetime.datetime.now()
@@ -261,9 +264,9 @@ class StockOut(generic.BO):
     领料单
     """
     STATUS = (
-        ('0', _("NEW")),
-        ('1', _("IN PROGRESS")),
-        ('9', _("EXECUTED"))
+        ('0', _("NEW")),            # 新建
+        ('1', _("IN PROGRESS")),    # 在处理
+        ('9', _("EXECUTED"))        # 已执行
     )
     index_weight = 2
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
@@ -384,12 +387,14 @@ class WareAdjust(generic.BO):
     库存调整
     """
     STATUS = (
-        ('0', _("NEW")),
-        ('1', _("IN PROGRESS")),
-        ('9', _("EXECUTED"))
+        ('0', _("NEW")),            # 新建
+        ('1', _("IN PROGRESS")),    # 在处理
+        ('9', _("EXECUTED"))        # 已执行
     )
     index_weight = 4
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 所属组织机构
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
     # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
@@ -425,7 +430,7 @@ class WareAdjust(generic.BO):
 
 class InOutDetail(models.Model):
     """
-    出入库详单
+    出入库详单，应该设置为抽象类
     """
 
     PROP = (
@@ -461,7 +466,7 @@ class InOutDetail(models.Model):
 
 class InitItem(InOutDetail):
     """
-    期初入库明细
+    期初入库明细行
     """
     master = models.ForeignKey(InitialInventory, on_delete=models.CASCADE)
 
@@ -554,6 +559,7 @@ class AdjustItem(InOutDetail):
     """
     # 关联库存调整单
     master = models.ForeignKey(WareAdjust, on_delete=models.CASCADE)
+    # 实时库存
     inventory = models.ForeignKey(
         Inventory,
         blank=True,

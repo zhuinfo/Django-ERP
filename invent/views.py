@@ -12,10 +12,11 @@ from django.utils.translation import ugettext_lazy as _
 
 
 def action_in(request, object_id):
-    """
-    入库操作
+    """ 入库操作
+
     :param request:
     :param object_id:
+
     :return:
     """
     title = _("Are you sure?")
@@ -45,10 +46,11 @@ def action_in(request, object_id):
 
 
 def action_out(request, object_id):
-    """
-    出库操作
+    """ 出库操作
+
     :param request:
     :param object_id:
+
     :return:
     """
     title = _("Are you sure?")
@@ -77,10 +79,11 @@ def action_out(request, object_id):
 
 
 def action_init(request, object_id):
-    """
-    期初入库操作
+    """ 期初入库操作
+
     :param request:
     :param object_id:
+
     :return:
     """
     title = _("Are you sure?")
@@ -110,10 +113,11 @@ def action_init(request, object_id):
 
 
 def action_return(request, object_id):
-    """
-    返库操作
+    """ 返库操作
+
     :param request:
     :param object_id:
+
     :return:
     """
     title = _("Are you sure?")
@@ -143,10 +147,11 @@ def action_return(request, object_id):
 
 
 def action_adjust(request, object_id):
-    """
-    调整操作
+    """ 调整操作
+
     :param request:
     :param object_id:
+
     :return:
     """
     title = _("Are you sure?")
