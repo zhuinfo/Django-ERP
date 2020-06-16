@@ -281,24 +281,30 @@ class Partner(generic.BO):
 
 class BankAccount(generic.BO):
     """
-    银行账户 organization
+    银行账户
     """
 
+    # 银行帐号
     account = models.CharField(
         _("account num"),
         max_length=const.DB_CHAR_NAME_40)
+    # 银行名称
     title = models.CharField(_("bank name"), max_length=const.DB_CHAR_NAME_40)
+    # 备注
     memo = models.CharField(
         _("memo"),
         max_length=const.DB_CHAR_NAME_20,
         blank=True,
         null=True)
+
+    # 合作伙伴
     partner = models.ForeignKey(
         Partner,
         verbose_name=_("partner"),
         blank=True,
         null=True,
         on_delete=models.CASCADE)
+    # 所属组织
     org = models.ForeignKey(
         Organization,
         verbose_name=_("organization"),

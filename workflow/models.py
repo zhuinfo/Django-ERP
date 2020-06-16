@@ -16,8 +16,11 @@ class Modal(ToStringMixin, models.Model):
     """
     import datetime
     index_weight = 1
+    # 工作流编号
     code = models.CharField(_("workflow code"), max_length=const.DB_CHAR_CODE_6, blank=True, null=True)
+    # 工作流名称
     name = models.CharField(_("workflow name"), max_length=const.DB_CHAR_NAME_40)
+    # 描述
     description = models.TextField(_("description"), blank=True, null=True)
     content_type = models.ForeignKey(
         ContentType,
@@ -30,7 +33,9 @@ class Modal(ToStringMixin, models.Model):
     app_name = models.CharField(_("app name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
     model_name = models.CharField(_("model name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
     # added by zhugl 2015-05-10
+    # 开始时间
     begin = models.DateField(_("begin date"), blank=True, null=True, default=datetime.date.today)
+    # 结束时时间
     end = models.DateField(_("end date"), blank=True, null=True, default=datetime.date(9999, 12, 31))
 
     def __unicode__(self):
@@ -51,11 +56,12 @@ class Node(ToStringMixin, models.Model):
     sql()
     etc:upper('zhangsan','lisi')
     """
+    # 处理类型
     HANDLER_TYPE = (
-        (1, _("designated user")),
-        (2, _("designated position")),
-        (3, _("designated role")),
-        (4, _("submitter")),
+        (1, _("designated user")),      # 指定用户
+        (2, _("designated position")),  # 指定岗位
+        (3, _("designated role")),      # 指定角色
+        (4, _("submitter")),            # 提交人
     )
     index_weight = 2
     modal = models.ForeignKey(Modal, verbose_name=_("workflow model"), on_delete=models.CASCADE)
@@ -63,21 +69,32 @@ class Node(ToStringMixin, models.Model):
     name = models.CharField(_("node name"), max_length=const.DB_CHAR_NAME_80)
     tooltip = models.CharField(_('tooltip words'), blank=True, null=True, max_length=const.DB_CHAR_NAME_120)
 
+    # 起始节点
     start = models.BooleanField(_("start node"), default=False)
+    # 结束节点
     stop = models.BooleanField(_("stop node"), default=False)
+    # 允许终止
     can_terminate = models.BooleanField(_("can terminate"), default=False)
+    # 允许拒绝
     can_deny = models.BooleanField(_("can deny"), default=True)
+    # 允许编辑
     can_edit = models.BooleanField(_("can edit"), default=False)
 
+    # 邮件通知
     email_notice = models.BooleanField(_("email notice"), default=True)
+    # 短信通知
     short_message_notice = models.BooleanField(_("short message notice"), default=False)
+    # 批准节点
     approve_node = models.BooleanField(_("approve node"), default=False)
     handler = models.TextField(_("handler"), blank=True, null=True, help_text=u'自定义SQL语句，优先高于指定用户、岗位、角色')
     # added by zhugl 2015-05-10
     handler_type = models.IntegerField(_("handler type"), choices=HANDLER_TYPE, default=1)
     positions = models.ManyToManyField(Position, verbose_name=_("designated position"), blank=True)
+    # 角色 多对多
     roles = models.ManyToManyField(Role, verbose_name=_("designated role"), blank=True)
+    # 用户 多对多
     users = models.ManyToManyField(User, verbose_name=_("designated user"), blank=True)
+    # 组织单元 多对多
     departments = models.ManyToManyField(OrgUnit, verbose_name=_("designated department"), blank=True)
     next = models.ManyToManyField('self', blank=True, verbose_name=_("next node"), symmetrical=False)
     # added by zhugl 2015-06-30
@@ -104,7 +121,7 @@ class Node(ToStringMixin, models.Model):
 
 class Instance(ToStringMixin, models.Model):
     """
-
+    工作流实例
     """
     STATUS = (
         (1, _("NEW")),
@@ -118,10 +135,14 @@ class Instance(ToStringMixin, models.Model):
     code = models.CharField(_("code"), blank=True, null=True, max_length=const.DB_CHAR_CODE_10)
     modal = models.ForeignKey(Modal, verbose_name=_("workflow model"), on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField("object id")
+    # 发起人
     starter = models.ForeignKey(User, verbose_name=_("start user"), related_name="starter", on_delete=models.CASCADE)
+    # 发起时间
     start_time = models.DateTimeField(_("start time"), auto_now_add=True)
+    # 批准时间
     approved_time = models.DateTimeField(_("approved time"), blank=True, null=True)
     status = models.IntegerField(_("status"), default=1, choices=STATUS)
+    # 当前节点 多对多
     current_nodes = models.ManyToManyField(Node, verbose_name=_("current node"), blank=True)
 
     def __unicode__(self):
