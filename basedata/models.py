@@ -667,6 +667,15 @@ class Material(generic.BO):
         verbose_name=_("category"),
         on_delete=models.CASCADE)
     # 物料性质 - Material type
+    # 10: 生产物料
+    # 11: 办公用品
+    # 20: 建筑物/培训室
+    # 30: 员工宿舍
+    # 40: 工卡/饭卡
+    # 50: 车辆
+    # 60: 图书
+    # 70: 工位
+    # 80: 工单服务
     tp = models.CharField(
         _('mt type'),
         blank=True,
@@ -719,6 +728,7 @@ class Material(generic.BO):
         decimal_places=4,
         blank=True,
         null=True)
+    # 所属组织机构
     org = models.ForeignKey(
         Organization,
         verbose_name=_("organization"),

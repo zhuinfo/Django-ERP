@@ -22,10 +22,15 @@ class Inventory(generic.BO):
     库存信息
     """
     index_weight = 1
+    # 所属组织机构
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 仓库
     warehouse = models.ForeignKey(Warehouse, verbose_name=_("warehouse"), on_delete=models.CASCADE)
+    # 物料
     material = models.ForeignKey(Material, verbose_name=_("material"), on_delete=models.CASCADE)
+    # 计量单位
     measure = models.ForeignKey(Measure, verbose_name=_("measure"), on_delete=models.CASCADE)
+    # 数量
     cnt = models.DecimalField(_("count"), max_digits=14, decimal_places=4)
     batch = models.CharField(_("batch"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     price = models.DecimalField(_("price"), max_digits=14, decimal_places=4)
@@ -49,11 +54,15 @@ class InitialInventory(generic.BO):
         ('9', _("EXECUTED"))
     )
     index_weight = 9
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 所属组织
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
     user = models.ForeignKey(User, verbose_name=_("user"), blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
+    # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
     attach = models.FileField(_('attach'), blank=True, null=True, upload_to='inventory', help_text=u'参考FD0002模板文档')
     amount = models.DecimalField(_('money of amount'), max_digits=14, decimal_places=4, blank=True, null=True)
@@ -145,13 +154,19 @@ class StockIn(generic.BO):
         ('9', _("EXECUTED"))
     )
     index_weight = 3
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 所属组织机构
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 仓库
     warehouse = models.ForeignKey(Warehouse, verbose_name=_("warehouse"), on_delete=models.CASCADE)
+    # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
     user = models.ForeignKey(User, verbose_name=_("user"), blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
+    # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
+    # 关联的采购单
     po = models.ForeignKey(
         PurchaseOrder,
         verbose_name=_("purchase order"),
@@ -248,9 +263,11 @@ class StockOut(generic.BO):
     index_weight = 2
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
     project = models.ForeignKey(Project, verbose_name=_("project"), blank=True, null=True, on_delete=models.CASCADE)
     wo = models.ForeignKey(WorkOrder, verbose_name=_("work order"), blank=True, null=True, on_delete=models.CASCADE)
+    # 描述
     description = models.TextField(_("description"), blank=True, null=True)
     amount = models.DecimalField(_("money of amount"), max_digits=14, decimal_places=4, blank=True, null=True)
     user = models.ForeignKey(User, verbose_name=_("out user"), blank=True, null=True, on_delete=models.CASCADE)
@@ -301,18 +318,21 @@ class WareReturn(generic.BO):
     返库单
     """
     STATUS = (
-        ('0', _("NEW")),
-        ('1', _("IN PROGRESS")),
-        ('9', _("EXECUTED"))
+        ('0', _("NEW")),            # 新建
+        ('1', _("IN PROGRESS")),    # 在处理
+        ('9', _("EXECUTED"))        # 已执行
     )
     index_weight = 5
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
+    # 关联的出库单
     out = models.ForeignKey(StockOut, verbose_name=_('StockOut'), on_delete=models.CASCADE)
     amount = models.DecimalField(_("money of amount"), max_digits=14, decimal_places=4, blank=True, null=True)
     user = models.ForeignKey(User, verbose_name=_("out user"), blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
+    # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -366,13 +386,17 @@ class WareAdjust(generic.BO):
     index_weight = 4
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
+    # 描述
     description = models.TextField(_("description"), blank=True, null=True)
     user = models.ForeignKey(User, verbose_name=_("out user"), blank=True, null=True, on_delete=models.CASCADE)
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
+    # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
 
     def action_adjust(self, request):
+        """执行库存调整"""
         with transaction.atomic():
             for item in AdjustItem.objects.filter(master=self, status=0):
                 inventory = item.inventory
@@ -396,7 +420,7 @@ class WareAdjust(generic.BO):
 
 class InOutDetail(models.Model):
     """
-    in out detail
+    出入库详单
     """
 
     PROP = (
@@ -404,21 +428,27 @@ class InOutDetail(models.Model):
         ('-', _("MINUS"))
     )
 
+    # 创建时间
     create_time = models.DateTimeField(_("create time"), auto_now_add=True)
     status = models.BooleanField(_("executed"), default=0)
     event_time = models.DateTimeField(_("event time"), blank=True, null=True)
+    # 仓库
     warehouse = models.ForeignKey(Warehouse, verbose_name=_("warehouse"), blank=True, null=True, on_delete=models.CASCADE)
+    # 物料
     material = models.ForeignKey(
         Material,
         verbose_name=_("material"),
         limit_choices_to={
-            "is_virtual": "0"},
+            "is_virtual": "0"},  # 排除了虚拟物料
         blank=True,
         null=True,
         on_delete=models.CASCADE)
+    # 计量单位
     measure = models.ForeignKey(Measure, verbose_name=_("measure"), blank=True, null=True, on_delete=models.CASCADE)
+    # 数量
     cnt = models.DecimalField(_("count"), max_digits=14, decimal_places=4, blank=True, null=True)
     batch = models.CharField(_("batch"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 单价？
     price = models.DecimalField(_("price"), max_digits=14, decimal_places=4, blank=True, null=True)
     prop = models.CharField(_("plus or minus property"), max_length=const.DB_CHAR_CODE_2, choices=PROP, default='+')
     source = models.CharField(_("source"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
@@ -437,9 +467,11 @@ class InitItem(InOutDetail):
 
 class InItem(InOutDetail):
     """
-    入库单明细
+    入库单明细行，继承 InOutDetail 类
     """
+    # 关联入库单
     master = models.ForeignKey(StockIn, on_delete=models.CASCADE)
+    # 关联采购单明细行
     po_item = models.ForeignKey(POItem, verbose_name=_("po item"), blank=True, null=True, on_delete=models.CASCADE)
 
     def get_new_price(self):
@@ -470,8 +502,9 @@ class InItemForm(forms.ModelForm):
 
 class OutItem(InOutDetail):
     """
-    出库单明细
+    出库单明细行，继承 InOutDetail 类
     """
+    # 关联出库单
     master = models.ForeignKey(StockOut, on_delete=models.CASCADE)
     inventory = models.ForeignKey(
         Inventory,
@@ -497,9 +530,11 @@ class OutItem(InOutDetail):
 
 class ReturnItem(InOutDetail):
     """
-    返库单明细
+    返库单明细行，继承 InOutDetail 类
     """
+    # 关联返库单
     master = models.ForeignKey(WareReturn, on_delete=models.CASCADE)
+    # 关联出库单明细行
     out_item = models.ForeignKey(OutItem, blank=True, null=True, verbose_name=_('out item'), on_delete=models.CASCADE)
     out_cnt = models.DecimalField(_("out count"), max_digits=14, decimal_places=4)
 
@@ -510,8 +545,9 @@ class ReturnItem(InOutDetail):
 
 class AdjustItem(InOutDetail):
     """
-    库存调整明细
+    库存调整明细行
     """
+    # 关联库存调整单
     master = models.ForeignKey(WareAdjust, on_delete=models.CASCADE)
     inventory = models.ForeignKey(
         Inventory,

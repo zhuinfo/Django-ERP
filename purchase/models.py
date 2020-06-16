@@ -123,7 +123,7 @@ class PurchaseOrder(generic.BO):
 
 class POItem(models.Model):
     """
-
+    采购单明细行
     """
     index_weight = 2
     po = models.ForeignKey(PurchaseOrder, verbose_name=_("purchase order"), on_delete=models.CASCADE)
