@@ -25,10 +25,7 @@ class Modal(ToStringMixin, models.Model):
     content_type = models.ForeignKey(
         ContentType,
         verbose_name=_("content type"),
-        limit_choices_to={
-            "app_label__in": [
-                'basedata',
-                'organ']},
+        limit_choices_to={"app_label__in": ['basedata', 'organ']},
         on_delete=models.CASCADE)
     app_name = models.CharField(_("app name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
     model_name = models.CharField(_("model name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
