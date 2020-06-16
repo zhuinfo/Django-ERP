@@ -22,22 +22,38 @@ class Organization(generic.BO):
     # 是否在用？
     status = models.BooleanField(_("in use"), default=True)
 
+    # 纳税识别号
     tax_num = models.CharField(_("tax num"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 开票地址/电话
     tax_address = models.CharField(_("tax address"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 发票开户行
     tax_account = models.CharField(_("tax account"), max_length=const.DB_CHAR_NAME_80, blank=True, null=True)
 
+    # 法人代表
     represent = models.CharField(_("representative "), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 地址
     address = models.CharField(_("address"), max_length=const.DB_CHAR_NAME_120, blank=True, null=True)
+    # 邮编
     zipcode = models.CharField(_("zipcode"), max_length=const.DB_CHAR_CODE_8, blank=True, null=True)
+    # 传真
     fax = models.CharField(_("fax"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 联系人
     contacts = models.CharField(_("contacts"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 联系电话
     phone = models.CharField(_("phone"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 网址
     website = models.CharField(_("website"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 邮箱
     email = models.CharField(_("email"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 营业执照代码
     lic_code = models.CharField(_("license code"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 组织机构代码
     cer_code = models.CharField(_("certificate code"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 营业执照证书
     license = models.FileField(_("business license"), blank=True, null=True, upload_to='organ')
+    # 组织结构证书
     certificate = models.FileField(_("organization code certificate"), blank=True, null=True, upload_to='organ')
+    # 排序权重
     weight = models.IntegerField(_("weight"), default=9)
 
     class Meta:
