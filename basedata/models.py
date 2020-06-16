@@ -466,11 +466,13 @@ class Measure(ToStringMixin, models.Model):
     计量单位
     """
     index_weight = 5
+    # 编号
     code = models.CharField(
         _("code"),
         max_length=const.DB_CHAR_CODE_6,
         blank=True,
         null=True)
+    # 名称
     name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_20)
     status = models.BooleanField(_("in use"), default=True)
 
@@ -487,13 +489,17 @@ class Trade(ToStringMixin, models.Model):
     国民经济行业分类
     """
     index_weight = 102
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_CODE_6)
+    # 名称
     name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 备注
     memo = models.CharField(
         _("memo"),
         max_length=const.DB_CHAR_NAME_120,
         null=True,
         blank=True)
+    # 父级
     parent = models.ForeignKey(
         'self',
         verbose_name=_("parent"),
@@ -515,18 +521,22 @@ class Brand(ToStringMixin, models.Model):
     品牌
     """
     index_weight = 101
+    # 经济行业
     trade = models.ForeignKey(
         Trade,
         verbose_name=_("trade"),
         null=True,
         blank=True,
         on_delete=models.CASCADE)
+    # 名称
     name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 拼音/英语
     pinyin = models.CharField(
         _("pinyin"),
         max_length=const.DB_CHAR_NAME_120,
         blank=True,
         null=True)
+    # 排序权重
     weight = models.IntegerField(
         _("weight"),
         blank=True,
@@ -547,24 +557,29 @@ class Category(ToStringMixin, models.Model):
     """
 
     index_weight = 100
+    # 经济行业
     trade = models.ForeignKey(
         Trade,
         verbose_name=_("trade"),
         null=True,
         blank=True,
         on_delete=models.CASCADE)
+    # 父级
     parent = models.ForeignKey(
         'self',
         verbose_name=_("parent"),
         null=True,
         blank=True,
         on_delete=models.CASCADE)
+    # 编号
     code = models.CharField(
         _("code"),
         max_length=const.DB_CHAR_CODE_6,
         null=True,
         blank=True)
+    # 名称
     name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 路径（？）
     path = models.CharField(
         _("path"),
         max_length=const.DB_CHAR_NAME_200,
@@ -819,20 +834,23 @@ class ExpenseAccount(generic.BO):
     """
 
     CATEGORY = (
-        ('HR', _('HR-DOMAIN')),
-        ('OF', _('OFFICE-DOMAIN')),
-        ('PU', _('PUBLIS-DOMAIN')),
-        ('MU', _('MUNADOMAIN')),
-        ('BU', _('BUSINESS')),
-        ('OT', _('OTHER')),
+        ('HR', _('HR-DOMAIN')),         # 人事费用
+        ('OF', _('OFFICE-DOMAIN')),     # 行政办公
+        ('PU', _('PUBLIS-DOMAIN')),     # 运营公共
+        ('MU', _('MUNADOMAIN')),        # 生产制造
+        ('BU', _('BUSINESS')),          # 市场商务
+        ('OT', _('OTHER')),             # 其他
     )
     index_weight = 10
+    # 编号
     code = models.CharField(
         _("code"),
         max_length=const.DB_CHAR_NAME_20,
         blank=True,
         null=True)
+    # 名称
     name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 分类
     category = models.CharField(
         _("category"),
         max_length=const.DB_CHAR_CODE_4,
@@ -845,7 +863,9 @@ class ExpenseAccount(generic.BO):
         null=True,
         blank=True,
         on_delete=models.CASCADE)
+    # 在用？
     status = models.BooleanField(_("in use"), default=True)
+    # 所属组织机构
     org = models.ForeignKey(
         Organization,
         verbose_name=_("organization"),
@@ -877,6 +897,7 @@ class Employee(generic.BO):
         max_length=const.DB_CHAR_NAME_20,
         blank=True,
         null=True)
+    # 所属组织机构
     organization = models.ForeignKey(
         Organization,
         verbose_name=_('organization'),
@@ -896,6 +917,7 @@ class Employee(generic.BO):
     # 生日
     birthday = models.DateField(_("birthday"), blank=True, null=True)
 
+    # 性别
     gender = models.CharField(
         _("gender"),
         max_length=const.DB_CHAR_CODE_2,
@@ -947,6 +969,7 @@ class Employee(generic.BO):
         blank=True,
         null=True)
 
+    # 职位
     position = models.ForeignKey(
         Position,
         verbose_name=_('position'),
@@ -1139,7 +1162,7 @@ class Family(generic.BO):
     name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_60)
     # 出生日期
     birthday = models.DateField(_("birthday"), blank=True, null=True)
-    # 组织机构
+    # 所属组织机构
     organization = models.CharField(
         _("organization"),
         max_length=const.DB_CHAR_NAME_120,
@@ -1151,8 +1174,9 @@ class Family(generic.BO):
         max_length=const.DB_CHAR_NAME_120,
         blank=True,
         null=True)
-    # 紧急联系人
+    # 是否是紧急联系人
     emergency = models.BooleanField(_("emergency"), default=False)
+    # 关联的职员
     employee = models.ForeignKey(
         Employee,
         verbose_name=_("employee"),
@@ -1332,12 +1356,12 @@ class Document(generic.BO):
     """
 
     TP = (
-        ('00', _('SYSTEM MANUAL')),
-        ('10', _('BUSINESS DOC')),
+        ('00', _('SYSTEM MANUAL')),  # 系统文档
+        ('10', _('BUSINESS DOC')),   # 业务文档
     )
     STATUS = (
-        ('0', _('draft')),
-        ('1', _('published'))
+        ('0', _('draft')),      # 草稿
+        ('1', _('published'))   # 已发布
     )
     index_weight = 8
     # 编号
@@ -1356,6 +1380,7 @@ class Document(generic.BO):
         null=True)
     # 描述信息
     description = models.TextField(_('description'), blank=True, null=True)
+    # 类型
     tp = models.CharField(
         _('type'),
         max_length=const.DB_CHAR_CODE_2,
@@ -1381,6 +1406,7 @@ class Document(generic.BO):
         choices=STATUS)
     # 发布时间
     pub_date = models.DateTimeField(_('publish date'), blank=True, null=True)
+    # 文件大小（？）
     size = models.CharField(
         _('size'),
         max_length=const.DB_CHAR_NAME_20,
