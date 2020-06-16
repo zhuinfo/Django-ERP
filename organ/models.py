@@ -8,13 +8,18 @@ from common import generic
 
 class Organization(generic.BO):
     """
-    组织单位
+    组织机构
     """
     index_weight = 1
+    # 组织编号
     code = models.CharField(_("organ code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 组织名称
     name = models.CharField(_("organ name"), max_length=const.DB_CHAR_NAME_120)
+    # 简称
     short = models.CharField(_("short name"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 拼音
     pinyin = models.CharField(_("pinyin"), max_length=const.DB_CHAR_NAME_120, blank=True, null=True)
+    # 是否在用？
     status = models.BooleanField(_("in use"), default=True)
 
     tax_num = models.CharField(_("tax num"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
@@ -55,17 +60,29 @@ class OrgUnit(generic.BO):
     parent = models.ForeignKey('self', verbose_name=_("parent"), null=True, blank=True, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, verbose_name=_('organization'),
                                      null=True, blank=True, on_delete=models.CASCADE)
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_CODE_8, blank=True, null=True)
+    # 名称
     name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 简称
     short = models.CharField(_("short name"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 拼音/英文
     pinyin = models.CharField(_("pinyin"), max_length=const.DB_CHAR_NAME_120, blank=True, null=True)
+    # 单元类型
     unit_type = models.IntegerField(_("type"), choices=UNIT_LEVEL, default=2)
+    # 状态：是否在用
     status = models.BooleanField(_("in use"), default=True)
+    # 是否虚拟
     virtual = models.BooleanField(_("is virtual"), default=False)
+    # 传真
     fax = models.CharField(_("fax"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 联系电话
     phone = models.CharField(_("phone"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 联系人
     contacts = models.CharField(_("contacts"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 邮箱
     email = models.CharField(_("email"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+    # 排序权重
     weight = models.IntegerField(_("weight"), default=99)
 
     class Meta:
@@ -92,25 +109,40 @@ class Position(generic.BO):
         ('05', _("EXPERT")),
     )
     index_weight = 3
+    # 关联的组织单元
     unit = models.ForeignKey(OrgUnit, verbose_name=_('org unit'), on_delete=models.CASCADE)
+    # 关联的组织机构
     organization = models.ForeignKey(Organization, verbose_name=_('organization'),
                                      null=True, blank=True, on_delete=models.CASCADE)
+    # 父级
     parent = models.ForeignKey('self', verbose_name=_("parent"), null=True, blank=True, on_delete=models.CASCADE)
+    # 编号
     code = models.CharField(_("position code"), max_length=const.DB_CHAR_CODE_8, blank=True, null=True)
+    # 岗位名称
     name = models.CharField(_("position name"), max_length=const.DB_CHAR_NAME_120)
+    # 简称
     short = models.CharField(_("short name"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 拼音/英文
     pinyin = models.CharField(_("pinyin"), max_length=const.DB_CHAR_NAME_120, blank=True, null=True)
+    # 岗位序列
     series = models.CharField(_("position series"), max_length=1, default='A', choices=const.get_value_list('S014'))
+    # 岗位级别
     grade = models.CharField(
         _("position grade"),
         max_length=const.DB_CHAR_CODE_2,
         default='01',
         choices=const.get_value_list('S015'))
+    # 是否虚拟
     virtual = models.BooleanField(_("is virtual"), default=False)
+    # 状态：是否在用
     status = models.BooleanField(_("in use"), default=True)
+    # 岗位说明
     description = models.TextField(_("position description"), blank=True, null=True)
+    # 任职资格
     qualification = models.TextField(_("qualification"), blank=True, null=True)
+    # 参考资料
     document = models.FileField(_("reference"), blank=True, null=True)
+    # 排序权重
     weight = models.IntegerField(_("weight"), default=99)
 
     def __unicode__(self):

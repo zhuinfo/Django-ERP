@@ -126,7 +126,7 @@ class BOAdmin(admin.ModelAdmin):
     """
     All business object admin derive from this class
     """
-    # 编码长度
+    # 编码的数字长度
     CODE_NUMBER_WIDTH = 4
     # 编码前缀
     CODE_PREFIX = '9'
@@ -277,10 +277,15 @@ class BOAdmin(admin.ModelAdmin):
             code = getattr(obj, 'code')
             # print code
             if code is None or len(code) == 0:
+                # 生成格式化
                 fmt = '%s%0' + str(self.CODE_NUMBER_WIDTH) + 'd'
+                # 生成code，这里需要获取obj的id
                 code = fmt % (self.CODE_PREFIX, obj.id)
+                # 获取数据表名称
                 table = obj._meta.db_table
+                # 生成SQL
                 sql = 'update %s set code = \'%s\' where id=%s' % (table, code, obj.id)
+                # 执行SQL
                 update(sql)
         except Exception:
             # 如果没有 code 字段则会进入异常分支
