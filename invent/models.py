@@ -149,9 +149,9 @@ class StockIn(generic.BO):
     入库单
     """
     STATUS = (
-        ('0', _("NEW")),
-        ('1', _("QUALITY TESTING")),
-        ('9', _("EXECUTED"))
+        ('0', _("NEW")),                # 新建
+        ('1', _("QUALITY TESTING")),    # 质量检验
+        ('9', _("EXECUTED"))            # 已执行
     )
     index_weight = 3
     # 编号
@@ -197,6 +197,9 @@ class StockIn(generic.BO):
         """
         执行入库操作
         """
+        # 入库明细行大
+
+
         if self.initem_set.count() > 0:
             with transaction.atomic():
                 total_amount = decimal.Decimal(0)
@@ -225,17 +228,19 @@ class StockIn(generic.BO):
                         item.source = self.code
                         item.save()
                         total_amount += item.price * item.cnt
+
+                    # 处理采购明细行
                     # saving the purchase item
                     item.po_item.is_in_stock = 1
-                    item.po_item.in_stock_time = datetime.datetime.now()
-                    item.po_item.entry_cnt = item.cnt
+                    item.po_item.in_stock_time = datetime.datetime.now()  # 入库时间
+                    item.po_item.entry_cnt = item.cnt  # 已经入库数量
 
                     item.po_item.save()
                     none_zero_left = POItem.objects.filter(po=item.po_item.po, left_cnt__gt=0).count()
                     if none_zero_left == 0:
-                        item.po_item.po.status = '99'
-                        item.po_item.po.entry_status = 1
-                        item.po_item.po.entry_time = datetime.datetime.now()
+                        item.po_item.po.status = '99'  # 标记为已经入库
+                        item.po_item.po.entry_status = 1  # 已入库
+                        item.po_item.po.entry_time = datetime.datetime.now()  # 入库时间
                         item.po_item.po.save()
                     # saving stock in item status
                     item.status = 1

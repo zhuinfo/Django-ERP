@@ -60,7 +60,9 @@ class PurchaseOrder(generic.BO):
         blank=True,
         null=True,
         default=0.00)
+    # 是否入库
     entry_status = models.BooleanField(_("entry status"), default=0)
+    # 入库时间
     entry_time = models.DateTimeField(_("entry time"), blank=True, null=True)
     # 附件
     attach = models.FileField(_('attach'), blank=True, null=True, help_text=u'您可导入采购明细，模板请参考文档FD0008')
@@ -167,7 +169,9 @@ class POItem(models.Model):
     is_in_stock = models.BooleanField(_("is in stock"), default=0)
     # 入库时间
     in_stock_time = models.DateTimeField(_("execute time"), blank=True, null=True)
+    # 入库数量
     entry_cnt = models.DecimalField(_("entry count"), max_digits=12, decimal_places=4, blank=True, null=True)
+    # 剩余数量
     left_cnt = models.DecimalField(_("left count"), max_digits=12, decimal_places=4, blank=True, null=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -177,16 +181,20 @@ class POItem(models.Model):
             money = self.price * self.cnt
             self.amount = money
 
-        # 自动配置计量单位
+        # 如果没有单位，自动配置计量单位，默认选第一个
         if self.measure is None and self.material and self.material.measure.count() > 0:
             self.measure = self.material.measure.all()[0]
 
         if self.is_in_stock:
+            # 如果已经入库
             self.left_cnt -= self.entry_cnt
         else:
+            # 未入库则赋予 left_cnt 初始值
             self.left_cnt = self.cnt
+
         super(POItem, self).save(force_insert, force_update, using, update_fields)
-        # 把价格配给物料数据模型的采购价格
+
+        # 把采购单明细行的价格配给物料模型的采购价格
         self.material.purchase_price = self.price
         self.material.save()
 
