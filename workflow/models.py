@@ -87,9 +87,11 @@ class Node(ToStringMixin, models.Model):
     approve_node = models.BooleanField(_("approve node"), default=False)
     handler = models.TextField(_("handler"), blank=True, null=True, help_text=u'自定义SQL语句，优先高于指定用户、岗位、角色')
     # added by zhugl 2015-05-10
+    # 处理类型
     handler_type = models.IntegerField(_("handler type"), choices=HANDLER_TYPE, default=1)
     positions = models.ManyToManyField(Position, verbose_name=_("designated position"), blank=True)
     # 角色 多对多
+    # syscfg.models.Role
     roles = models.ManyToManyField(Role, verbose_name=_("designated role"), blank=True)
     # 用户 多对多
     users = models.ManyToManyField(User, verbose_name=_("designated user"), blank=True)

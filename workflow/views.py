@@ -25,7 +25,9 @@ def compile_node_handler(request, obj, next_node):
     :return:
     """
 
+    # 下一个节点处理类
     handler = next_node.handler
+    # 下一个用户处理类
     next_user_handler = next_node.next_user_handler
     # next_user_handler 具有最高优先级
     if next_user_handler:

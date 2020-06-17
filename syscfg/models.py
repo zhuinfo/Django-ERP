@@ -14,7 +14,9 @@ class Site(ToStringMixin, models.Model):
     index_weight = 1
     begin = models.DateField(_('begin date'), blank=True, null=True)
     end = models.DateField(_('end date'), blank=True, null=True)
+    # 站点名称
     name = models.CharField(_('site name'), max_length=const.DB_CHAR_NAME_40)
+    # 描述信息
     description = models.TextField(_('site description'), blank=True, null=True)
     user = models.ManyToManyField(User, verbose_name=_('administrator'))
 
@@ -31,12 +33,18 @@ class Module(generic.BO):
     模块管理
     """
     index_weight = 2
+    # 模块编号
     code = models.CharField(_("module code"), max_length=const.DB_CHAR_CODE_6, blank=True, null=True)
+    # 模块名称
     name = models.CharField(_("module name"), max_length=const.DB_CHAR_NAME_40)
+    # URL
     url = models.URLField(_("module url"), blank=True, null=True, max_length=const.DB_CHAR_NAME_80)
+    # 权重
     weight = models.IntegerField(_("weight"), blank=True, null=True, default=99)
     icon = models.CharField(_("style class"), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
+    # 父级
     parent = models.ForeignKey('self', blank=True, null=True, verbose_name=_("parent"), on_delete=models.CASCADE)
+    # 是否在用
     status = models.BooleanField(_("in use"), default=True)
 
     class Meta:
@@ -49,10 +57,15 @@ class Menu(generic.BO):
     菜单管理
     """
     index_weight = 3
+    # 关联的模块
     module = models.ForeignKey(Module, verbose_name=_("module"), on_delete=models.CASCADE)
+    # 编号
     code = models.CharField(_("menu code"), max_length=const.DB_CHAR_CODE_6, blank=True, null=True)
+    # 名称
     name = models.CharField(_("menu name"), max_length=const.DB_CHAR_NAME_40)
+    # URL
     url = models.URLField(_("menu url"), blank=True, null=True, max_length=const.DB_CHAR_NAME_80)
+    # 权重
     weight = models.IntegerField(_("weight"), blank=True, null=True, default=99)
     icon = models.CharField(_("style class"), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
     status = models.BooleanField(_("in use"), default=True)

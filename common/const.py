@@ -24,8 +24,11 @@ STATUS_ON_OFF = (
 
 
 def get_value_list(group):
-    """
-    获取值列表信息
+    """获取值列表信息
+
+    :param group: str, 组名称
+
+    :return: ((key1, value1), (key2, value2), ...)
     """
     if group:
         try:
