@@ -86,12 +86,17 @@ class OrgUnit(generic.BO):
     short = models.CharField(_("short name"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     # 拼音/英文
     pinyin = models.CharField(_("pinyin"), max_length=const.DB_CHAR_NAME_120, blank=True, null=True)
+
     # 单元类型
     unit_type = models.IntegerField(_("type"), choices=UNIT_LEVEL, default=2)
     # 状态：是否在用
     status = models.BooleanField(_("in use"), default=True)
     # 是否虚拟
     virtual = models.BooleanField(_("is virtual"), default=False)
+
+    ################################################################
+    # 联系方式
+    ################################################################
     # 传真
     fax = models.CharField(_("fax"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     # 联系电话
@@ -100,6 +105,7 @@ class OrgUnit(generic.BO):
     contacts = models.CharField(_("contacts"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
     # 邮箱
     email = models.CharField(_("email"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
+
     # 排序权重
     weight = models.IntegerField(_("weight"), default=99)
 
@@ -136,6 +142,7 @@ class Position(generic.BO):
                                      null=True, blank=True, on_delete=models.CASCADE)
     # 父级
     parent = models.ForeignKey('self', verbose_name=_("parent"), null=True, blank=True, on_delete=models.CASCADE)
+
     # 编号
     code = models.CharField(_("position code"), max_length=const.DB_CHAR_CODE_8, blank=True, null=True)
     # 岗位名称
@@ -144,6 +151,7 @@ class Position(generic.BO):
     short = models.CharField(_("short name"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     # 拼音/英文
     pinyin = models.CharField(_("pinyin"), max_length=const.DB_CHAR_NAME_120, blank=True, null=True)
+
     # 岗位序列
     series = models.CharField(_("position series"), max_length=1, default='A', choices=const.get_value_list('S014'))
     # 岗位级别
@@ -152,6 +160,7 @@ class Position(generic.BO):
         max_length=const.DB_CHAR_CODE_2,
         default='01',
         choices=const.get_value_list('S015'))
+
     # 是否虚拟
     virtual = models.BooleanField(_("is virtual"), default=False)
     # 状态：是否在用
