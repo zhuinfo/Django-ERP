@@ -5,6 +5,7 @@ from basedata.models import Partner, BankAccount
 
 
 class POItemInline(admin.TabularInline):
+    """采购单明细行Inline"""
     model = POItem
     fields = ('material', 'measure', 'price', 'cnt', 'tax', 'discount_price')
     raw_id_fields = ['material']
@@ -58,6 +59,7 @@ class PurchaseOrderAdmin(generic.BOAdmin):
 
 
 class PurchaseItemAdmin(generic.BOAdmin):
+    """采购明细管理"""
     list_display = ['po', 'vender', 'material', 'cnt', 'price', 'tax']
     readonly_fields = ['po', 'material', 'cnt', 'price', 'tax']
 
@@ -66,6 +68,7 @@ class PurchaseItemAdmin(generic.BOAdmin):
 
 
 class InvoiceAdmin(generic.BOAdmin):
+    """发票管理"""
     list_display = ['code', 'number', 'vo_date', 'po', 'partner', 'po_amount', 'vo_amount']
     readonly_fields = ['partner', 'po_amount']
     raw_id_fields = ['po']
@@ -77,6 +80,7 @@ class InvoiceAdmin(generic.BOAdmin):
 
 
 class PaymentAdmin(generic.BOAdmin):
+    """采购付款管理"""
     CODE_PREFIX = 'PY'
     CODE_NUMBER_WIDTH = 4
     list_display = ['code', 'py_date', 'po', 'partner', 'po_amount', 'py_amount']
