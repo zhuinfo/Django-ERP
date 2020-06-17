@@ -149,8 +149,7 @@ class POItem(models.Model):
     material = models.ForeignKey(
         Material,
         verbose_name=_("material"),
-        limit_choices_to={
-            "is_virtual": "0"},
+        limit_choices_to={"is_virtual": "0"},
         on_delete=models.CASCADE)
     # 计量单位
     measure = models.ForeignKey(Measure, verbose_name=_("measure"), blank=True, null=True, on_delete=models.CASCADE)
@@ -176,8 +175,7 @@ class POItem(models.Model):
     # 剩余数量
     left_cnt = models.DecimalField(_("left count"), max_digits=12, decimal_places=4, blank=True, null=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         # 计算总价
         if self.price and self.cnt:
             money = self.price * self.cnt
@@ -223,12 +221,19 @@ class Invoice(generic.BO):
     """
     index_weight = 4
     vo_date = models.DateField(_("invoice date"), blank=True, null=True, default=datetime.date.today)
+    # 编号
     code = models.CharField(_("invoice code"), max_length=const.DB_CHAR_NAME_20)
+    # 发票代码
     number = models.CharField(_("invoice number"), max_length=const.DB_CHAR_NAME_20)
+    # 采购单
     po = models.ForeignKey(PurchaseOrder, verbose_name=_("purchase order"), on_delete=models.CASCADE)
+    # 合作伙伴
     partner = models.ForeignKey(Partner, verbose_name=_("partner"), blank=True, null=True, on_delete=models.CASCADE)
+    # 采购金额
     po_amount = models.DecimalField(_("po amount"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 发票金额
     vo_amount = models.DecimalField(_("invoice amount"), max_digits=14, decimal_places=4)
+    # 发票文件
     file = models.FileField(_("invoice file"), upload_to='invoice', blank=True, null=True)
 
     def __unicode__(self):
@@ -251,15 +256,25 @@ class Payment(generic.BO):
     采购付款
     """
     index_weight = 3
+    # 付款日期
     py_date = models.DateField(_("pay date"), blank=True, null=True, default=datetime.date.today)
+    # 所属组织
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 编号
     code = models.CharField(_("pay code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 采购单
     po = models.ForeignKey(PurchaseOrder, verbose_name=_("purchase order"), on_delete=models.CASCADE)
+    # 合作伙伴
     partner = models.ForeignKey(Partner, verbose_name=_("partner"), blank=True, null=True, on_delete=models.CASCADE)
+    # 采购金额
     po_amount = models.DecimalField(_("po amount"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 支付金额
     py_amount = models.DecimalField(_("pay amount"), max_digits=14, decimal_places=4)
+    # 银行账户
     bank = models.ForeignKey(BankAccount, verbose_name=_("bank account"), blank=True, null=True, on_delete=models.CASCADE)
+    # 银行回执
     response_code = models.CharField(_("response code"), max_length=const.DB_CHAR_NAME_80, blank=True, null=True)
+    # 备注
     memo = models.TextField(_("memo"), blank=True, null=True)
 
     def save(self, force_insert=False, force_update=False, using=None,

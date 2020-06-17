@@ -32,8 +32,7 @@ class SaleOrder(generic.BO):
     partner = models.ForeignKey(
         Partner,
         verbose_name=_("partner"),
-        limit_choices_to={
-            "partner_type": "C"},
+        limit_choices_to={"partner_type": "C"},
         on_delete=models.CASCADE)
     order_date = models.DateField(_("order date"))
     deliver_date = models.DateField(_("deliver date"))
@@ -89,9 +88,7 @@ class SaleItem(models.Model):
     material = models.ForeignKey(
         Material,
         verbose_name=_("material"),
-        limit_choices_to={
-            "is_virtual": "0",
-            'can_sale': '1'},
+        limit_choices_to={"is_virtual": "0", 'can_sale': '1'},
         blank=True,
         null=True,
         on_delete=models.CASCADE)
@@ -170,8 +167,7 @@ class OfferSheet(generic.BO):
     partner = models.ForeignKey(
         Partner,
         verbose_name=_("partner"),
-        limit_choices_to={
-            "partner_type": "C"},
+        limit_choices_to={"partner_type": "C"},
         on_delete=models.CASCADE)
     offer_date = models.DateField(_("offer date"))
     deliver_date = models.DateField(_("deliver date"))
@@ -270,9 +266,7 @@ class OfferItem(models.Model):
     material = models.ForeignKey(
         Material,
         verbose_name=_("material"),
-        limit_choices_to={
-            "is_virtual": "0",
-            'can_sale': '1'},
+        limit_choices_to={"is_virtual": "0", 'can_sale': '1'},
         blank=True,
         null=True,
         on_delete=models.CASCADE)

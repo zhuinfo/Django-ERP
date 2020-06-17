@@ -122,8 +122,7 @@ class WOItem(models.Model):
         verbose_name=_("material"),
         null=True,
         blank=True,
-        limit_choices_to={
-            "is_virtual": "0"},
+        limit_choices_to={"is_virtual": "0"},
         on_delete=models.CASCADE)
     amount = models.DecimalField(_("amount"), max_digits=10, decimal_places=4, blank=True, null=True)
     measure = models.ForeignKey(Measure, verbose_name=_('measure'), blank=True, null=True, on_delete=models.CASCADE)
@@ -327,8 +326,7 @@ class Activity(generic.BO):
         verbose_name=_("room"),
         blank=True,
         null=True,
-        limit_choices_to={
-            'tp': 20},
+        limit_choices_to={'tp': 20},
         on_delete=models.CASCADE)
     location = models.CharField(_("location"), max_length=const.DB_CHAR_NAME_80, blank=True, null=True)
     classification = models.CharField(

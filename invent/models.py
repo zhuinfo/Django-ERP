@@ -183,8 +183,7 @@ class StockIn(generic.BO):
         PurchaseOrder,
         verbose_name=_("purchase order"),
         null=True,
-        limit_choices_to={
-            "entry_status": "0"},
+        limit_choices_to={"entry_status": "0"},
         blank=True,
         on_delete=models.CASCADE)
     # 入库金额
@@ -479,8 +478,7 @@ class InOutDetail(models.Model):
     material = models.ForeignKey(
         Material,
         verbose_name=_("material"),
-        limit_choices_to={
-            "is_virtual": "0"},  # 排除了虚拟物料
+        limit_choices_to={"is_virtual": "0"},  # 排除了虚拟物料
         blank=True,
         null=True,
         on_delete=models.CASCADE)

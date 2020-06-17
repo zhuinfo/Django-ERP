@@ -358,8 +358,7 @@ class Project(generic.BO):
         blank=True,
         null=True,
         verbose_name=_("partner"),
-        limit_choices_to={
-            "partner_type": "C"},
+        limit_choices_to={"partner_type": "C"},
         on_delete=models.CASCADE)
     status = models.CharField(
         _("status"),
@@ -1288,11 +1287,7 @@ class DataImport(generic.BO):
     content_type = models.ForeignKey(
         ContentType,
         verbose_name=_("content type"),
-        limit_choices_to={
-            "app_label__in": [
-                'basedata',
-                'organ',
-                'auth']},
+        limit_choices_to={"app_label__in": ['basedata','organ','auth']},
         on_delete=models.CASCADE)
     # 附件
     attach = models.FileField(
