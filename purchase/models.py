@@ -25,7 +25,7 @@ class PurchaseOrder(generic.BO):
         ('01', _("IN PROGRESS")),        # 在处理
         ('04', _("DROP")),               # 废弃
         ('09', _("APPROVED")),           # 批准
-        ('99', _("ALREADY STOCK IN")),  # 已入库
+        ('99', _("ALREADY STOCK IN")),   # 已入库
     )
     index_weight = 1
     # 编号
@@ -160,7 +160,9 @@ class POItem(models.Model):
     cnt = models.DecimalField(_("count"), max_digits=12, decimal_places=4, blank=True, null=True)
     # 折后单价
     discount_price = models.DecimalField(_("discount price"), max_digits=12, decimal_places=4, blank=True, null=True)
+    # 总价
     amount = models.DecimalField(_("money of amount"), max_digits=12, decimal_places=2, blank=True, null=True)
+    # 折后总价
     discount_amount = models.DecimalField(_("discount amount"), max_digits=12, decimal_places=2, blank=True, null=True)
     # 税率
     tax = models.CharField(_("tax rate"), max_length=const.DB_CHAR_CODE_6, choices=const.get_value_list('S052'), default='0.00')

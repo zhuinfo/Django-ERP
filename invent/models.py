@@ -12,6 +12,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from common import generic
 from common import const
+
+# 关联了以下模型
 from basedata.models import Material, Warehouse, Measure, Organization, Project
 from selfhelp.models import WorkOrder
 from purchase.models import PurchaseOrder, POItem
@@ -32,6 +34,7 @@ class Inventory(generic.BO):
     measure = models.ForeignKey(Measure, verbose_name=_("measure"), on_delete=models.CASCADE)
     # 数量
     cnt = models.DecimalField(_("count"), max_digits=14, decimal_places=4)
+    # 批次号
     batch = models.CharField(_("batch"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     # 单价
     price = models.DecimalField(_("price"), max_digits=14, decimal_places=4)
@@ -51,8 +54,8 @@ class InitialInventory(generic.BO):
     期初库存
     """
     STATUS = (
-        ('0', _("NEW")),
-        ('9', _("EXECUTED"))
+        ('0', _("NEW")),        # 新建
+        ('9', _("EXECUTED"))    # 已执行
     )
     index_weight = 9
     # 编号
@@ -62,19 +65,25 @@ class InitialInventory(generic.BO):
     # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
     user = models.ForeignKey(User, verbose_name=_("user"), blank=True, null=True, on_delete=models.CASCADE)
+    # 状态
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
     # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
+    # 附件
     attach = models.FileField(_('attach'), blank=True, null=True, upload_to='inventory', help_text=u'参考FD0002模板文档')
+    # 金额
     amount = models.DecimalField(_('money of amount'), max_digits=14, decimal_places=4, blank=True, null=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-
+        """"""
         super(InitialInventory, self).save(force_insert, force_update, using, update_fields)
+
         count = InitItem.objects.filter(master=self).count()
+        # 如果有附件并且item为零，自动从附件加载明细行
         if self.attach and count == 0:
             path = os.path.join(settings.MEDIA_ROOT, self.attach.name)
+            # csv 文件
             reader = csv.reader(open(path, 'r'))
             index = 0
             with transaction.atomic():
@@ -163,7 +172,9 @@ class StockIn(generic.BO):
     warehouse = models.ForeignKey(Warehouse, verbose_name=_("warehouse"), on_delete=models.CASCADE)
     # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
+    # 入库人（？）
     user = models.ForeignKey(User, verbose_name=_("user"), blank=True, null=True, on_delete=models.CASCADE)
+    # 状态
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
     # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
@@ -176,7 +187,9 @@ class StockIn(generic.BO):
             "entry_status": "0"},
         blank=True,
         on_delete=models.CASCADE)
+    # 入库金额
     amount = models.DecimalField(_("stock in money of amount"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 批次号
     batch = models.CharField(_("batch"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
 
     def money_of_amount(self):
@@ -269,17 +282,25 @@ class StockOut(generic.BO):
         ('9', _("EXECUTED"))        # 已执行
     )
     index_weight = 2
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 所属组织机构
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
     # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
+    # 关联的项目
     project = models.ForeignKey(Project, verbose_name=_("project"), blank=True, null=True, on_delete=models.CASCADE)
+    # 关联的工单
     wo = models.ForeignKey(WorkOrder, verbose_name=_("work order"), blank=True, null=True, on_delete=models.CASCADE)
     # 描述
     description = models.TextField(_("description"), blank=True, null=True)
+    # 出库金额
     amount = models.DecimalField(_("money of amount"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 领料人
     user = models.ForeignKey(User, verbose_name=_("out user"), blank=True, null=True, on_delete=models.CASCADE)
+    # 状态
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
+    # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
 
     def out_amount(self):
@@ -304,9 +325,9 @@ class StockOut(generic.BO):
                     if item.cnt:
                         total += item.cnt * item.inventory.price
                         item.inventory.cnt -= item.cnt
-                        item.status = 1
+                        item.status = 1  # 标记为已执行
                         item.price = item.inventory.price
-                        item.event_time = datetime.datetime.now()
+                        item.event_time = datetime.datetime.now()  # 执行时间
                         item.inventory.save()
                         item.source = self.code
                         item.save()
@@ -331,14 +352,19 @@ class WareReturn(generic.BO):
         ('9', _("EXECUTED"))        # 已执行
     )
     index_weight = 5
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 所属组织机构
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
     # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
     # 关联的出库单
     out = models.ForeignKey(StockOut, verbose_name=_('StockOut'), on_delete=models.CASCADE)
+    # 金额
     amount = models.DecimalField(_("money of amount"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 操作人（？）
     user = models.ForeignKey(User, verbose_name=_("out user"), blank=True, null=True, on_delete=models.CASCADE)
+    # 状态
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
     # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
@@ -360,6 +386,7 @@ class WareReturn(generic.BO):
                     cnt=out_item.cnt)
 
     def action_return(self, request):
+        """执行返库单"""
         with transaction.atomic():
             total_amount = decimal.Decimal(0)
             for item in ReturnItem.objects.filter(master=self):
@@ -400,7 +427,9 @@ class WareAdjust(generic.BO):
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
     # 描述
     description = models.TextField(_("description"), blank=True, null=True)
+    # 操作者？
     user = models.ForeignKey(User, verbose_name=_("out user"), blank=True, null=True, on_delete=models.CASCADE)
+    # 状态
     status = models.CharField(_("status"), max_length=const.DB_CHAR_CODE_2, default='0', choices=STATUS)
     # 执行时间
     execute_time = models.DateTimeField(_("execute time"), blank=True, null=True)
@@ -440,7 +469,9 @@ class InOutDetail(models.Model):
 
     # 创建时间
     create_time = models.DateTimeField(_("create time"), auto_now_add=True)
+    # 是否已经执行？
     status = models.BooleanField(_("executed"), default=0)
+    # 事件时间
     event_time = models.DateTimeField(_("event time"), blank=True, null=True)
     # 仓库
     warehouse = models.ForeignKey(Warehouse, verbose_name=_("warehouse"), blank=True, null=True, on_delete=models.CASCADE)
@@ -457,10 +488,13 @@ class InOutDetail(models.Model):
     measure = models.ForeignKey(Measure, verbose_name=_("measure"), blank=True, null=True, on_delete=models.CASCADE)
     # 数量
     cnt = models.DecimalField(_("count"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 批次号
     batch = models.CharField(_("batch"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
-    # 单价？
+    # 金额
     price = models.DecimalField(_("price"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 增减属性
     prop = models.CharField(_("plus or minus property"), max_length=const.DB_CHAR_CODE_2, choices=PROP, default='+')
+    # 用于存放相关订单编号
     source = models.CharField(_("source"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
 
 
