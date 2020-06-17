@@ -66,14 +66,16 @@ class OrgUnit(generic.BO):
     组织单元
     """
     UNIT_LEVEL = (
-        (1, _('BRANCH')),
-        (2, _('DEPARTMENT')),
-        (3, _('OFFICE')),
-        (4, _('TEAM')),
-        (5, _('COMMITTEE'))
+        (1, _('BRANCH')),       # 分公司/事业部
+        (2, _('DEPARTMENT')),   # 一级部门
+        (3, _('OFFICE')),       # 二级部门/处室/科室
+        (4, _('TEAM')),         # 组/班
+        (5, _('COMMITTEE'))     # 委员会
     )
     index_weight = 2
+    # 自关联父级
     parent = models.ForeignKey('self', verbose_name=_("parent"), null=True, blank=True, on_delete=models.CASCADE)
+    # 所属组织
     organization = models.ForeignKey(Organization, verbose_name=_('organization'),
                                      null=True, blank=True, on_delete=models.CASCADE)
     # 编号
