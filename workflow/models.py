@@ -85,10 +85,12 @@ class Node(ToStringMixin, models.Model):
     short_message_notice = models.BooleanField(_("short message notice"), default=False)
     # 批准节点
     approve_node = models.BooleanField(_("approve node"), default=False)
+    # 处理人 通过自定义SQL语句查询
     handler = models.TextField(_("handler"), blank=True, null=True, help_text=u'自定义SQL语句，优先高于指定用户、岗位、角色')
     # added by zhugl 2015-05-10
     # 处理类型
     handler_type = models.IntegerField(_("handler type"), choices=HANDLER_TYPE, default=1)
+    # 岗位 多对多
     positions = models.ManyToManyField(Position, verbose_name=_("designated position"), blank=True)
     # 角色 多对多
     # syscfg.models.Role
@@ -97,6 +99,7 @@ class Node(ToStringMixin, models.Model):
     users = models.ManyToManyField(User, verbose_name=_("designated user"), blank=True)
     # 组织单元 多对多
     departments = models.ManyToManyField(OrgUnit, verbose_name=_("designated department"), blank=True)
+    # 下一个节点 自关联
     next = models.ManyToManyField('self', blank=True, verbose_name=_("next node"), symmetrical=False)
     # added by zhugl 2015-06-30
     next_user_handler = models.CharField(_('next user handler'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)

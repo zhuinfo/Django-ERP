@@ -25,7 +25,7 @@ def compile_node_handler(request, obj, next_node):
     :return:
     """
 
-    # 下一个节点处理类
+    # 自定义 SQL 语句
     handler = next_node.handler
     # 下一个用户处理类
     next_user_handler = next_node.next_user_handler
@@ -80,7 +80,7 @@ def compile_node_handler(request, obj, next_node):
 
 
 def start(request, app, model, object_id):
-    """
+    """ 启动工作流
 
     :param request:
     :return:
@@ -159,7 +159,7 @@ def start(request, app, model, object_id):
 
 
 def approve(request, app, model, object_id, operation):
-    """
+    """ 批准
 
     :param request:
     :param operation:
@@ -302,7 +302,7 @@ def approve(request, app, model, object_id, operation):
 
 
 def restart(request, app, model, object_id, instance):
-    """
+    """ 重启
 
     :param request:
     :param app:
