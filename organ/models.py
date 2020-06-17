@@ -112,13 +112,15 @@ class Position(generic.BO):
     """
     岗位
     """
+    # 未用
     SERIES = (
-        ('A', _("Admin Position")),
-        ('S', _("Sale Position")),
-        ('T', _("Technology Position")),
-        ('P', _("Produce Position")),
+        ('A', _("Admin Position")),         # 管理行政类
+        ('S', _("Sale Position")),          # 市场营销类
+        ('T', _("Technology Position")),    # 技术研发类
+        ('P', _("Produce Position")),       # 生产操作类
     )
 
+    # 未用：岗位级别
     GRADE = (
         ('01', _("BASIC")),
         ('02', _("MEDIUM")),
