@@ -80,10 +80,15 @@ class Role(generic.BO):
     角色管理，分配用户所拥有的菜单
     """
     index_weight = 4
+    # 角色编号
     code = models.CharField(_("role code"), max_length=const.DB_CHAR_CODE_6, blank=True, null=True)
+    # 角色名称
     name = models.CharField(_("role name"), max_length=const.DB_CHAR_NAME_40)
+    # 描述
     description = models.CharField(_("description"), max_length=const.DB_CHAR_NAME_80, blank=True, null=True)
+    # 是否在用
     status = models.BooleanField(_("in use"), default=True)
+    # 父级角色
     parent = models.ForeignKey('self', blank=True, null=True, verbose_name=_("parent"), on_delete=models.CASCADE)
     users = models.ManyToManyField(User, verbose_name=_("role users"), blank=True)
     menus = models.ManyToManyField(Menu, verbose_name=_("role menus"), blank=True)
