@@ -1328,7 +1328,9 @@ class Education(generic.BO):
         max_length=const.DB_CHAR_CODE_2,
         choices=const.get_value_list('S035'),
         default='1')
+    # 学校
     school = models.CharField(_("school"), max_length=const.DB_CHAR_NAME_120)
+    # 专业
     major = models.CharField(
         _("major"),
         max_length=const.DB_CHAR_NAME_120,
