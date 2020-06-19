@@ -28,8 +28,11 @@ class ValueListAdmin(generic.BOAdmin):
     CODE_NUMBER_WIDTH = 3
     CODE_PREFIX = 'S'
     list_display = ['code', 'name', 'module', 'status']
-    fields = (('code',), ('name',), ('module',), ('status',
-                                                  'init', 'locked',), ('locked_by', 'lock_time',))
+    fields = (('code',),
+              ('name',),
+              ('module',),
+              ('status', 'init', 'locked',),
+              ('locked_by', 'lock_time',))
     raw_id_fields = ['module']
     readonly_fields = ['locked_by', 'lock_time']
     inlines = [ValueListItemInline]
@@ -81,20 +84,8 @@ class BankAccountInline(admin.TabularInline):
 
 
 class PartnerForm(models.ModelForm):
-    tax_address = fields.CharField(
-        widget=TextInput(
-            attrs={
-                'size': 119,
-            }),
-        required=False,
-        label=_("tax address"))
-    memo = fields.CharField(
-        widget=Textarea(
-            attrs={
-                'rows': 3,
-                'cols': 85}),
-        required=False,
-        label=_("memo"))
+    tax_address = fields.CharField(widget=TextInput(attrs={'size': 119, }), required=False, label=_("tax address"))
+    memo = fields.CharField(widget=Textarea(attrs={'rows': 3, 'cols': 85}), required=False, label=_("memo"))
 
     class Meta:
         model = Partner
@@ -105,40 +96,31 @@ class PartnerAdmin(generic.BOAdmin):
     list_display = ['code', 'name', 'partner_type', 'level']
     list_display_links = ['code', 'name']
 
-    fields = (('code', 'name',), ('short', 'pinyin',), ('partner_type', 'level'),
-              ('tax_num', 'tax_account',), ('tax_address',), ('contacts', 'phone',), ('memo',),)
+    fields = (('code', 'name',),
+              ('short', 'pinyin',),
+              ('partner_type', 'level'),
+              ('tax_num', 'tax_account',),
+              ('tax_address',),
+              ('contacts', 'phone',),
+              ('memo',),)
     search_fields = ['code', 'name', 'pinyin']
     form = PartnerForm
     save_on_top = True
     inlines = [AddressInline, BankAccountInline]
 
     def get_queryset(self, request):
-        if request.user.is_superuser or (request.user.has_perm('basedate.view_all_customer')
-                                         and request.user.has_perm('basedate.view_all_supplier')):
+        if request.user.is_superuser or (
+                request.user.has_perm('basedate.view_all_customer') and request.user.has_perm('basedate.view_all_supplier')):
             return super(PartnerAdmin, self).get_queryset(request)
         elif request.user.has_perm('basedata.view_all_customer'):
-            return super(
-                PartnerAdmin,
-                self).get_queryset(request).filter(
-                partner_type='C')
+            return super(PartnerAdmin, self).get_queryset(request).filter(partner_type='C')
         else:
-            return super(
-                PartnerAdmin,
-                self).get_queryset(request).filter(
-                partner_type='S')
+            return super(PartnerAdmin, self).get_queryset(request).filter(partner_type='S')
 
 
 class ProjectForm(models.ModelForm):
-    income = fields.DecimalField(
-        required=False,
-        widget=TextInput(
-            attrs={
-                'readonly': 'true'}))
-    expand = fields.DecimalField(
-        required=False,
-        widget=TextInput(
-            attrs={
-                'readonly': 'true'}))
+    income = fields.DecimalField(required=False, widget=TextInput(attrs={'readonly': 'true'}))
+    expand = fields.DecimalField(required=False, widget=TextInput(attrs={'readonly': 'true'}))
 
     class Meta:
         model = Project
@@ -150,10 +132,16 @@ class ProjectAdmin(generic.BOAdmin):
     list_display = ['code', 'name', 'status', 'income', 'expand']
     list_display_links = ['code', 'name']
     fields = (
-        ('code', 'name',), ('short', 'pinyin',),
-        ('partner',), ('status', 'prj_type',),
+        ('code', 'name',),
+        ('short', 'pinyin',),
+        ('partner',),
+        ('status', 'prj_type',),
         ('description',),
-        ('budget', 'income', 'expand',), ('blueprint',), ('offer',), ('business',), ('users',),
+        ('budget', 'income', 'expand',),
+        ('blueprint',),
+        ('offer',),
+        ('business',),
+        ('users',),
     )
     search_fields = ['code', 'name']
     readonly_fields = ['status']
@@ -206,17 +194,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class MaterialForm(models.ModelForm):
-    name = fields.CharField(
-        widget=TextInput(
-            attrs={
-                "size": "119"}),
-        label=_("material name"))
-    spec = fields.CharField(
-        widget=TextInput(
-            attrs={
-                "size": "119"}),
-        required=False,
-        label=_("specifications"))
+    name = fields.CharField(widget=TextInput(attrs={"size": "119"}), label=_("material name"))
+    spec = fields.CharField(widget=TextInput(attrs={"size": "119"}), required=False, label=_("specifications"))
 
     class Mata:
         model = Material
@@ -242,9 +221,16 @@ class MaterialAdmin(generic.BOAdmin):
     list_filter = ['brand', 'tp']
     search_fields = ['code', 'name']
     fields = (
-        ('code', 'barcode'), ('name',), ('spec',),
-        ('brand',), ('category',), ('status', 'is_equip', 'can_sale', 'is_virtual',),
-        ('warehouse',), ('tp',), ('measure',), ('stock_price', 'purchase_price', 'sale_price',),
+        ('code', 'barcode'),
+        ('name',),
+        ('spec',),
+        ('brand',),
+        ('category',),
+        ('status', 'is_equip', 'can_sale', 'is_virtual',),
+        ('warehouse',),
+        ('tp',),
+        ('measure',),
+        ('stock_price', 'purchase_price', 'sale_price',),
     )
     filter_horizontal = ['measure']
     inlines = [ExtraParamInline]
@@ -273,16 +259,8 @@ class ExpenseAdmin(generic.BOAdmin):
 
 
 class FamilyForm(models.ModelForm):
-    name = fields.CharField(
-        widget=TextInput(
-            attrs={
-                "size": "25"}),
-        label=_("name"))
-    phone = fields.CharField(
-        widget=TextInput(
-            attrs={
-                "size": "25"}),
-        label=_("phone"))
+    name = fields.CharField(widget=TextInput(attrs={"size": "25"}), label=_("name"))
+    phone = fields.CharField(widget=TextInput(attrs={"size": "25"}), label=_("phone"))
 
     class Meta:
         model = Family
@@ -329,11 +307,28 @@ class EmployeeAdmin(generic.BOAdmin):
         'email']
     search_fields = ['code', 'name', 'idcard', 'pinyin']
     fieldsets = [
-        (None, {'fields': [('code', 'phone',), ('name', 'pinyin',), ('gender', 'birthday',), ('idcard', 'country',),
-                           ('position',), ('rank', 'category'), ('status', 'ygxs',), ('workday', 'startday',)]}),
-        (_('other info'), {'fields': [('hometown', 'address',), ('banknum', 'bankname',), ('email', 'office',),
-                                      ('emergency', 'literacy',), ('religion', 'marital',), ('party', 'nation',), ('spjob', 'health',),
-                                      ('major', 'degree',), ('tag1', 'tag2',), ('tag3', 'tag4',), ('user',), ], 'classes':['collapse']}),
+        (None, {'fields': [
+            ('code', 'phone',),
+            ('name', 'pinyin',),
+            ('gender', 'birthday',),
+            ('idcard', 'country',),
+            ('position',),
+            ('rank', 'category'),
+            ('status', 'ygxs',),
+            ('workday', 'startday',)
+        ]}),
+        (_('other info'), {'fields': [
+            ('hometown', 'address',),
+            ('banknum', 'bankname',),
+            ('email', 'office',),
+            ('emergency', 'literacy',),
+            ('religion', 'marital',),
+            ('party', 'nation',),
+            ('spjob', 'health',),
+            ('major', 'degree',),
+            ('tag1', 'tag2',),
+            ('tag3', 'tag4',), ('user',),
+        ], 'classes':['collapse']}),
     ]
     readonly_fields = ['status', 'ygxs', 'rank', 'category']
     inlines = [FamilyInline, EducationInline, WorkExperienceInline]
@@ -344,10 +339,7 @@ class EmployeeAdmin(generic.BOAdmin):
                 'basedata.view_all_employee'):
             return super(EmployeeAdmin, self).get_queryset(request)
         else:
-            return super(
-                EmployeeAdmin,
-                self).get_queryset(request).filter(
-                user=request.user)
+            return super(EmployeeAdmin, self).get_queryset(request).filter(user=request.user)
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -376,26 +368,12 @@ class DataImportAdmin(generic.BOAdmin):
             if obj.status == '1':
                 extra_context = extra_context or {}
                 extra_context.update(dict(readonly=True))
-        return super(
-            DataImportAdmin,
-            self).changeform_view(
-            request,
-            object_id,
-            form_url,
-            extra_context)
+        return super(DataImportAdmin, self).changeform_view(request, object_id, form_url, extra_context)
 
 
 class DocumentForm(models.ModelForm):
-    title = fields.CharField(
-        widget=TextInput(
-            attrs={
-                "size": "119"}),
-        label=_("title"))
-    keywords = fields.CharField(
-        widget=TextInput(
-            attrs={
-                "size": "119"}),
-        label=_("keywords"))
+    title = fields.CharField(widget=TextInput(attrs={"size": "119"}), label=_("title"))
+    keywords = fields.CharField(widget=TextInput(attrs={"size": "119"}), label=_("keywords"))
 
     class Meta:
         model = Document
@@ -440,10 +418,7 @@ class DocumentAdmin(generic.BOAdmin):
 
     def publish(self, request, queryset):
         import datetime
-        cnt = queryset.filter(
-            status='0').update(
-            status='1',
-            pub_date=datetime.datetime.now())
+        cnt = queryset.filter(status='0').update(status='1', pub_date=datetime.datetime.now())
         self.message_user(request, u'%s 个文档发布成功' % cnt)
 
     publish.short_description = _('publish selected %(verbose_name_plural)s')
