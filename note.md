@@ -26,6 +26,13 @@
     sudo apt-get install -y build-essential libssl-dev libffi-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev
     sudo apt-get install -y libmysqlclient-dev python3-dev
 
+## 导出 basedata.ValueListItem
+
+    python manage.py dumpdata --format json basedata.ValueList basedata.ValueListItem > value_list.json
+
+导入
+
+    python manage.py loaddata value_list.json
 
 ## 主要模块说明
 
