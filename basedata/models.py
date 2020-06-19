@@ -979,6 +979,7 @@ class Employee(generic.BO):
         Position,
         verbose_name=_('position'),
         on_delete=models.CASCADE)
+    # 职员级别
     rank = models.CharField(
         _("employee rank"),
         max_length=const.DB_CHAR_CODE_2,
@@ -990,6 +991,15 @@ class Employee(generic.BO):
     # 入职日期
     startday = models.DateField(_("start date"), blank=True, null=True)
     # 宗教
+    # 00 - 无宗教信仰
+    # 10 - 佛教
+    # 20 - 喇嘛教
+    # 30 - 道教
+    # 40 - 天主教
+    # 50 - 基督教
+    # 70 - 东正教
+    # 80 - 伊斯兰教
+    # 99 - 其他
     religion = models.CharField(
         _("religion"),
         max_length=const.DB_CHAR_CODE_2,
@@ -999,6 +1009,13 @@ class Employee(generic.BO):
         null=True,
     )
     # 婚姻状况
+    # 10 - 未婚
+    # 20 - 初婚
+    # 21 - 再婚
+    # 22 - 复婚
+    # 30 - 丧偶
+    # 40 - 离婚
+    # 90 - 其他
     marital = models.CharField(
         _("marital status"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1007,6 +1024,19 @@ class Employee(generic.BO):
         choices=const.get_value_list('S023'),
         default='10')
     # 政治面貌
+    # 01 - 中国共产党党员
+    # 02 - 中国共产党预备党员
+    # 03 - 中国共产主义青年团团员
+    # 04 - 中国国民党革命委员会会员
+    # 05 - 中国民主同盟盟员
+    # 06 - 中国民主建国会会员
+    # 07 - 中国民主促进会会员
+    # 08 - 中国农工民主党党员
+    # 09 - 中国致公党党员
+    # 10 - 九三学社社员
+    # 11 - 台湾民主自治同盟盟员
+    # 12 - 无党派民主人士
+    # 13 - 群众
     party = models.CharField(
         _("political party"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1015,6 +1045,7 @@ class Employee(generic.BO):
         choices=const.get_value_list('S026'),
         default='13')
     # 民族
+    # 01 - 汉族
     nation = models.CharField(
         _("nation"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1023,6 +1054,14 @@ class Employee(generic.BO):
         choices=const.get_value_list('S021'),
         default='01')
 
+    # 用工形式
+    # 1 - 劳动合同制（长期）
+    # 2 - 劳动合同制（短期）
+    # 3 - 人事代理制
+    # 4 - 劳务派遣制
+    # 5 - 非全日制
+    # 6 - 业务外包
+    # 9 - 其他
     ygxs = models.CharField(
         _("employ ygxs"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1030,6 +1069,17 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S019'),
         default='2')
+    # 人员状态
+    # 10 - 在岗工作
+    # 11 - 见习期（试用）
+    # 12 - 待岗
+    # 20 - 离职
+    # 21 - 退休
+    # 22 - 终止劳动合同
+    # 23 - 协商解除劳动合同
+    # 24 - 劳动者主张解除劳动合同
+    # 25 - 用人单位主张解除劳动合同
+    # 30 - 死亡
     status = models.CharField(
         _("employ status"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1037,6 +1087,15 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S016'),
         default='10')
+
+    # 人员类别
+    # 10 - 经营者
+    # 20 - 中层管理人员
+    # 21 - 一般管理人员
+    # 30 - 专业技术人员
+    # 40 - 技能人员
+    # 50 - 服务人员
+    # 99 - 其他人员
     category = models.CharField(
         _("employ category"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1045,6 +1104,15 @@ class Employee(generic.BO):
         choices=const.get_value_list('S018'),
         default='21')
 
+    # 文化程度
+    # 0 - 研究生
+    # 10 - 大学本科
+    # 20 - 大学专科和专科学校
+    # 40 - 技工学校
+    # 50 - 高中
+    # 60 - 初中
+    # 70 - 小学
+    # 80 - 文盲或半文盲
     literacy = models.CharField(
         _("literacy"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1052,6 +1120,21 @@ class Employee(generic.BO):
         choices=const.get_value_list('S024'),
         blank=True,
         null=True)
+    # 专业类别
+    # 01 - 哲学
+    # 02 - 经济学
+    # 03 - 法学
+    # 04 - 教育学
+    # 05 - 文学
+    # 06 - 历史学
+    # 07 - 理学
+    # 08 - 工学
+    # 09 - 农学
+    # 10 - 医学
+    # 11 - 军事学
+    # 12 - 管理学
+    # 13 - 建筑学
+    # 99 - 其他
     major = models.CharField(
         _("major type"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1060,6 +1143,12 @@ class Employee(generic.BO):
         choices=const.get_value_list('S038'),
         default='99')
     # 学位
+    # 1 - 名誉博士
+    # 2 - 博士
+    # 3 - 硕士
+    # 4 - 学士
+    # 5 - 双学士
+    # 9 - 其他
     degree = models.CharField(
         _("major degree"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1069,6 +1158,7 @@ class Employee(generic.BO):
         default='4')
 
     # 特殊工种
+    # 00 - 非特殊工种
     spjob = models.CharField(
         _("special job"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1076,7 +1166,13 @@ class Employee(generic.BO):
         null=True,
         choices=const.get_value_list('S042'),
         default='00')
-    # 健康状况
+    # 身体状况
+    # 1 - 健康或良好
+    # 2 - 一般或较弱
+    # 3 - 有慢性病（一）
+    # 4 - 有慢性病（二）
+    # 6 - 残疾
+    # 7 - 军残
     health = models.CharField(
         _("health"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1085,7 +1181,13 @@ class Employee(generic.BO):
         choices=const.get_value_list('S043'),
         default='1')
 
-    # 	复转军人标识
+    # 复转军人标识
+    # 10 - 军转干部
+    # 15 - 复员干部
+    # 20 - 转业士官
+    # 30 - 复员士官
+    # 40 - 退役士兵
+    # 99 - 非复转军人
     tag1 = models.CharField(
         _("tag1 fzjr"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1094,6 +1196,13 @@ class Employee(generic.BO):
         choices=const.get_value_list('S039'),
         default='99')
     # 党委负责人
+    # 1 - 党委（党组）书记
+    # 2 - 党委（党组）副书记
+    # 3 - 党委常委（党组成员）
+    # 4 - 纪委书记（纪检组组长）
+    # 6 - 工会主席
+    # 8 - 其他党委（党组）负责人
+    # 9 - 非党委负责人
     tag2 = models.CharField(
         _("tag2 dwld"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1102,6 +1211,7 @@ class Employee(generic.BO):
         choices=const.get_value_list('S040'),
         default='9')
     # 董事监事
+    # 00 - 非董事监事
     tag3 = models.CharField(
         _("tag3 dsjs"),
         max_length=const.DB_CHAR_CODE_10,
@@ -1110,6 +1220,12 @@ class Employee(generic.BO):
         choices=const.get_value_list('S041'),
         default='00')
     # 兵役状况
+    # 0 - 未服兵役
+    # 1 - 退出现役
+    # 2 - 士兵预备役
+    # 3 - 军官预备役
+    # 4 - 服现役
+    # 9 - 其他
     tag4 = models.CharField(
         _("tag4 byzk"),
         max_length=const.DB_CHAR_CODE_2,
@@ -1287,7 +1403,7 @@ class DataImport(generic.BO):
     content_type = models.ForeignKey(
         ContentType,
         verbose_name=_("content type"),
-        limit_choices_to={"app_label__in": ['basedata','organ','auth']},
+        limit_choices_to={"app_label__in": ['basedata', 'organ', 'auth']},
         on_delete=models.CASCADE)
     # 附件
     attach = models.FileField(
