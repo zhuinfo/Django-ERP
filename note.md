@@ -28,7 +28,7 @@
 
 ## 导出 basedata.ValueListItem
 
-    python manage.py dumpdata --format json basedata.ValueList basedata.ValueListItem > value_list.json
+    python manage.py dumpdata --indent 4 basedata.ValueList basedata.ValueListItem > value_list.json
 
 导入
 
