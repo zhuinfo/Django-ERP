@@ -767,8 +767,9 @@ class Material(generic.BO):
 
 
 class MaterialParam(ToStringMixin, models.Model):
-    """
-    物料扩展参数
+    """物料参数
+
+    作为多对多的关联表
     """
 
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
