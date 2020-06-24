@@ -457,8 +457,8 @@ class WareAdjust(generic.BO):
 
 
 class InOutDetail(models.Model):
-    """
-    出入库详单，应该设置为抽象类
+    """出入库详单
+    因为需要在实时库存显示某物料的出入库状态，需要查询该表，所以不能设置为抽象类
     """
 
     PROP = (
@@ -575,9 +575,9 @@ class ReturnItem(InOutDetail):
     """
     返库单明细行，继承 InOutDetail 类
     """
-    # 关联返库单
+    # 关联的返库单
     master = models.ForeignKey(WareReturn, on_delete=models.CASCADE)
-    # 关联领料单明细行
+    # 关联的领料单明细行
     out_item = models.ForeignKey(OutItem, blank=True, null=True, verbose_name=_('out item'), on_delete=models.CASCADE)
     out_cnt = models.DecimalField(_("out count"), max_digits=14, decimal_places=4)
 
