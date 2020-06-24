@@ -357,7 +357,7 @@ class WareReturn(generic.BO):
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
     # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
-    # 关联的出库单
+    # 关联的领料单
     out = models.ForeignKey(StockOut, verbose_name=_('StockOut'), on_delete=models.CASCADE)
     # 金额
     amount = models.DecimalField(_("money of amount"), max_digits=14, decimal_places=4, blank=True, null=True)
@@ -544,10 +544,11 @@ class InItemForm(forms.ModelForm):
 
 class OutItem(InOutDetail):
     """
-    出库单明细行，继承 InOutDetail 类
+    领料单明细行，继承 InOutDetail 类
     """
-    # 关联出库单
+    # 关联的领料单
     master = models.ForeignKey(StockOut, on_delete=models.CASCADE)
+    # 库存物资
     inventory = models.ForeignKey(
         Inventory,
         blank=True,
@@ -576,7 +577,7 @@ class ReturnItem(InOutDetail):
     """
     # 关联返库单
     master = models.ForeignKey(WareReturn, on_delete=models.CASCADE)
-    # 关联出库单明细行
+    # 关联领料单明细行
     out_item = models.ForeignKey(OutItem, blank=True, null=True, verbose_name=_('out item'), on_delete=models.CASCADE)
     out_cnt = models.DecimalField(_("out count"), max_digits=14, decimal_places=4)
 

@@ -73,7 +73,9 @@ class PurchaseOrder(generic.BO):
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(PurchaseOrder, self).save(force_insert, force_update, using, update_fields)
-        # 如果折扣金额大于0
+
+        # 如果折扣金额大于0，按比例会分摊到每一个物料上，并自动计算明细物料中的折旧单价
+        # 如果使用SQL语句，因为sqlite3的update语句不支持别名，所以会报错
         if self.discount_amount > 0:
             sql = 'UPDATE purchase_poitem a SET a.discount_price = ' \
                   'a.price-((SELECT discount_amount/amount FROM purchase_purchaseorder WHERE id=%s)*a.amount/a.cnt) WHERE a.po_id = %s'

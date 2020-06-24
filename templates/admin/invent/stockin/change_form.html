@@ -42,7 +42,7 @@
 {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1" />{% endif %}
 {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />{% endif %}
 {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
-{% if show_workflow_line%}
+{% if show_workflow_line %}
 <fieldset class="module aligned workflow">
     <h2>{% trans "workflow approve" %}</h2>
     <div style="padding:10px">
@@ -53,6 +53,7 @@
         <label class="control"><input type="radio" name="operation" value="1" checked> {% trans "agree" %}</label>
         <label class="control"><input type="radio" name="operation" value="3"> {% trans "deny" %}</label>
         <label class="control"><input type="radio" name="operation" value="4"> {% trans "terminate" %}</label>
+        {% comment %} 工作流批准按钮 {% endcomment %}
         <a class="button" href="approve/1" id="workflow_submit">{% trans "submit" %}</a>
         {% endif %}
     </div>
