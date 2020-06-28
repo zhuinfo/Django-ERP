@@ -28,17 +28,25 @@ class SaleOrder(generic.BO):
         ('99', _("ALREADY STOCK OUT")),
     )
     index_weight = 2
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 合作伙伴
     partner = models.ForeignKey(
         Partner,
         verbose_name=_("partner"),
         limit_choices_to={"partner_type": "C"},
         on_delete=models.CASCADE)
+    # 订单日期
     order_date = models.DateField(_("order date"))
+    # 交付日期
     deliver_date = models.DateField(_("deliver date"))
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
+    # 描述
     description = models.TextField(_("memo"), blank=True, null=True)
+    
+    # 联系人
     contact = models.CharField(_("contacts"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     phone = models.CharField(_("phone"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     fax = models.CharField(_("fax"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
@@ -125,14 +133,24 @@ class PaymentCollection(generic.BO):
     销售回款
     """
     index_weight = 3
+
+    # 回款日期
     collection_date = models.DateField(_("collection date"), blank=True, null=True, default=datetime.date.today)
+    # 所属组织
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 回款单号
     code = models.CharField(_("collection code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 关联的销售订单
     so = models.ForeignKey(SaleOrder, verbose_name=_("sale order"), on_delete=models.CASCADE)
+    # 合作伙伴
     partner = models.ForeignKey(Partner, verbose_name=_("partner"), blank=True, null=True, on_delete=models.CASCADE)
+    # 合同金额？
     order_amount = models.DecimalField(_("order amount"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 到账金额？
     collection_amount = models.DecimalField(_("collection amount"), max_digits=14, decimal_places=4)
+    # 银行
     bank = models.ForeignKey(BankAccount, verbose_name=_("bank account"), blank=True, null=True, on_delete=models.CASCADE)
+    # 备注
     memo = models.TextField(_("memo"), blank=True, null=True)
 
     def __unicode__(self):

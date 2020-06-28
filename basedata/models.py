@@ -334,25 +334,30 @@ class Project(generic.BO):
     TYPES = get_value_list('S013')
     index_weight = 1
 
+    # 项目编号
     code = models.CharField(
         _("project code"),
         max_length=const.DB_CHAR_NAME_20,
         blank=True,
         null=True)
+    # 项目名称
     name = models.CharField(
         _("project name"),
         max_length=const.DB_CHAR_NAME_120)
+    # 简称
     short = models.CharField(
         _("short name"),
         max_length=const.DB_CHAR_NAME_20,
         blank=True,
         null=True)
+    # 拼音/英文
     pinyin = models.CharField(
         _("pinyin"),
         max_length=const.DB_CHAR_NAME_120,
         blank=True,
         null=True)
 
+    # 合作伙伴
     partner = models.ForeignKey(
         Partner,
         blank=True,
@@ -360,6 +365,7 @@ class Project(generic.BO):
         verbose_name=_("partner"),
         limit_choices_to={"partner_type": "C"},
         on_delete=models.CASCADE)
+    # 状态
     status = models.CharField(
         _("status"),
         max_length=const.DB_CHAR_CODE_2,
@@ -367,6 +373,7 @@ class Project(generic.BO):
         null=True,
         default='00',
         choices=STATUS)
+    # 项目类型
     prj_type = models.CharField(
         _("project type"),
         max_length=const.DB_CHAR_CODE_2,
@@ -375,8 +382,10 @@ class Project(generic.BO):
         choices=TYPES,
         default='00')
 
+    # 描述
     description = models.TextField(_("description"), blank=True, null=True)
 
+    # 预算金额
     budget = models.DecimalField(
         _("budget"),
         max_digits=10,
@@ -396,24 +405,29 @@ class Project(generic.BO):
         blank=True,
         null=True)
 
+    # 技术/图纸
     blueprint = models.FileField(
         _("blueprint"),
         upload_to='project',
         blank=True,
         null=True)
+    # 报价单
     offer = models.FileField(
         _("offer sheet"),
         upload_to='offer sheet',
         blank=True,
         null=True)
+    # 商务/标书
     business = models.FileField(
         _("business document"),
         upload_to='project',
         blank=True,
         null=True)
 
+    # 关系人
     users = models.ManyToManyField(
         User, verbose_name=_("related users"), blank=True)
+    # 组织
     org = models.ForeignKey(
         Organization,
         verbose_name=_("organization"),

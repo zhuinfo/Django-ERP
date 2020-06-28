@@ -45,6 +45,7 @@ class RequestUser(MiddlewareMixin):
             _thread_local.user = django_user
 
     def process_view(self, request, view_func, view_args, view_kwargs):
+        # app 排序权重
         app_weight = {
             'selfhelp': 1,
             'purchase': 3,

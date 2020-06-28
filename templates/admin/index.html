@@ -13,11 +13,12 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+
+{% comment %} 遍历 maxi_app_list {% endcomment %}
 {% for app in maxi_app_list %}
-
 | <a href="{{ app.app_url }}">{{ app.name }}</a>
-
 {% endfor %}
+
 </div>
 {% endblock %}
 

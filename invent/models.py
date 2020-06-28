@@ -492,7 +492,7 @@ class InOutDetail(models.Model):
     price = models.DecimalField(_("price"), max_digits=14, decimal_places=4, blank=True, null=True)
     # 增减属性
     prop = models.CharField(_("plus or minus property"), max_length=const.DB_CHAR_CODE_2, choices=PROP, default='+')
-    # 用于存放相关订单编号
+    # 原始单据：用于存放相关订单编号
     source = models.CharField(_("source"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
 
 
