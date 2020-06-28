@@ -50,11 +50,14 @@ class SaleOrder(generic.BO):
     contact = models.CharField(_("contacts"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     phone = models.CharField(_("phone"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
     fax = models.CharField(_("fax"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 交付地址
     deliver_address = models.CharField(_("deliver address"), max_length=const.DB_CHAR_NAME_120, blank=True, null=True)
+    # 发票类型
     invoice_type = models.CharField(_("invoice type"), max_length=const.DB_CHAR_CODE_6,
                                     choices=const.get_value_list('S053'), default='10')
-
+    # 金额
     amount = models.DecimalField(_("money amount"), max_digits=12, decimal_places=2, blank=True, null=True, default=0.00)
+    # 折扣金额
     discount_amount = models.DecimalField(
         _("discount amount"),
         max_digits=12,
@@ -181,19 +184,28 @@ class OfferSheet(generic.BO):
         ('4', _("DROP")),
         ('9', _("APPROVED")),
     )
+    # 编号
     code = models.CharField(_("code"), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 合作伙伴
     partner = models.ForeignKey(
         Partner,
         verbose_name=_("partner"),
         limit_choices_to={"partner_type": "C"},
         on_delete=models.CASCADE)
+    # 报价日期
     offer_date = models.DateField(_("offer date"))
+    # 交付日期
     deliver_date = models.DateField(_("deliver date"))
+    # 组织机构
     org = models.ForeignKey(Organization, verbose_name=_("organization"), blank=True, null=True, on_delete=models.CASCADE)
+    # 标题
     title = models.CharField(_("title"), max_length=const.DB_CHAR_NAME_40)
+    # 备注
     description = models.TextField(_("memo"), blank=True, null=True)
 
+    # 金额
     amount = models.DecimalField(_("money amount"), max_digits=12, decimal_places=2, blank=True, null=True, default=0.00)
+    # 折扣
     discount_amount = models.DecimalField(
         _("discount amount"),
         max_digits=12,
@@ -201,8 +213,10 @@ class OfferSheet(generic.BO):
         blank=True,
         null=True,
         default=0.00)
+    # 报价员
     user = models.ForeignKey(User, verbose_name=_("offer man"), blank=True, null=True, on_delete=models.CASCADE)
 
+    # 报价表文件
     attach = models.FileField(
         _('offer sheet file'),
         blank=True,
@@ -278,9 +292,10 @@ class OfferSheet(generic.BO):
 
 class OfferItem(models.Model):
     """
-    订单明细
+    报价明细
     """
     master = models.ForeignKey(OfferSheet, on_delete=models.CASCADE)
+    # 物料
     material = models.ForeignKey(
         Material,
         verbose_name=_("material"),
@@ -288,13 +303,21 @@ class OfferItem(models.Model):
         blank=True,
         null=True,
         on_delete=models.CASCADE)
+    # 计量单位
     measure = models.ForeignKey(Measure, verbose_name=_("measure"), blank=True, null=True, on_delete=models.CASCADE)
+    # 数量
     cnt = models.DecimalField(_("count"), max_digits=14, decimal_places=4)
+    # 品牌
     brand = models.CharField(_('brand'), max_length=const.DB_CHAR_NAME_20, blank=True, null=True)
+    # 成本单价
     cost_price = models.DecimalField(_("cost price"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 库存单价？
     stock_price = models.DecimalField(_("stock price"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 销售单价
     sale_price = models.DecimalField(_("sale price"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 折后单价
     discount_price = models.DecimalField(_("discount price"), max_digits=14, decimal_places=4, blank=True, null=True)
+    # 税率
     tax = models.CharField(_("tax rate"), max_length=const.DB_CHAR_CODE_6, choices=const.get_value_list('S052'), default='0.00')
     create_time = models.DateTimeField(_("create time"), auto_now_add=True)
     status = models.BooleanField(_("executed"), default=0)
