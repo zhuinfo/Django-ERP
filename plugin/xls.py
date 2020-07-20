@@ -34,7 +34,9 @@ class OPSHandler(Handler):
                     self.stuff(obj, sheet)
 
     def department(self, obj, sheet):
+        """导入部门"""
         from organ.models import OrgUnit
+
         row_count = sheet.nrows
         if obj.is_clear:
             OrgUnit.objects.update(end=datetime.date.today())
@@ -55,7 +57,9 @@ class OPSHandler(Handler):
                     pass
 
     def position(self, obj, sheet):
+        """导入岗位"""
         from organ.models import Position, OrgUnit
+
         row_count = sheet.nrows
         if obj.is_clear:
             Position.objects.update(end=datetime.date.today())
@@ -82,14 +86,17 @@ class OPSHandler(Handler):
                     pass
 
     def stuff(self, obj, sheet):
+        """导入职员"""
         from organ.models import Position
         from basedata.models import Employee
         from django.contrib.auth.models import User, Group
+
         row_count = sheet.nrows
         try:
             group = Group.objects.get_by_natural_key(u'职员')
         except Exception:
             pass
+
         for row_index in range(1, row_count):
             row = sheet.row_values(row_index)
             position = Position.objects.filter(code=row[8], end__gt=datetime.date.today()).all()[0]
