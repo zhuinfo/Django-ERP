@@ -28,6 +28,7 @@ class Modal(ToStringMixin, models.Model):
         limit_choices_to={"app_label__in": ['basedata', 'organ', 'purchase']},
         on_delete=models.CASCADE)
     app_name = models.CharField(_("app name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
+    # 模型名称名称
     model_name = models.CharField(_("model name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
     # added by zhugl 2015-05-10
     # 开始时间
@@ -44,7 +45,7 @@ class Modal(ToStringMixin, models.Model):
 
 
 class Node(ToStringMixin, models.Model):
-    """
+    """工作流节点
     submitter()
     upper()
     user()
@@ -61,6 +62,8 @@ class Node(ToStringMixin, models.Model):
         (4, _("submitter")),            # 提交人
     )
     index_weight = 2
+
+    # 工作流模型
     modal = models.ForeignKey(Modal, verbose_name=_("workflow model"), on_delete=models.CASCADE)
     # 编号
     code = models.CharField(_("node code"), max_length=const.DB_CHAR_CODE_4, blank=True, null=True)
@@ -83,13 +86,16 @@ class Node(ToStringMixin, models.Model):
     email_notice = models.BooleanField(_("email notice"), default=True)
     # 短信通知
     short_message_notice = models.BooleanField(_("short message notice"), default=False)
+
     # 批准节点
     approve_node = models.BooleanField(_("approve node"), default=False)
-    # 处理人 通过自定义SQL语句查询
+
+    # 处理器 通过自定义SQL语句查询
     handler = models.TextField(_("handler"), blank=True, null=True, help_text=u'自定义SQL语句，优先高于指定用户、岗位、角色')
     # added by zhugl 2015-05-10
-    # 处理类型
+    # 处理器类型
     handler_type = models.IntegerField(_("handler type"), choices=HANDLER_TYPE, default=1)
+
     # 岗位 多对多
     positions = models.ManyToManyField(Position, verbose_name=_("designated position"), blank=True)
     # 角色 多对多
@@ -99,11 +105,14 @@ class Node(ToStringMixin, models.Model):
     users = models.ManyToManyField(User, verbose_name=_("designated user"), blank=True)
     # 组织单元 多对多
     departments = models.ManyToManyField(OrgUnit, verbose_name=_("designated department"), blank=True)
+
     # 下一个节点 自关联
     next = models.ManyToManyField('self', blank=True, verbose_name=_("next node"), symmetrical=False)
+
     # added by zhugl 2015-06-30
     next_user_handler = models.CharField(_('next user handler'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
     next_node_handler = models.CharField(_('next node handler'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
+
     # 状态字段
     status_field = models.CharField(_('status field'), blank=True, null=True, max_length=const.DB_CHAR_NAME_40)
     # 状态值
@@ -113,6 +122,7 @@ class Node(ToStringMixin, models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        # 自动添加code
         if not self.code:
             fmt = 'N%02d'
             self.code = fmt % (self.modal.node_set.count() + 1)
@@ -172,21 +182,26 @@ class Instance(ToStringMixin, models.Model):
 
 
 class History(ToStringMixin, models.Model):
-    """
+    """审批记录
     workflow history
     """
     PROCESS_TYPE = (
-        (0, _("SUBMIT")),
-        (1, _("AGREE")),
-        (3, _("DENY")),
-        (4, _("TERMINATE")),
+        (0, _("SUBMIT")),       # 提交
+        (1, _("AGREE")),        # 同意
+        (3, _("DENY")),         # 拒绝
+        (4, _("TERMINATE")),    # 终止
     )
     index_weight = 5
+
     inst = models.ForeignKey(Instance, verbose_name=_("workflow instance"), on_delete=models.CASCADE)
     node = models.ForeignKey(Node, verbose_name=_("workflow node"), blank=True, null=True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, verbose_name=_("submitter"), on_delete=models.CASCADE)
+
+    # 处理时间
     pro_time = models.DateTimeField(_("process time"), auto_now_add=True)
+    # 处理类型
     pro_type = models.IntegerField(_("process type"), choices=PROCESS_TYPE, default=0)
+
     memo = models.CharField(_("memo"), max_length=const.DB_CHAR_NAME_40, blank=True, null=True)
 
     def get_node_desc(self):
@@ -220,15 +235,22 @@ class TodoList(ToStringMixin, models.Model):
     待办列表
     """
     index_weight = 4
+
     code = models.CharField(_("code"), max_length=const.DB_CHAR_CODE_10, blank=True, null=True)
     inst = models.ForeignKey(Instance, verbose_name=_("workflow instance"), on_delete=models.CASCADE)
     node = models.ForeignKey(Node, verbose_name=_("current node"), blank=True, null=True, on_delete=models.CASCADE)
+
     app_name = models.CharField(_("app name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
     model_name = models.CharField(_("model name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
+
+    # 处理人
     user = models.ForeignKey(User, verbose_name=_("handler"), on_delete=models.CASCADE)
     arrived_time = models.DateTimeField(_("arrived time"), auto_now_add=True)
+    # 已读
     is_read = models.BooleanField(_("is read"), default=False)
+    # 阅读时间
     read_time = models.DateTimeField(_("read time"), blank=True, null=True)
+    # 已完成
     status = models.BooleanField(_("is done"), default=False)
 
     def save(self, force_insert=False, force_update=False, using=None,

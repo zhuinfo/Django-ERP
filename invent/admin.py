@@ -93,6 +93,7 @@ class StockInAdmin(generic.BOAdmin):
                 except Exception as e:
                     # 不存在则创建明细行
                     pp = item.discount_price or item.price
+                    # 计算税率
                     if decimal.Decimal(item.tax) > decimal.Decimal(0):
                         pp = pp / (decimal.Decimal(1) + decimal.Decimal(item.tax))
                     InItem.objects.create(

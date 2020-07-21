@@ -17,6 +17,7 @@ class NodeInline(admin.TabularInline):
 
 
 class WorkflowModelAdmin(admin.ModelAdmin):
+    """工作流模型"""
     list_display = ['code', 'name', 'begin', 'end']
     inlines = [NodeInline]
     readonly_fields = ['app_name', 'model_name']

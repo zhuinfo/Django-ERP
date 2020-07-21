@@ -58,6 +58,7 @@ class RequestUser(MiddlewareMixin):
         if view_func.__name__ == 'index':
             app_dict = {}
             for model, model_admin in admin.site._registry.items():
+                # 检查是否有module权限
                 app_label = model._meta.app_label
                 has_module_perms = model_admin.has_module_permission(request)
 
@@ -69,6 +70,7 @@ class RequestUser(MiddlewareMixin):
                             'name': capfirst(model._meta.verbose_name_plural),
                             'object_name': model._meta.object_name,
                             'perms': perms,
+                            # 获取model的排序权重
                             'weight': getattr(model, 'index_weight', 99)
                         }
                         if perms.get('change', False):

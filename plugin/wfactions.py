@@ -26,6 +26,7 @@ class WorkflowAction(object):
 
 
 class TestAction(WorkflowAction):
+    """测试操作"""
     name = 'action.test'
 
     def action(self, request, obj, node_config, operation=Operation.APPROVE):
