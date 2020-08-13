@@ -3,6 +3,7 @@
 
 {% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation{% endblock %}
 
+{% comment %} 导航栏 {% endcomment %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
@@ -13,6 +14,7 @@
 </div>
 {% endblock %}
 
+{% comment %} 主要内容 {% endcomment %}
 {% block content %}
 {% if has_workflow %}
     <p>{% blocktrans with escaped_object=object %}Are you sure you want to submit the {{ object_name }} "{{ escaped_object }}"? {% endblocktrans %}</p>

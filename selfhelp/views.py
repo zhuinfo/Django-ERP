@@ -11,6 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 
 
 def pay_action(request, model, object_id):
+    """付款操作"""
     title = _("Are you sure?")
     ct = ContentType.objects.get(app_label='selfhelp', model=model)
     obj = ct.get_object_for_this_type(id=int(object_id))

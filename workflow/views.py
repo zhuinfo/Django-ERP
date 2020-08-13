@@ -18,14 +18,14 @@ SELECTED_CHECKBOX_NAME = 'NEXT_NODE_USER'
 
 
 def compile_node_handler(request, obj, next_node):
-    """
+    """ 获取下一节点的处理者
     :param request:
     :param obj:
     :param handler:
     :return:
     """
 
-    # 自定义 SQL 语句
+    # 获取自定义 SQL 语句
     handler = next_node.handler
     # 下一个用户处理类
     next_user_handler = next_node.next_user_handler
@@ -91,29 +91,40 @@ def start(request, app, model, object_id):
     title = _("Are you sure?")
     opts = obj._meta
     objects_name = force_text(opts.verbose_name)
+    # 是否有工作流
     has_workflow = False
+
+    # 获取工作流
     queryset = Modal.objects.filter(content_type=content_type, end__gt=datetime.date.today()).order_by('-end')
     cnt = queryset.count()
     workflow_modal = None
     next_node = None
     next_users = []
     has_next_user = False
+
     if cnt > 0:
         has_workflow = True
         workflow_modal = queryset[0]
+        # 起始节点
         query_start_node = workflow_modal.node_set.filter(start=1)
+        # 第一个节点
         query_first_node = workflow_modal.node_set.order_by('id')
+
         if query_start_node.count() > 0:
+            # 起始节点大于零
             next_node = query_start_node[0]
         elif query_first_node.count() > 0:
             next_node = query_first_node[0]
+
         if next_node:
+            # 获取下一节点的处理用户
             next_users = compile_node_handler(request, obj, next_node)
             if len(next_users) > 0:
                 has_next_user = True
     else:
         title = _("No workflow model was found")
 
+    # 获取工作流实例，判断该对象是否处于工作流中
     try:
         tmp = Instance.objects.get(modal=workflow_modal, object_id=object_id)
         messages.warning(request, _("the object is already in workflow"))
@@ -121,16 +132,25 @@ def start(request, app, model, object_id):
     except Exception:
         pass
 
+    # POST提交
     if request.POST.get("post"):
+        # 获取提交的列表
         val = request.POST.getlist(SELECTED_CHECKBOX_NAME)
+        # 创建实例
         workflow_inst = Instance.objects.create(modal=workflow_modal, object_id=object_id, starter=request.user)
         workflow_inst.current_nodes.add(next_node)
         workflow_inst.save()
+        # 工作流审批记录
         workflow_history = History.objects.create(inst=workflow_inst, user=request.user)
+
+        # 创建待办事项，待办事项会在处理人审批的时候使用
         for user in User.objects.filter(id__in=val):
+            
             todo = TodoList.objects.create(inst=workflow_inst, node=next_node, user=user, app_name=app, model_name=model)
         TodoList.objects.create(inst=workflow_inst, user=request.user, app_name=app, model_name=model, is_read=True,
                                 read_time=datetime.datetime.now(), status=True)
+
+        # 设置工作流中那个模型的状态
         if next_node.status_field and next_node.status_value:
             try:
                 setattr(obj, next_node.status_field, next_node.status_value)
@@ -211,14 +231,17 @@ def approve(request, app, model, object_id, operation):
             pass
         else:
             tmp_node = current[0]
+            # 判断是否是停止终止节点
             if tmp_node.stop or tmp_node == all_nodes[0]:
                 next_nodes = ['stop']
                 is_stop_node = True
             else:
+                # 条件处理
                 if tmp_node.next_node_handler and len(tmp_node.next_node_handler) > 0:
                     hd = tmp_node.next_node_handler
                     klass = NextNodeManager().handlers.get(hd)
                     if klass and isinstance(klass, NextNodeHandler):
+                        # 获取下一节点
                         next_nodes = klass.handle(request, obj, tmp_node)
                         next_node_description = klass.description
                 if next_nodes and len(next_nodes) > 0:
@@ -229,6 +252,7 @@ def approve(request, app, model, object_id, operation):
                     position = all_nodes.index(tmp_node)
                     next_nodes = [all_nodes[position - 1]]
 
+    # 提交表单
     if request.POST.get("post"):
         from django.db import transaction
         val = request.POST.getlist(SELECTED_CHECKBOX_NAME)
@@ -249,6 +273,7 @@ def approve(request, app, model, object_id, operation):
                     else:
                         workflow_instance.current_nodes.clear()
                         workflow_instance.current_nodes.add(next_nodes[0])
+                        # 设置待办事项
                         for user in User.objects.filter(id__in=val):
                             todo = TodoList.objects.create(
                                 inst=workflow_instance, node=next_nodes[0], user=user, app_name=app, model_name=model)
@@ -258,6 +283,7 @@ def approve(request, app, model, object_id, operation):
                                 obj.save()
                             except Exception:
                                 pass
+                    # 创建历史纪录
                     History.objects.create(
                         inst=workflow_instance,
                         user=request.user,

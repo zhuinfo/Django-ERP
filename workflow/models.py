@@ -53,6 +53,12 @@ class Node(ToStringMixin, models.Model):
     position()
     sql()
     etc:upper('zhangsan','lisi')
+
+    工作流节点有三种处理方式：
+    - 第一种是使用自定义的SQL语句，为最高优先级
+    - 第二种是使用代码写好的处理类（函数），给 next_user_handler 字段赋值即可
+    - 第三种是预先选好的关联用户，比如根据用户、岗位、角色或提交人来处理节点
+
     """
     # 处理类型
     HANDLER_TYPE = (
@@ -231,13 +237,16 @@ class History(ToStringMixin, models.Model):
 
 
 class TodoList(ToStringMixin, models.Model):
-    """
-    待办列表
+    """待办列表
+
+    每当工单提交之后，会自动创建一个代办
     """
     index_weight = 4
 
     code = models.CharField(_("code"), max_length=const.DB_CHAR_CODE_10, blank=True, null=True)
+    # 工作流实例
     inst = models.ForeignKey(Instance, verbose_name=_("workflow instance"), on_delete=models.CASCADE)
+    # 当前节点
     node = models.ForeignKey(Node, verbose_name=_("current node"), blank=True, null=True, on_delete=models.CASCADE)
 
     app_name = models.CharField(_("app name"), max_length=const.DB_CHAR_NAME_60, blank=True, null=True)
@@ -245,6 +254,7 @@ class TodoList(ToStringMixin, models.Model):
 
     # 处理人
     user = models.ForeignKey(User, verbose_name=_("handler"), on_delete=models.CASCADE)
+    # 送达时间
     arrived_time = models.DateTimeField(_("arrived time"), auto_now_add=True)
     # 已读
     is_read = models.BooleanField(_("is read"), default=False)
@@ -267,12 +277,15 @@ class TodoList(ToStringMixin, models.Model):
             return u'启动'
 
     def code_link(self):
+        """跳转到对应的工单"""
         return format_html("<a href='/admin/{}/{}/{}'>{}</a>",
                            self.app_name, self.model_name, self.inst.object_id, self.code)
     code_link.allow_tags = True
     code_link.short_description = _("code")
 
     def href(self):
+        """跳转到对应的工单"""
+        # 获取工单的名称并显示
         ct = ContentType.objects.get(app_label=self.app_name, model=self.model_name)
         obj = ct.get_object_for_this_type(id=self.inst.object_id)
         title = u"%s" % obj
@@ -280,6 +293,7 @@ class TodoList(ToStringMixin, models.Model):
                            self.app_name, self.model_name, self.inst.object_id, title)
 
     def modal_dsc(self):
+        """显示工作流的名称"""
         return u'%s' % (self.inst.modal.name)
     modal_dsc.short_description = u'业务流程'
 
@@ -291,6 +305,7 @@ class TodoList(ToStringMixin, models.Model):
     node_dsc.short_description = _('current node')
 
     def submitter(self):
+        """提交人"""
         if self.inst.starter.last_name or self.inst.starter.first_name:
             return u"%s%s" % (self.inst.starter.last_name, self.inst.starter.first_name)
         return u"%s" % (self.inst.starter.username)
@@ -303,7 +318,7 @@ class TodoList(ToStringMixin, models.Model):
 
 
 def get_modal(app_label, model_name):
-    """
+    """获取工作流
 
     :param app_label:
     :param model_name:
@@ -316,7 +331,7 @@ def get_modal(app_label, model_name):
 
 
 def get_instance(obj):
-    """
+    """获取工作流实例
 
     :param obj:
     :return:

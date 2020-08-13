@@ -147,14 +147,20 @@ class BOAdmin(admin.ModelAdmin):
         :return:
         """
         app_info = get_app_model_info_from_request(request)
+        # 工作流
         workflow_modal = None
         workflow_instance = None
         has_workflow_modal = False
         has_workflow_instance = False
+
         show_workflow_line = False
+        # 显示提交按钮
         show_submit_button = False
+        # 可以重启
         can_restart = False
+        # 可以编辑
         can_edit = False
+
         # print app_info
         if app_info:
             try:
@@ -177,6 +183,7 @@ class BOAdmin(admin.ModelAdmin):
                     show_workflow_line = True
                     if unread.count() > 0:
                         unread.update(is_read=1, read_time=datetime.datetime.now())
+                # 工作流实例已经被拒绝（DENY） 并且当前用户是发起人
                 if workflow_instance.status == 3 and request.user == workflow_instance.starter:
                     can_restart = True
                     show_workflow_line = True
@@ -186,6 +193,8 @@ class BOAdmin(admin.ModelAdmin):
 
         if workflow_modal and not workflow_instance:
             show_submit_button = True
+
+        # 更新额外的内容
         extra_context = extra_context or {}
         ctx = dict(
             has_workflow_instance=has_workflow_instance,
@@ -219,15 +228,22 @@ class BOAdmin(admin.ModelAdmin):
         # print app_info
         if app_info:
             try:
+                # 工作流
                 modal = ContentType.objects.get(app_label='workflow', model='modal')
                 workflow_modal = modal.get_object_for_this_type(app_name=app_info['app'], model_name=app_info['model'])
                 has_workflow_modal = True
+                
+                # 工作流实例
                 instance = ContentType.objects.get(app_label='workflow', model='instance')
                 workflow_instance = instance.get_object_for_this_type(modal=workflow_modal, object_id=app_info['id'])
                 has_workflow_instance = True
+                
+                # 审批历史
                 history = ContentType.objects.get(app_label='workflow', model='history')
                 history_list = history.model_class().objects.filter(inst=workflow_instance)
                 has_history = True
+
+                # 代办事项
                 todo = ContentType.objects.get(app_label='workflow', model='todolist')
                 todo_list = todo.model_class().objects.filter(inst=workflow_instance, status=0).exclude(node=None)
 

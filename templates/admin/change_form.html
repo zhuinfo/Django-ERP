@@ -41,23 +41,33 @@
 <div>
 {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1" />{% endif %}
 {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />{% endif %}
+
+{% comment %} 顶部按钮 {% endcomment %}
 {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
-{% if show_workflow_line%}
+
+{% comment %} 显示工作流线 {% endcomment %}
+{% if show_workflow_line %}
 <fieldset class="module aligned workflow">
     <h2>{% trans "workflow approve" %}</h2>
     <div style="padding:10px">
+        {% comment %} 可以重启 {% endcomment %}
         {% if can_restart %}
         <a class="button" href="restart/{{workflow_instance.id}}" id="workflow_restart">{% trans "restart workflow" %}</a>
         <p style="float:right;color:#666">{% trans "your apply has been denied,you can restart a new apply" %}</p>
         {% else %}
-        <label class="control"><input type="radio" name="operation" value="1" checked> {% trans "agree" %}</label>
-        <label class="control"><input type="radio" name="operation" value="3"> {% trans "deny" %}</label>
-        <label class="control"><input type="radio" name="operation" value="4"> {% trans "terminate" %}</label>
-        <a class="button" href="approve/1" id="workflow_approve">{% trans "submit" %}</a>
+            {% comment %} 同意 value = 1 {% endcomment %}
+            <label class="control"><input type="radio" name="operation" value="1" checked> {% trans "agree" %}</label>
+            {% comment %} 拒绝 value = 3 {% endcomment %}
+            <label class="control"><input type="radio" name="operation" value="3"> {% trans "deny" %}</label>
+            {% comment %} 终止 value = 4 {% endcomment %}
+            <label class="control"><input type="radio" name="operation" value="4"> {% trans "terminate" %}</label>
+            {% comment %} 提交 {% endcomment %}
+            <a class="button" href="approve/1" id="workflow_approve">{% trans "submit" %}</a>
         {% endif %}
     </div>
 </fieldset>
 {% endif %}
+
 {% if errors %}
     <p class="errornote">
     {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
@@ -99,11 +109,15 @@
             {% if adminform and add %}
                 $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
             {% endif %}
+
+            {% comment %} 工作流 {% endcomment %}
             {% if workflow_modal  %}
+                {% comment %} 工作流实例 {% endcomment %}
                 {% if workflow_instance %}
                 workflow_modal = "{{ workflow_modal.code }}";
                 workflow_instance = "{{ workflow_instance.code }}";
                 $('tr.add-row').hide();
+                    {% comment %} 可以编辑 {% endcomment %}
                     {% if can_edit %}
                         $('a.deletelink').hide();
                         $("#workflow_submit").hide();
@@ -119,11 +133,16 @@
             {% else %}
                 $("#workflow_submit").hide();
             {% endif %}
+
+            {% comment %} 额外的按钮 {% endcomment %}
             {% if extra_buttons %}
                 {% for button in extra_buttons %}
+                    {% comment %} 工作流提交按钮 {% endcomment %}
                     $("<a href='{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
                 {% endfor %}
             {% endif %}
+
+            {% comment %} 是否只读 {% endcomment %}
             {% if readonly %}
                 $('input,select,textarea').attr('disabled',true);
                 $('div.submit-row').hide();

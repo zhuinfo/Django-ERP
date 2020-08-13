@@ -818,16 +818,20 @@ class ExtraParam(ToStringMixin, models.Model):
         ('NUM', _('NUMBER')),
         ('DATE', _('DATE')),
     )
+    # 关联的物料
     material = models.ForeignKey(
         Material,
         verbose_name=_("material"),
         on_delete=models.CASCADE)
+    # 数据名称
     name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_40)
+    # 数据类型
     data_type = models.CharField(
         _("data type"),
         default='CHAR',
         choices=DATA_TYPE,
         max_length=const.DB_CHAR_CODE_6)
+    # 数据源
     data_source = models.CharField(
         _("data source"),
         blank=True,
