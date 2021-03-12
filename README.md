@@ -10,7 +10,7 @@ Forked from <a href="https://github.com/zhuinfo/Django-ERP">zhuinfo Django-ERP</
 请先确保您已安装了Python 2.7,并已配置好了数据库，本文档会略过这部分内容（理论上Django是可以支持MYSql、PGSQL、SQLite、Oracle等主流数据库的，但是建议不要嘬，用自己熟悉的数据库，因为数据是无价的。）
 验证方法请通过python --version查看版本，以及数据库 确认用户名和密码是否登录正常
 
-后续我争取不上requirements.txt，远期目标我个人是希望能做个dock镜像，并让它能慢慢顺着Python3和新版本的django平滑过渡上去。
+后续我争取不上requirements.txt，远期目标我个人是希望能做个docker镜像，并让它能慢慢顺着Python3和新版本的django平滑过渡上去。
 
 ## 数据库配置
 
