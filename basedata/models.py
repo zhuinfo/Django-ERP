@@ -4,78 +4,125 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.translation import ugettext_lazy as _
-from django.utils.text import force_text
+from django.utils.encoding import force_text
 from common import const
 from common import generic
-from syscfg.models import Module,Site
-from organ.models import Organization,Position
+from common.generic import ToStringMixin
+from syscfg.models import Module, Site
+from organ.models import Organization, Position
 import datetime
-from plugin.xls import ExcelManager
+from plugin.xls import ExcelManager, excel_manager
 
 
 class ValueList(generic.BO):
     """
     值列表
     """
-    index_weight = 9
-    code = models.CharField(_("list code"),max_length=const.DB_CHAR_CODE_6,blank=True,null=True)
-    name = models.CharField(_("list name"),max_length=const.DB_CHAR_NAME_40)
-    module = models.ForeignKey(Module,verbose_name=_("module"),blank=True,null=True)
-    status = models.BooleanField(_("in use"),default=True)
-    init = models.BooleanField(_("is init"),default=False)
-    locked = models.BooleanField(_("is locked"),default=False)
-    locked_by = models.ForeignKey(User,verbose_name=_("locked by"),blank=True,null=True)
-    lock_time = models.DateTimeField(_("locked time"),null=True,blank=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        super(ValueList,self).save(force_insert,force_update,using,update_fields)
+    index_weight = 9
+    # 编号
+    code = models.CharField(
+        _("list code"),
+        max_length=const.DB_CHAR_CODE_6,
+        blank=True,
+        null=True)
+    # 名称
+    name = models.CharField(_("list name"), max_length=const.DB_CHAR_NAME_40)
+    # 模块
+    module = models.ForeignKey(
+        Module,
+        verbose_name=_("module"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    # 状态 - 是否在用
+    status = models.BooleanField(_("in use"), default=True)
+    # 是否是初始数据
+    init = models.BooleanField(_("is init"), default=False)
+    # 是否锁定
+    locked = models.BooleanField(_("is locked"), default=False)
+    # 锁定用户
+    locked_by = models.ForeignKey(
+        User,
+        verbose_name=_("locked by"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    # 锁定日期时间
+    lock_time = models.DateTimeField(_("locked time"), null=True, blank=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super(ValueList, self).save(force_insert, force_update, using, update_fields)
+        # 同时更新 ValueListItem 模型数据的 group_code 数值
         sql = 'update basedata_valuelistitem set group_code = %s where groud_id=%s'
-        params = [self.code,self.id]
-        generic.update(sql,params)
+        params = [self.code, self.id]
+        generic.update(sql, params)
 
     class Meta:
         verbose_name = _('value list')
         verbose_name_plural = _('value list')
 
 
-class ValueListItem(models.Model):
+class ValueListItem(ToStringMixin, models.Model):
     """
     值列表项
     """
-    group = models.ForeignKey(ValueList,verbose_name=_("list group"))
-    group_code = models.CharField(max_length=const.DB_CHAR_CODE_6,blank=True,null=True)
-    code = models.CharField(_("item code"),max_length=const.DB_CHAR_CODE_6,blank=True,null=True)
-    name = models.CharField(_("item name"),max_length=const.DB_CHAR_NAME_40)
-    status = models.BooleanField(_("in use"),default=True)
-    weight = models.IntegerField(_("weight"),null=True,default=9)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    group = models.ForeignKey(
+        ValueList,
+        verbose_name=_("list group"),
+        on_delete=models.CASCADE)
+    group_code = models.CharField(
+        max_length=const.DB_CHAR_CODE_6,
+        blank=True,
+        null=True)
+    # 编号
+    code = models.CharField(
+        _("item code"),
+        max_length=const.DB_CHAR_CODE_6,
+        blank=True,
+        null=True)
+    # 名称
+    name = models.CharField(_("item name"), max_length=const.DB_CHAR_NAME_40)
+    # 是否在用？
+    status = models.BooleanField(_("in use"), default=True)
+    # 排序权重
+    weight = models.IntegerField(_("weight"), null=True, default=9)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        # 如果编号没赋值
         if not self.code:
-            cnt = self.group.valuelistitem_set.count()+1
+            cnt = self.group.valuelistitem_set.count() + 1
             self.code = "%02d" % cnt
         self.group_code = self.group.code
-        super(ValueListItem,self).save(force_insert,force_update,using,update_fields)
+        super(ValueListItem, self).save(force_insert, force_update, using, update_fields)
 
     def __unicode__(self):
-        return "%s-%s" % (self.code,self.name)
+        return "%s-%s" % (self.code, self.name)
 
     class Meta:
         verbose_name = _('list item')
         verbose_name_plural = _('list item')
-        ordering = ['weight','code']
-        index_together = ['group','group_code']
+        ordering = ['weight', 'code']
+        index_together = ['group', 'group_code']
 
 
 def get_value_list(group):
-    """
+    """获取选项值的列表
 
-    :param group:
-    :return:
+    :param group: str
+
+    :return: list or None
     """
     if group:
-        return tuple([(item.code, item.name) for item in ValueListItem.objects.filter(group_code__exact=group,status=1)])
+        try:
+            # exact: https://docs.djangoproject.com/en/3.0/ref/models/querysets/#exact
+            return tuple([
+                (item.code, item.name) for item in ValueListItem.objects.filter(
+                    group_code__exact=group, status=1)
+            ])
+        except Exception:
+            return None
     else:
         return None
 
@@ -84,15 +131,46 @@ class Address(generic.BO):
     """
     地址
     """
-    ADDRESS_TYPE = get_value_list('S011')
-    address_type = models.CharField(_("address type"),max_length=const.DB_CHAR_CODE_2,choices=ADDRESS_TYPE,default='01')
-    address = models.CharField(_("address"),max_length=const.DB_CHAR_NAME_120)
-    zipcode = models.CharField(_("zipcode"),max_length=const.DB_CHAR_CODE_8,blank=True,null=True)
-    phone = models.CharField(_("phone"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    contacts = models.CharField(_("contacts"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
 
-    content_type = models.ForeignKey(ContentType,blank=True,null=True)
-    object_id = models.PositiveIntegerField(blank=True,null=True)
+    ADDRESS_TYPE = get_value_list('S011')
+    # 地址类型
+    # - 送货地址
+    # - 发票地址
+    # - 临时地址
+    address_type = models.CharField(
+        _("address type"),
+        max_length=const.DB_CHAR_CODE_2,
+        choices=ADDRESS_TYPE,
+        default='01')
+    # 地址
+    address = models.CharField(_("address"), max_length=const.DB_CHAR_NAME_120)
+    # 邮编
+    zipcode = models.CharField(
+        _("zipcode"),
+        max_length=const.DB_CHAR_CODE_8,
+        blank=True,
+        null=True)
+    # 联系电话
+    phone = models.CharField(
+        _("phone"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 联系人
+    contacts = models.CharField(
+        _("contacts"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+
+    # 通用类型
+    # 让地址模型可以与各种模型关联起来
+    content_type = models.ForeignKey(
+        ContentType,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
@@ -104,52 +182,135 @@ class Partner(generic.BO):
     """
     合作伙伴
     """
+
     index_weight = 3
     PARTNER_TYPE = (
-        ('C', _('Customer')),
-        ('S', _('Supplier')),
+        ('C', _('Customer')),  # 客户
+        ('S', _('Supplier')),  # 供应商
     )
 
+    # 等级
     LEVEL = (
-        ('A','A'),
-        ('B','B'),
-        ('C','C'),
-        ('D','D'),
+        ('A', 'A'),
+        ('B', 'B'),
+        ('C', 'C'),
+        ('D', 'D'),
     )
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
-    code = models.CharField(_("partner code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    name = models.CharField(_("partner name"),max_length=const.DB_CHAR_NAME_120)
-    short = models.CharField(_("short name"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    pinyin = models.CharField(_("pinyin"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    partner_type = models.CharField(_("type"),max_length=const.DB_CHAR_CODE_2,choices=PARTNER_TYPE,default='C')
-    level = models.CharField(_("level"),max_length=const.DB_CHAR_CODE_2,choices=LEVEL,default='C')
+    org = models.ForeignKey(
+        Organization,
+        verbose_name=_("organization"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    # 合作伙伴编号
+    code = models.CharField(
+        _("partner code"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 名称
+    name = models.CharField(
+        _("partner name"),
+        max_length=const.DB_CHAR_NAME_120)
+    # 简称
+    short = models.CharField(
+        _("short name"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 拼音/英文
+    pinyin = models.CharField(
+        _("pinyin"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 合作伙伴类型
+    partner_type = models.CharField(
+        _("type"),
+        max_length=const.DB_CHAR_CODE_2,
+        choices=PARTNER_TYPE,
+        default='C')
+    # 等级
+    level = models.CharField(
+        _("level"),
+        max_length=const.DB_CHAR_CODE_2,
+        choices=LEVEL,
+        default='C')
 
-    tax_num = models.CharField(_("tax num"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
-    tax_address = models.CharField(_("tax address"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
-    tax_account = models.CharField(_("tax account"),max_length=const.DB_CHAR_NAME_80,blank=True,null=True)
-
-    contacts = models.CharField(_("contacts"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
-    phone = models.CharField(_("phone"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
-    memo = models.TextField(_("memo"),blank=True,null=True)
+    # 纳税识别号
+    tax_num = models.CharField(
+        _("tax num"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+    # 开票地址
+    tax_address = models.CharField(
+        _("tax address"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+    # 发票开户行
+    tax_account = models.CharField(
+        _("tax account"),
+        max_length=const.DB_CHAR_NAME_80,
+        blank=True,
+        null=True)
+    # 联系人
+    contacts = models.CharField(
+        _("contacts"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+    # 联系电话
+    phone = models.CharField(
+        _("phone"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+    # 备注
+    memo = models.TextField(_("memo"), blank=True, null=True)
 
     class Meta:
         verbose_name = _('partner')
         verbose_name_plural = _('partner')
         permissions = (
-            ('view_all_customer',_("view all customer")),
-            ('view_all_supplier',_("view all supplier")),
+            ('view_all_customer', _("view all customer")),
+            ('view_all_supplier', _("view all supplier")),
         )
 
 
 class BankAccount(generic.BO):
     """
-    银行账户 organization
+    银行账户
     """
-    account = models.CharField(_("account num"),max_length=const.DB_CHAR_NAME_40)
-    title = models.CharField(_("bank name"),max_length=const.DB_CHAR_NAME_40)
-    memo = models.CharField(_("memo"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    partner = models.ForeignKey(Partner,verbose_name=_("partner"),blank=True,null=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+
+    # 银行帐号
+    account = models.CharField(
+        _("account num"),
+        max_length=const.DB_CHAR_NAME_40)
+    # 银行名称
+    title = models.CharField(_("bank name"), max_length=const.DB_CHAR_NAME_40)
+    # 备注
+    memo = models.CharField(
+        _("memo"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+
+    # 合作伙伴
+    partner = models.ForeignKey(
+        Partner,
+        verbose_name=_("partner"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    # 所属组织
+    org = models.ForeignKey(
+        Organization,
+        verbose_name=_("organization"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
 
     def __unicode__(self):
         name = ''
@@ -157,7 +318,7 @@ class BankAccount(generic.BO):
             name = self.org.name
         elif self.partner:
             name = self.partner.name
-        return u"%s %s %s" % (name,self.account,self.title)
+        return u"%s %s %s" % (name, self.account, self.title)
 
     class Meta:
         verbose_name = _('bank account')
@@ -168,48 +329,142 @@ class Project(generic.BO):
     """
     工程项目
     """
+
     STATUS = get_value_list('S012')
     TYPES = get_value_list('S013')
     index_weight = 1
 
-    code = models.CharField(_("project code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    name = models.CharField(_("project name"),max_length=const.DB_CHAR_NAME_120)
-    short = models.CharField(_("short name"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    pinyin = models.CharField(_("pinyin"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
+    # 项目编号
+    code = models.CharField(
+        _("project code"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 项目名称
+    name = models.CharField(
+        _("project name"),
+        max_length=const.DB_CHAR_NAME_120)
+    # 简称
+    short = models.CharField(
+        _("short name"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 拼音/英文
+    pinyin = models.CharField(
+        _("pinyin"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
 
-    partner = models.ForeignKey(Partner,blank=True,null=True,verbose_name=_("partner"),limit_choices_to={"partner_type":"C"})
-    status = models.CharField(_("status"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,default='00',choices=STATUS)
-    prj_type = models.CharField(_("project type"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=TYPES,default='00')
+    # 合作伙伴
+    partner = models.ForeignKey(
+        Partner,
+        blank=True,
+        null=True,
+        verbose_name=_("partner"),
+        limit_choices_to={"partner_type": "C"},
+        on_delete=models.CASCADE)
+    # 状态
+    status = models.CharField(
+        _("status"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        default='00',
+        choices=STATUS)
+    # 项目类型
+    prj_type = models.CharField(
+        _("project type"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=TYPES,
+        default='00')
 
-    description = models.TextField(_("description"),blank=True,null=True)
+    # 描述
+    description = models.TextField(_("description"), blank=True, null=True)
 
-    budget = models.DecimalField(_("budget"),max_digits=10,decimal_places=2,blank=True,null=True)
-    income = models.DecimalField(_("income"),max_digits=10,decimal_places=2,blank=True,null=True)
-    expand = models.DecimalField(_("expand"),max_digits=10,decimal_places=2,blank=True,null=True)
+    # 预算金额
+    budget = models.DecimalField(
+        _("budget"),
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True)
+    income = models.DecimalField(
+        _("income"),
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True)
+    expand = models.DecimalField(
+        _("expand"),
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True)
 
-    blueprint = models.FileField(_("blueprint"),upload_to='project',blank=True,null=True)
-    offer = models.FileField(_("offer sheet"),upload_to='offer sheet',blank=True,null=True)
-    business = models.FileField(_("business document"),upload_to='project',blank=True,null=True)
+    # 技术/图纸
+    blueprint = models.FileField(
+        _("blueprint"),
+        upload_to='project',
+        blank=True,
+        null=True)
+    # 报价单
+    offer = models.FileField(
+        _("offer sheet"),
+        upload_to='offer sheet',
+        blank=True,
+        null=True)
+    # 商务/标书
+    business = models.FileField(
+        _("business document"),
+        upload_to='project',
+        blank=True,
+        null=True)
 
-    users = models.ManyToManyField(User,verbose_name=_("related users"),blank=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    # 关系人
+    users = models.ManyToManyField(
+        User, verbose_name=_("related users"), blank=True)
+    # 组织
+    org = models.ForeignKey(
+        Organization,
+        verbose_name=_("organization"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('project')
         verbose_name_plural = _('project')
 
 
-class Warehouse(models.Model):
+class Warehouse(ToStringMixin, models.Model):
     """
     仓库
     """
     index_weight = 6
-    code = models.CharField(_("code"),max_length=const.DB_CHAR_CODE_6,blank=True,null=True)
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_40)
-    status = models.BooleanField(_("in use"),default=True)
-    location = models.CharField(_("location"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    users = models.ManyToManyField(User,verbose_name=_("related users"),blank=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    code = models.CharField(
+        _("code"),
+        max_length=const.DB_CHAR_CODE_6,
+        blank=True,
+        null=True)
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_40)
+    status = models.BooleanField(_("in use"), default=True)
+    location = models.CharField(
+        _("location"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    users = models.ManyToManyField(
+        User, verbose_name=_("related users"), blank=True)
+    org = models.ForeignKey(
+        Organization,
+        verbose_name=_("organization"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
 
     def __unicode__(self):
         return '%s' % self.name
@@ -219,14 +474,20 @@ class Warehouse(models.Model):
         verbose_name_plural = _('warehouse')
 
 
-class Measure(models.Model):
+class Measure(ToStringMixin, models.Model):
     """
     计量单位
     """
     index_weight = 5
-    code = models.CharField(_("code"),max_length=const.DB_CHAR_CODE_6,blank=True,null=True)
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_20)
-    status = models.BooleanField(_("in use"),default=True)
+    # 编号
+    code = models.CharField(
+        _("code"),
+        max_length=const.DB_CHAR_CODE_6,
+        blank=True,
+        null=True)
+    # 名称
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_20)
+    status = models.BooleanField(_("in use"), default=True)
 
     def __unicode__(self):
         return '%s' % self.name
@@ -236,15 +497,28 @@ class Measure(models.Model):
         verbose_name_plural = _('measure')
 
 
-class Trade(models.Model):
+class Trade(ToStringMixin, models.Model):
     """
     国民经济行业分类
     """
     index_weight = 102
-    code = models.CharField(_("code"),max_length=const.DB_CHAR_CODE_6)
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_120)
-    memo = models.CharField(_("memo"),max_length=const.DB_CHAR_NAME_120,null=True,blank=True)
-    parent = models.ForeignKey('self',verbose_name=_("parent"),null=True,blank=True)
+    # 编号
+    code = models.CharField(_("code"), max_length=const.DB_CHAR_CODE_6)
+    # 名称
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 备注
+    memo = models.CharField(
+        _("memo"),
+        max_length=const.DB_CHAR_NAME_120,
+        null=True,
+        blank=True)
+    # 父级
+    parent = models.ForeignKey(
+        'self',
+        verbose_name=_("parent"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
 
     def __unicode__(self):
         return '%s' % self.name
@@ -255,15 +529,32 @@ class Trade(models.Model):
         ordering = ['code']
 
 
-class Brand(models.Model):
+class Brand(ToStringMixin, models.Model):
     """
     品牌
     """
     index_weight = 101
-    trade = models.ForeignKey(Trade,verbose_name=_("trade"),null=True,blank=True)
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_120)
-    pinyin = models.CharField(_("pinyin"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    weight = models.IntegerField(_("weight"),blank=True,null=True,default=99)
+    # 经济行业
+    trade = models.ForeignKey(
+        Trade,
+        verbose_name=_("trade"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
+    # 名称
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 拼音/英语
+    pinyin = models.CharField(
+        _("pinyin"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 排序权重
+    weight = models.IntegerField(
+        _("weight"),
+        blank=True,
+        null=True,
+        default=99)
 
     def __unicode__(self):
         return '%s' % self.name
@@ -273,16 +564,40 @@ class Brand(models.Model):
         verbose_name_plural = _('brand')
 
 
-class Category(models.Model):
+class Category(ToStringMixin, models.Model):
     """
     分类
     """
+
     index_weight = 100
-    trade = models.ForeignKey(Trade,verbose_name=_("trade"),null=True,blank=True)
-    parent = models.ForeignKey('self',verbose_name=_("parent"),null=True,blank=True)
-    code = models.CharField(_("code"),max_length=const.DB_CHAR_CODE_6,null=True,blank=True)
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_120)
-    path = models.CharField(_("path"),max_length=const.DB_CHAR_NAME_200,null=True,blank=True)
+    # 经济行业
+    trade = models.ForeignKey(
+        Trade,
+        verbose_name=_("trade"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
+    # 父级
+    parent = models.ForeignKey(
+        'self',
+        verbose_name=_("parent"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
+    # 编号
+    code = models.CharField(
+        _("code"),
+        max_length=const.DB_CHAR_CODE_6,
+        null=True,
+        blank=True)
+    # 名称
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 路径（？）
+    path = models.CharField(
+        _("path"),
+        max_length=const.DB_CHAR_NAME_200,
+        null=True,
+        blank=True)
 
     def __unicode__(self):
         return '%s' % self.name
@@ -292,14 +607,18 @@ class Category(models.Model):
         verbose_name_plural = _('category')
 
 
-class TechnicalParameterName(models.Model):
+class TechnicalParameterName(ToStringMixin, models.Model):
     """
     技术参数-名称，将技术参数绑定于物料分类上，在此分类下的物料自动继承全部技术参数
     """
+
     index_weight = 7
-    category = models.ForeignKey(Category,verbose_name=_("material category"))
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_40)
-    status = models.BooleanField(_("in use"),default=True)
+    category = models.ForeignKey(
+        Category,
+        verbose_name=_("material category"),
+        on_delete=models.CASCADE)
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_40)
+    status = models.BooleanField(_("in use"), default=True)
 
     def __unicode__(self):
         return '%s' % self.name
@@ -309,13 +628,21 @@ class TechnicalParameterName(models.Model):
         verbose_name_plural = _('technical parameter')
 
 
-class TechnicalParameterValue(models.Model):
+class TechnicalParameterValue(ToStringMixin, models.Model):
     """
     技术参数-值，将技术参数绑定于物料分类上，在此分类下的物料自动继承全部技术参数
     """
-    tech_name = models.ForeignKey(TechnicalParameterName,verbose_name=_("technical name"))
-    value = models.CharField(_("value"),max_length=const.DB_CHAR_NAME_80)
-    description = models.CharField(_("description"),max_length=const.DB_CHAR_NAME_80,null=True,blank=True)
+
+    tech_name = models.ForeignKey(
+        TechnicalParameterName,
+        verbose_name=_("technical name"),
+        on_delete=models.CASCADE)
+    value = models.CharField(_("value"), max_length=const.DB_CHAR_NAME_80)
+    description = models.CharField(
+        _("description"),
+        max_length=const.DB_CHAR_NAME_80,
+        null=True,
+        blank=True)
 
     def __unicode__(self):
         return '%s' % self.value
@@ -329,47 +656,148 @@ class Material(generic.BO):
     """
     物料
     """
+
     index_weight = 4
-    code = models.CharField(_("material code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    barcode = models.CharField(_("bar code"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
-    name = models.CharField(_("material name"),max_length=const.DB_CHAR_NAME_120)
-    spec = models.CharField(_("specifications"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    pinyin = models.CharField(_("pinyin"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    brand = models.ForeignKey(Brand,blank=True,null=True,verbose_name=_("brand"))
-    category = models.ForeignKey(Category,blank=True,null=True,verbose_name=_("category"))
-    tp = models.CharField(_('mt type'),blank=True,null=True,max_length=const.DB_CHAR_CODE_2,choices=const.get_value_list('S054'),default='10')
-    status = models.BooleanField(_("in use"),default=True)
-    is_equip = models.BooleanField(_("is equipment"),default=False)
-    can_sale = models.BooleanField(_("can sale"),default=True)
-    is_virtual = models.BooleanField(_("is virtual"),default=False)
+    # 编号
+    code = models.CharField(
+        _("material code"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 条形码
+    barcode = models.CharField(
+        _("bar code"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+    # 名称
+    name = models.CharField(
+        _("material name"),
+        max_length=const.DB_CHAR_NAME_120)
+    # 规格型号
+    spec = models.CharField(
+        _("specifications"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 拼音
+    pinyin = models.CharField(
+        _("pinyin"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 品牌
+    brand = models.ForeignKey(
+        Brand,
+        blank=True,
+        null=True,
+        verbose_name=_("brand"),
+        on_delete=models.CASCADE)
+    # 分类
+    category = models.ForeignKey(
+        Category,
+        blank=True,
+        null=True,
+        verbose_name=_("category"),
+        on_delete=models.CASCADE)
+    # 物料性质 - Material type
+    # 10: 生产物料
+    # 11: 办公用品
+    # 20: 建筑物/培训室
+    # 30: 员工宿舍
+    # 40: 工卡/饭卡
+    # 50: 车辆
+    # 60: 图书
+    # 70: 工位
+    # 80: 工单服务
+    tp = models.CharField(
+        _('mt type'),
+        blank=True,
+        null=True,
+        max_length=const.DB_CHAR_CODE_2,
+        choices=const.get_value_list('S054'),
+        default='10')
+    # 状态：是否在用
+    status = models.BooleanField(_("in use"), default=True)
+    # 是否是设备
+    is_equip = models.BooleanField(_("is equipment"), default=False)
+    # 是否可以销售
+    can_sale = models.BooleanField(_("can sale"), default=True)
+    # 是否是虚拟
+    is_virtual = models.BooleanField(_("is virtual"), default=False)
 
-    warehouse = models.ForeignKey(Warehouse,blank=True,null=True,verbose_name=_("warehouse"))
-    measure = models.ManyToManyField(Measure,verbose_name=_("measure"))
+    # 仓库
+    warehouse = models.ForeignKey(
+        Warehouse,
+        blank=True,
+        null=True,
+        verbose_name=_("warehouse"),
+        on_delete=models.CASCADE)
+    # 计量单位
+    measure = models.ManyToManyField(Measure, verbose_name=_("measure"))
 
-    params = models.ManyToManyField(TechnicalParameterValue,verbose_name=_("technical parameter"),through='MaterialParam')
+    params = models.ManyToManyField(
+        TechnicalParameterValue,
+        verbose_name=_("technical parameter"),
+        through='MaterialParam')
 
-    stock_price = models.DecimalField(_("stock price"),max_digits=14,decimal_places=4,blank=True,null=True)
-    purchase_price = models.DecimalField(_("purchase price"),max_digits=14,decimal_places=4,blank=True,null=True)
-    sale_price = models.DecimalField(_("sale price"),max_digits=14,decimal_places=4,blank=True,null=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    # 库存单价
+    stock_price = models.DecimalField(
+        _("stock price"),
+        max_digits=14,
+        decimal_places=4,
+        blank=True,
+        null=True)
+    # 采购单价
+    purchase_price = models.DecimalField(
+        _("purchase price"),
+        max_digits=14,
+        decimal_places=4,
+        blank=True,
+        null=True)
+    # 销售单价
+    sale_price = models.DecimalField(
+        _("sale price"),
+        max_digits=14,
+        decimal_places=4,
+        blank=True,
+        null=True)
+    # 所属组织机构
+    org = models.ForeignKey(
+        Organization,
+        verbose_name=_("organization"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
 
     def __unicode__(self):
 
-        return "%s %s" % (self.code,self.name)
+        return "%s %s" % (self.code, self.name)
 
     class Meta:
         verbose_name = _('material')
         verbose_name_plural = _('material')
-        ordering = ['tp','code']
+        ordering = ['tp', 'code']
 
 
-class MaterialParam(models.Model):
+class MaterialParam(ToStringMixin, models.Model):
+    """物料参数
+
+    作为多对多的关联表
     """
 
-    """
-    material = models.ForeignKey(Material)
-    param_value = models.ForeignKey(TechnicalParameterValue)
-    param_name = models.ForeignKey(TechnicalParameterName,blank=Trade,null=True)
+    material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    # 参数数值
+    param_value = models.ForeignKey(
+        TechnicalParameterValue,
+        on_delete=models.CASCADE)
+    # 参数名称
+    param_name = models.ForeignKey(
+        TechnicalParameterName,
+        blank=Trade,
+        null=True,
+        on_delete=models.CASCADE)
+    # 创建时间
     creation = models.DateField(auto_now_add=True)
 
     def __unicode__(self):
@@ -380,19 +808,35 @@ class MaterialParam(models.Model):
         verbose_name_plural = _('material parameter')
 
 
-class ExtraParam(models.Model):
+class ExtraParam(ToStringMixin, models.Model):
+    """
+    额外的参数
     """
 
-    """
     DATA_TYPE = (
-        ('CHAR',_('CHAR')),
-        ('NUM',_('NUMBER')),
-        ('DATE',_('DATE')),
+        ('CHAR', _('CHAR')),
+        ('NUM', _('NUMBER')),
+        ('DATE', _('DATE')),
     )
-    material = models.ForeignKey(Material,verbose_name=_("material"))
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_40)
-    data_type = models.CharField(_("data type"),default='CHAR',choices=DATA_TYPE,max_length=const.DB_CHAR_CODE_6)
-    data_source = models.CharField(_("data source"),blank=True,null=True,max_length=const.DB_CHAR_NAME_40)
+    # 关联的物料
+    material = models.ForeignKey(
+        Material,
+        verbose_name=_("material"),
+        on_delete=models.CASCADE)
+    # 数据名称
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_40)
+    # 数据类型
+    data_type = models.CharField(
+        _("data type"),
+        default='CHAR',
+        choices=DATA_TYPE,
+        max_length=const.DB_CHAR_CODE_6)
+    # 数据源
+    data_source = models.CharField(
+        _("data source"),
+        blank=True,
+        null=True,
+        max_length=const.DB_CHAR_NAME_40)
 
     def __unicode__(self):
         return "%s" % self.name
@@ -406,97 +850,433 @@ class ExpenseAccount(generic.BO):
     """
     费用科目
     """
+
     CATEGORY = (
-        ('HR',_('HR-DOMAIN')),
-        ('OF',_('OFFICE-DOMAIN')),
-        ('PU',_('PUBLIS-DOMAIN')),
-        ('MU',_('MUNADOMAIN')),
-        ('BU',_('BUSINESS')),
-        ('OT',_('OTHER')),
+        ('HR', _('HR-DOMAIN')),         # 人事费用
+        ('OF', _('OFFICE-DOMAIN')),     # 行政办公
+        ('PU', _('PUBLIS-DOMAIN')),     # 运营公共
+        ('MU', _('MUNADOMAIN')),        # 生产制造
+        ('BU', _('BUSINESS')),          # 市场商务
+        ('OT', _('OTHER')),             # 其他
     )
     index_weight = 10
-    code = models.CharField(_("code"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_120)
-    category = models.CharField(_("category"),max_length=const.DB_CHAR_CODE_4,choices=CATEGORY,default='PU')
-    description = models.TextField(_("description"),blank=True,null=True)
-    parent = models.ForeignKey('self',verbose_name=_("parent"),null=True,blank=True)
-    status = models.BooleanField(_("in use"),default=True)
-    org = models.ForeignKey(Organization,verbose_name=_("organization"),blank=True,null=True)
+    # 编号
+    code = models.CharField(
+        _("code"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 名称
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_120)
+    # 分类
+    category = models.CharField(
+        _("category"),
+        max_length=const.DB_CHAR_CODE_4,
+        choices=CATEGORY,
+        default='PU')
+    description = models.TextField(_("description"), blank=True, null=True)
+    parent = models.ForeignKey(
+        'self',
+        verbose_name=_("parent"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
+    # 在用？
+    status = models.BooleanField(_("in use"), default=True)
+    # 所属组织机构
+    org = models.ForeignKey(
+        Organization,
+        verbose_name=_("organization"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _('expenses account')
         verbose_name_plural = _('expenses account')
-        ordering = ['category','code']
+        ordering = ['category', 'code']
 
 
 class Employee(generic.BO):
     """
     职员信息
     """
+
     index_weight = 2
-    code = models.CharField(_("employee number"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    phone = models.CharField(_("phone"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    organization = models.ForeignKey(Organization,verbose_name = _('organization'),null=True,blank=True)
-    name = models.CharField(_("employee name"),max_length=const.DB_CHAR_NAME_120)
-    pinyin = models.CharField(_("pinyin"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    birthday = models.DateField(_("birthday"),blank=True,null=True)
+    # 工号
+    code = models.CharField(
+        _("employee number"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 联系电话
+    phone = models.CharField(
+        _("phone"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 所属组织机构
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_('organization'),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
+    # 姓名
+    name = models.CharField(
+        _("employee name"),
+        max_length=const.DB_CHAR_NAME_120)
+    # 拼音/英语
+    pinyin = models.CharField(
+        _("pinyin"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 生日
+    birthday = models.DateField(_("birthday"), blank=True, null=True)
 
-    gender = models.CharField(_("gender"),max_length=const.DB_CHAR_CODE_2,choices=const.get_value_list('gender'),default='1')
-    idcard = models.CharField(_("id card"),max_length=const.DB_CHAR_NAME_20)
+    # 性别
+    gender = models.CharField(
+        _("gender"),
+        max_length=const.DB_CHAR_CODE_2,
+        choices=const.get_value_list('gender'),
+        default='1')
+    idcard = models.CharField(_("id card"), max_length=const.DB_CHAR_NAME_20)
 
-    country = models.CharField(_("nationality"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,default='CN',choices=const.get_value_list('S022'))
-    hometown = models.CharField(_("hometown"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
-    address = models.CharField(_("home address"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    banknum = models.CharField(_("bank account"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
-    bankname = models.CharField(_("bank name"),max_length=const.DB_CHAR_NAME_80,blank=True,null=True)
-    emergency = models.CharField(_("emergency contacts"),max_length=const.DB_CHAR_NAME_40,blank=True,null=True)
-    email = models.CharField(_("email"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    office = models.CharField(_("office phone"),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
+    # 国籍
+    country = models.CharField(
+        _("nationality"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        default='CN',
+        choices=const.get_value_list('S022'))
+    # 籍贯
+    hometown = models.CharField(
+        _("hometown"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+    # 家庭地址
+    address = models.CharField(
+        _("home address"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 银行帐号
+    banknum = models.CharField(
+        _("bank account"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+    # 开户行
+    bankname = models.CharField(
+        _("bank name"),
+        max_length=const.DB_CHAR_NAME_80,
+        blank=True,
+        null=True)
+    emergency = models.CharField(
+        _("emergency contacts"),
+        max_length=const.DB_CHAR_NAME_40,
+        blank=True,
+        null=True)
+    # 邮箱
+    email = models.CharField(
+        _("email"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 办公电话
+    office = models.CharField(
+        _("office phone"),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
 
-    position = models.ForeignKey(Position,verbose_name = _('position'))
-    rank = models.CharField(_("employee rank"),max_length=const.DB_CHAR_CODE_2,default='00',choices=const.get_value_list('S017'))
+    # 职位
+    position = models.ForeignKey(
+        Position,
+        verbose_name=_('position'),
+        on_delete=models.CASCADE)
+    # 职员级别
+    rank = models.CharField(
+        _("employee rank"),
+        max_length=const.DB_CHAR_CODE_2,
+        default='00',
+        choices=const.get_value_list('S017'))
 
-    workday = models.DateField(_("workday"),blank=True,null=True)
-    startday = models.DateField(_("start date"),blank=True,null=True)
+    # 参加工作日期
+    workday = models.DateField(_("workday"), blank=True, null=True)
+    # 入职日期
+    startday = models.DateField(_("start date"), blank=True, null=True)
+    # 宗教
+    # 00 - 无宗教信仰
+    # 10 - 佛教
+    # 20 - 喇嘛教
+    # 30 - 道教
+    # 40 - 天主教
+    # 50 - 基督教
+    # 70 - 东正教
+    # 80 - 伊斯兰教
+    # 99 - 其他
+    religion = models.CharField(
+        _("religion"),
+        max_length=const.DB_CHAR_CODE_2,
+        default='00',
+        choices=const.get_value_list('S020'),
+        blank=True,
+        null=True,
+    )
+    # 婚姻状况
+    # 10 - 未婚
+    # 20 - 初婚
+    # 21 - 再婚
+    # 22 - 复婚
+    # 30 - 丧偶
+    # 40 - 离婚
+    # 90 - 其他
+    marital = models.CharField(
+        _("marital status"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S023'),
+        default='10')
+    # 政治面貌
+    # 01 - 中国共产党党员
+    # 02 - 中国共产党预备党员
+    # 03 - 中国共产主义青年团团员
+    # 04 - 中国国民党革命委员会会员
+    # 05 - 中国民主同盟盟员
+    # 06 - 中国民主建国会会员
+    # 07 - 中国民主促进会会员
+    # 08 - 中国农工民主党党员
+    # 09 - 中国致公党党员
+    # 10 - 九三学社社员
+    # 11 - 台湾民主自治同盟盟员
+    # 12 - 无党派民主人士
+    # 13 - 群众
+    party = models.CharField(
+        _("political party"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S026'),
+        default='13')
+    # 民族
+    # 01 - 汉族
+    nation = models.CharField(
+        _("nation"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S021'),
+        default='01')
 
-    religion = models.CharField(_("religion"),max_length=const.DB_CHAR_CODE_2,default='00',choices=const.get_value_list('S020'),blank=True,null=True,)
-    marital = models.CharField(_("marital status"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S023'),default='10')
+    # 用工形式
+    # 1 - 劳动合同制（长期）
+    # 2 - 劳动合同制（短期）
+    # 3 - 人事代理制
+    # 4 - 劳务派遣制
+    # 5 - 非全日制
+    # 6 - 业务外包
+    # 9 - 其他
+    ygxs = models.CharField(
+        _("employ ygxs"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S019'),
+        default='2')
+    # 人员状态
+    # 10 - 在岗工作
+    # 11 - 见习期（试用）
+    # 12 - 待岗
+    # 20 - 离职
+    # 21 - 退休
+    # 22 - 终止劳动合同
+    # 23 - 协商解除劳动合同
+    # 24 - 劳动者主张解除劳动合同
+    # 25 - 用人单位主张解除劳动合同
+    # 30 - 死亡
+    status = models.CharField(
+        _("employ status"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S016'),
+        default='10')
 
-    party = models.CharField(_("political party"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S026'),default='13')
-    nation = models.CharField(_("nation"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S021'),default='01')
+    # 人员类别
+    # 10 - 经营者
+    # 20 - 中层管理人员
+    # 21 - 一般管理人员
+    # 30 - 专业技术人员
+    # 40 - 技能人员
+    # 50 - 服务人员
+    # 99 - 其他人员
+    category = models.CharField(
+        _("employ category"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S018'),
+        default='21')
 
-    ygxs = models.CharField(_("employ ygxs"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S019'),default='2')
-    status = models.CharField(_("employ status"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S016'),default='10')
-    category = models.CharField(_("employ category"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S018'),default='21')
+    # 文化程度
+    # 0 - 研究生
+    # 10 - 大学本科
+    # 20 - 大学专科和专科学校
+    # 40 - 技工学校
+    # 50 - 高中
+    # 60 - 初中
+    # 70 - 小学
+    # 80 - 文盲或半文盲
+    literacy = models.CharField(
+        _("literacy"),
+        max_length=const.DB_CHAR_CODE_2,
+        default='10',
+        choices=const.get_value_list('S024'),
+        blank=True,
+        null=True)
+    # 专业类别
+    # 01 - 哲学
+    # 02 - 经济学
+    # 03 - 法学
+    # 04 - 教育学
+    # 05 - 文学
+    # 06 - 历史学
+    # 07 - 理学
+    # 08 - 工学
+    # 09 - 农学
+    # 10 - 医学
+    # 11 - 军事学
+    # 12 - 管理学
+    # 13 - 建筑学
+    # 99 - 其他
+    major = models.CharField(
+        _("major type"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S038'),
+        default='99')
+    # 学位
+    # 1 - 名誉博士
+    # 2 - 博士
+    # 3 - 硕士
+    # 4 - 学士
+    # 5 - 双学士
+    # 9 - 其他
+    degree = models.CharField(
+        _("major degree"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S037'),
+        default='4')
 
-    literacy = models.CharField(_("literacy"),max_length=const.DB_CHAR_CODE_2,default='10',choices=const.get_value_list('S024'),blank=True,null=True)
-    major = models.CharField(_("major type"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S038'),default='99')
-    degree = models.CharField(_("major degree"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S037'),default='4')
+    # 特殊工种
+    # 00 - 非特殊工种
+    spjob = models.CharField(
+        _("special job"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S042'),
+        default='00')
+    # 身体状况
+    # 1 - 健康或良好
+    # 2 - 一般或较弱
+    # 3 - 有慢性病（一）
+    # 4 - 有慢性病（二）
+    # 6 - 残疾
+    # 7 - 军残
+    health = models.CharField(
+        _("health"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S043'),
+        default='1')
 
-    spjob = models.CharField(_("special job"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S042'),default='00')
-    health = models.CharField(_("health"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S043'),default='1')
+    # 复转军人标识
+    # 10 - 军转干部
+    # 15 - 复员干部
+    # 20 - 转业士官
+    # 30 - 复员士官
+    # 40 - 退役士兵
+    # 99 - 非复转军人
+    tag1 = models.CharField(
+        _("tag1 fzjr"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S039'),
+        default='99')
+    # 党委负责人
+    # 1 - 党委（党组）书记
+    # 2 - 党委（党组）副书记
+    # 3 - 党委常委（党组成员）
+    # 4 - 纪委书记（纪检组组长）
+    # 6 - 工会主席
+    # 8 - 其他党委（党组）负责人
+    # 9 - 非党委负责人
+    tag2 = models.CharField(
+        _("tag2 dwld"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S040'),
+        default='9')
+    # 董事监事
+    # 00 - 非董事监事
+    tag3 = models.CharField(
+        _("tag3 dsjs"),
+        max_length=const.DB_CHAR_CODE_10,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S041'),
+        default='00')
+    # 兵役状况
+    # 0 - 未服兵役
+    # 1 - 退出现役
+    # 2 - 士兵预备役
+    # 3 - 军官预备役
+    # 4 - 服现役
+    # 9 - 其他
+    tag4 = models.CharField(
+        _("tag4 byzk"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S027'),
+        default='0')
 
-    tag1 = models.CharField(_("tag1 fzjr"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S039'),default='99')
-    tag2 = models.CharField(_("tag2 dwld"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S040'),default='9')
-    tag3 = models.CharField(_("tag3 dsjs"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S041'),default='00')
-    tag4 = models.CharField(_("tag4 byzk"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S027'),default='0')
-
-    user = models.ForeignKey(User,verbose_name=_("user"),blank=True,null=True)
+    # 关联帐号
+    user = models.ForeignKey(
+        User,
+        verbose_name=_("user"),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
 
     def age(self):
+        """年龄"""
         import datetime
         if self.birthday:
-            cnt = datetime.date.today().year-self.birthday.year
+            cnt = datetime.date.today().year - self.birthday.year
             return cnt
 
     def work_age(self):
+        """工龄"""
         import datetime
         if self.birthday and self.workday:
-            cnt = datetime.date.today().year-self.workday.year
+            cnt = datetime.date.today().year - self.workday.year
             return cnt
 
     def __unicode__(self):
-        return u'%s %s'%(self.code,self.name)
+        return u'%s %s' % (self.code, self.name)
 
     age.short_description = u'年龄'
     work_age.short_description = u'工龄'
@@ -505,7 +1285,7 @@ class Employee(generic.BO):
         verbose_name = _("employee")
         verbose_name_plural = _("employee")
         permissions = (
-            ('view_all_employee',_("view all employee")),
+            ('view_all_employee', _("view all employee")),
         )
 
 
@@ -513,14 +1293,43 @@ class Family(generic.BO):
     """
     家庭成员
     """
-    relation = models.CharField(_("family title"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S025'))
-    status = models.CharField(_("social status"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S029'),default='17')
-    name = models.CharField(_("name"),max_length=const.DB_CHAR_NAME_60)
-    birthday = models.DateField(_("birthday"),blank=True,null=True)
-    organization = models.CharField(_("organization"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    phone = models.CharField(_("phone"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    emergency = models.BooleanField(_("emergency"),default=False)
-    employee = models.ForeignKey(Employee,verbose_name=_("employee"))
+
+    relation = models.CharField(
+        _("family title"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S025'))
+    status = models.CharField(
+        _("social status"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S029'),
+        default='17')
+    # 姓名
+    name = models.CharField(_("name"), max_length=const.DB_CHAR_NAME_60)
+    # 出生日期
+    birthday = models.DateField(_("birthday"), blank=True, null=True)
+    # 所属组织机构
+    organization = models.CharField(
+        _("organization"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 联系电话
+    phone = models.CharField(
+        _("phone"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 是否是紧急联系人
+    emergency = models.BooleanField(_("emergency"), default=False)
+    # 关联的职员
+    employee = models.ForeignKey(
+        Employee,
+        verbose_name=_("employee"),
+        on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("family member")
@@ -531,11 +1340,34 @@ class Education(generic.BO):
     """
     教育履历
     """
-    edu_type = models.CharField(_("edu type"),max_length=const.DB_CHAR_CODE_2,choices=const.get_value_list('S035'),default='1')
-    school = models.CharField(_("school"),max_length=const.DB_CHAR_NAME_120)
-    major = models.CharField(_("major"),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    degree = models.CharField(_("major degree"),max_length=const.DB_CHAR_CODE_2,blank=True,null=True,choices=const.get_value_list('S037'),default='4')
-    employee = models.ForeignKey(Employee,verbose_name=_("employee"))
+
+    # 教育类型
+    edu_type = models.CharField(
+        _("edu type"),
+        max_length=const.DB_CHAR_CODE_2,
+        choices=const.get_value_list('S035'),
+        default='1')
+    # 学校
+    school = models.CharField(_("school"), max_length=const.DB_CHAR_NAME_120)
+    # 专业
+    major = models.CharField(
+        _("major"),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 学历
+    degree = models.CharField(
+        _("major degree"),
+        max_length=const.DB_CHAR_CODE_2,
+        blank=True,
+        null=True,
+        choices=const.get_value_list('S037'),
+        default='4')
+    # 关联的职员
+    employee = models.ForeignKey(
+        Employee,
+        verbose_name=_("employee"),
+        on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("education experience")
@@ -546,9 +1378,20 @@ class WorkExperience(generic.BO):
     """
     工作履历
     """
-    organization = models.CharField(_("organization"),max_length=const.DB_CHAR_NAME_120)
-    position = models.CharField(_("position"),max_length=const.DB_CHAR_NAME_120)
-    employee = models.ForeignKey(Employee,verbose_name=_("employee"))
+
+    # 组织机构
+    organization = models.CharField(
+        _("organization"),
+        max_length=const.DB_CHAR_NAME_120)
+    # 岗位
+    position = models.CharField(
+        _("position"),
+        max_length=const.DB_CHAR_NAME_120)
+    # 关联的职员
+    employee = models.ForeignKey(
+        Employee,
+        verbose_name=_("employee"),
+        on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = _("work experience")
@@ -556,39 +1399,69 @@ class WorkExperience(generic.BO):
 
 
 class DataImport(generic.BO):
+    """
+    数据导入
+    """
 
-    """
-    Data import
-    """
     actions = {}
 
     STATUS = (
-        ('0',_('NEW')),
-        ('1',_('EXECUTED')),
+        # 新建
+        ('0', _('NEW')),
+        # 执行
+        ('1', _('EXECUTED')),
     )
-    imp_date = models.DateField(_('date'),blank=True,null=True,default=datetime.datetime.today)
-    title = models.CharField(_('title'),max_length=const.DB_CHAR_NAME_40)
-    description = models.TextField(_('description'),blank=True,null=True)
-    content_type = models.ForeignKey(ContentType,verbose_name=_("content type"),limit_choices_to={"app_label__in":['basedata','organ','auth']})
-    attach = models.FileField(_('attach'),blank=True,null=True,upload_to='data')
-    is_clear = models.BooleanField(_('clear old data?'),default=0)
-    handler = models.CharField(_('handler class'),max_length=const.DB_CHAR_NAME_80,blank=True,null=True)
-    status = models.CharField(_('status'),max_length=const.DB_CHAR_CODE_2,default='0',choices=STATUS)
+    # 导入日期
+    imp_date = models.DateField(
+        _('date'),
+        blank=True,
+        null=True,
+        default=datetime.datetime.today)
+    # 标题
+    title = models.CharField(_('title'), max_length=const.DB_CHAR_NAME_40)
+    # 描述
+    description = models.TextField(_('description'), blank=True, null=True)
+    content_type = models.ForeignKey(
+        ContentType,
+        verbose_name=_("content type"),
+        limit_choices_to={"app_label__in": ['basedata', 'organ', 'auth']},
+        on_delete=models.CASCADE)
+    # 附件
+    attach = models.FileField(
+        _('attach'),
+        blank=True,
+        null=True,
+        upload_to='data')
+    # 是否清除旧数据
+    is_clear = models.BooleanField(_('clear old data?'), default=0)
+    # 处理类
+    handler = models.CharField(
+        _('handler class'),
+        max_length=const.DB_CHAR_NAME_80,
+        blank=True,
+        null=True)
+    # 状态
+    status = models.CharField(
+        _('status'),
+        max_length=const.DB_CHAR_CODE_2,
+        default='0',
+        choices=STATUS)
 
-    def action_import(self,request):
+    def action_import(self, request):
         from django.db import transaction
         if self.attach:
             if self.handler:
-                klass = ExcelManager().handlers.get(self.handler)
+                # klass = ExcelManager().handlers.get(self.handler)
+                klass = excel_manager.handlers.get(self.handler)
                 with transaction.atomic():
-                    klass.handle(self,self.attach)
+                    klass.handle(self, self.attach)
                     self.status = 1
                     self.save()
             else:
                 import xlrd
                 import os
                 from mis import settings
-                path = os.path.join(settings.MEDIA_ROOT,self.attach.name)
+                path = os.path.join(settings.MEDIA_ROOT, self.attach.name)
                 workbook = xlrd.open_workbook(path)
                 sheet = workbook.sheet_by_index(0)
                 row_count = sheet.nrows
@@ -609,13 +1482,13 @@ class DataImport(generic.BO):
                             for name in cols:
                                 index = cols.index(name)
                                 v = values[index]
-                                if type(v) == str:
+                                if isinstance(v, str):
                                     v = force_text(v.decode('gbk'))
-                                params[name]=v
+                                params[name] = v
                                 # print 'name is %s value is %s'%(name,v)
                             try:
                                 params.pop('')
-                            except Exception,e:
+                            except Exception:
                                 pass
                             # print params
                             klass.objects.create(**params)
@@ -631,26 +1504,70 @@ class Document(generic.BO):
     """
     文档管理
     """
+
     TP = (
-        ('00',_('SYSTEM MANUAL')),
-        ('10',_('BUSINESS DOC')),
+        ('00', _('SYSTEM MANUAL')),  # 系统文档
+        ('10', _('BUSINESS DOC')),   # 业务文档
     )
     STATUS = (
-        ('0',_('draft')),
-        ('1',_('published'))
+        ('0', _('draft')),      # 草稿
+        ('1', _('published'))   # 已发布
     )
     index_weight = 8
-    code = models.CharField(_('code'),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    title = models.CharField(_('title'),max_length=const.DB_CHAR_NAME_120)
-    keywords = models.CharField(_('keywords'),max_length=const.DB_CHAR_NAME_120,blank=True,null=True)
-    description = models.TextField(_('description'),blank=True,null=True)
-    tp = models.CharField(_('type'),max_length=const.DB_CHAR_CODE_2,default='10',choices=TP)
-    business_domain = models.CharField(_("business domain"),max_length=const.DB_CHAR_CODE_4,choices=const.get_value_list('S045'),default='OT')
-    user = models.ForeignKey(User,verbose_name=_('user'),blank=True,null=True)
-    status = models.CharField(_('status'),max_length=const.DB_CHAR_CODE_2,default='0',choices=STATUS)
-    pub_date = models.DateTimeField(_('publish date'),blank=True,null=True)
-    size = models.CharField(_('size'),max_length=const.DB_CHAR_NAME_20,blank=True,null=True)
-    attach = models.FileField(_('attach'),blank=True,null=True,upload_to='doc')
+    # 编号
+    code = models.CharField(
+        _('code'),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 标题
+    title = models.CharField(_('title'), max_length=const.DB_CHAR_NAME_120)
+    # 关键词
+    keywords = models.CharField(
+        _('keywords'),
+        max_length=const.DB_CHAR_NAME_120,
+        blank=True,
+        null=True)
+    # 描述信息
+    description = models.TextField(_('description'), blank=True, null=True)
+    # 类型
+    tp = models.CharField(
+        _('type'),
+        max_length=const.DB_CHAR_CODE_2,
+        default='10',
+        choices=TP)
+    # 业务域
+    business_domain = models.CharField(
+        _("business domain"),
+        max_length=const.DB_CHAR_CODE_4,
+        choices=const.get_value_list('S045'),
+        default='OT')
+    user = models.ForeignKey(
+        User,
+        verbose_name=_('user'),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    # 状态
+    status = models.CharField(
+        _('status'),
+        max_length=const.DB_CHAR_CODE_2,
+        default='0',
+        choices=STATUS)
+    # 发布时间
+    pub_date = models.DateTimeField(_('publish date'), blank=True, null=True)
+    # 文件大小（？）
+    size = models.CharField(
+        _('size'),
+        max_length=const.DB_CHAR_NAME_20,
+        blank=True,
+        null=True)
+    # 附件
+    attach = models.FileField(
+        _('attach'),
+        blank=True,
+        null=True,
+        upload_to='doc')
 
     class Meta:
         verbose_name = _("document")

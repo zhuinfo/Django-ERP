@@ -8,7 +8,7 @@ from basedata.models import DataImport
 from django.utils.translation import ugettext_lazy as _
 
 
-def action_import(request,object_id):
+def action_import(request, object_id):
     """
     数据导入操作
     :param request:
@@ -24,11 +24,13 @@ def action_import(request,object_id):
         obj.action_import(request)
         try:
 
-            messages.success(request,_('data import successfully'))
-        except Exception,e:
-            messages.error(request,e)
+            messages.success(request, _('data import successfully'))
+        except Exception as e:
+            messages.error(request, e)
 
-        return HttpResponseRedirect("/admin/basedata/dataimport/%s"%(object_id))
+        return HttpResponseRedirect(
+            "/admin/basedata/dataimport/%s" %
+            (object_id))
 
     context = dict(
         site.each_context(request),
@@ -39,4 +41,7 @@ def action_import(request,object_id):
     )
     request.current_app = site.name
 
-    return TemplateResponse(request,'admin/invent/stockin/in_confirmation.html', context)
+    return TemplateResponse(
+        request,
+        'admin/invent/stockin/in_confirmation.html',
+        context)

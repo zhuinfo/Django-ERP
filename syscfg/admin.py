@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.contrib import admin
-from django.forms import ModelForm,DateField
+from django.forms import ModelForm, DateField
 from syscfg.models import *
 from common import generic
 
@@ -25,7 +25,7 @@ class SiteAdmin(admin.ModelAdmin):
 class ModuleAdmin(generic.BOAdmin):
     CODE_NUMBER_WIDTH = 3
     CODE_PREFIX = 'U'
-    list_display = ['code','name','parent','status']
+    list_display = ['code', 'name', 'parent', 'status']
     ordering = ['weight']
     raw_id_fields = ['parent']
 
@@ -34,7 +34,7 @@ class MenuAdmin(generic.BOAdmin):
     CODE_NUMBER_WIDTH = 3
     CODE_PREFIX = 'M'
 
-    list_display = ['code','name','module','status']
+    list_display = ['code', 'name', 'module', 'status']
     list_filter = ['module']
     ordering = ['weight']
     raw_id_fields = ['module']
@@ -43,11 +43,11 @@ class MenuAdmin(generic.BOAdmin):
 class RoleAdmin(generic.BOAdmin):
     CODE_NUMBER_WIDTH = 3
     CODE_PREFIX = 'R'
-    list_display = ['code','name','status']
-    filter_horizontal = ['users','menus']
+    list_display = ['code', 'name', 'status']
+    filter_horizontal = ['users', 'menus']
 
 
 admin.site.register(Site, SiteAdmin)
-admin.site.register(Module,ModuleAdmin)
-admin.site.register(Menu,MenuAdmin)
-admin.site.register(Role,RoleAdmin)
+admin.site.register(Module, ModuleAdmin)
+admin.site.register(Menu, MenuAdmin)
+admin.site.register(Role, RoleAdmin)
