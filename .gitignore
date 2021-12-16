@@ -1,0 +1,9 @@
+*.sqlite3
+.vscode/
+.venv/
+upload/
+settings.py
+
+.DS_Store
+__pycache__
+.idea

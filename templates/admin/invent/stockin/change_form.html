@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_urls admin_static admin_modify %}
+{% load i18n admin_urls static admin_modify %}
 
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
@@ -42,7 +42,7 @@
 {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1" />{% endif %}
 {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />{% endif %}
 {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
-{% if show_workflow_line%}
+{% if show_workflow_line %}
 <fieldset class="module aligned workflow">
     <h2>{% trans "workflow approve" %}</h2>
     <div style="padding:10px">
@@ -53,6 +53,7 @@
         <label class="control"><input type="radio" name="operation" value="1" checked> {% trans "agree" %}</label>
         <label class="control"><input type="radio" name="operation" value="3"> {% trans "deny" %}</label>
         <label class="control"><input type="radio" name="operation" value="4"> {% trans "terminate" %}</label>
+        {% comment %} 工作流批准按钮 {% endcomment %}
         <a class="button" href="approve/1" id="workflow_submit">{% trans "submit" %}</a>
         {% endif %}
     </div>
@@ -100,6 +101,7 @@
             {% if adminform and add %}
                 $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
             {% endif %}
+            // 工作流按钮
             {% if workflow_modal  %}
                 {% if workflow_instance %}
                 workflow_modal = "{{ workflow_modal.code }}";
@@ -113,11 +115,15 @@
             {% else %}
                 $("#workflow_submit").hide();
             {% endif %}
+
+            // 额外的按钮
             {% if extra_buttons %}
                 {% for button in extra_buttons %}
-                    $("<a href='{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
+                    $("<a href='/admin/invent/stockin/{{original.id}}/{{button.href}}' class='button'>{{button.title}}</a>").insertAfter("#workflow_submit");
                 {% endfor %}
             {% endif %}
+
+            // 原始按钮
             {% if readonly %}
                 $('input,select').attr('disabled',true);
                 $('div.submit-row').hide();
